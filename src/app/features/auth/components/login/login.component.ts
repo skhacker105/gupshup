@@ -10,7 +10,7 @@ import { AuthService } from '../../../../services';
   styleUrls: ['./login.component.scss']
 })
 export class LoginComponent {
-  credentials = { phoneOrEmail: '', password: '' };
+  credentials = { email: '', password: '' };
   errorMessage = '';
   loading = false;
   isMobile = false;

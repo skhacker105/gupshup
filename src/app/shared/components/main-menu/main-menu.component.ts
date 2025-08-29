@@ -1,4 +1,3 @@
-// src/app/shared/components/main-menu/main-menu.component.ts
 import { Component } from '@angular/core';
 import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
 import { Router } from '@angular/router';
@@ -14,6 +13,7 @@ export class MainMenuComponent {
   isTablet = false;
   isDesktop = true;
   isMenuOpen = false;
+  isSubmenuOpen = false; // For tablet dropdown
 
   constructor(
     private breakpointObserver: BreakpointObserver,
@@ -24,16 +24,27 @@ export class MainMenuComponent {
       this.isMobile = result.matches && result.breakpoints[Breakpoints.Handset];
       this.isTablet = result.matches && result.breakpoints[Breakpoints.Tablet];
       this.isDesktop = result.matches && result.breakpoints[Breakpoints.Web];
-      if (!this.isMobile) this.isMenuOpen = true;
+      this.isMenuOpen = !this.isMobile; // Open by default on tablet/desktop
+      this.isSubmenuOpen = false; // Reset submenu on resize
     });
   }
 
   toggleMenu(): void {
     this.isMenuOpen = !this.isMenuOpen;
+    if (!this.isMenuOpen) this.isSubmenuOpen = false; // Close submenu when main menu closes
+  }
+
+  toggleSubmenu(): void {
+    if (this.isTablet) this.isSubmenuOpen = !this.isSubmenuOpen;
   }
 
   async logout(): Promise<void> {
-    await this.dbService.updateUser({ id: this.dbService.getDeviceId()!, phoneNumber: '' });
-    this.router.navigate(['/login']);
+    try {
+      await this.dbService.updateUser({ id: this.dbService.getDeviceId(), phoneNumber: '' });
+      await this.router.navigate(['/login']);
+    } catch (err) {
+      console.error('Logout failed:', err);
+      alert('Failed to log out. Please try again.');
+    }
   }
 }

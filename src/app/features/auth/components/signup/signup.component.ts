@@ -40,7 +40,7 @@ export class SignupComponent {
       return;
     }
     this.authService.signup(this.user).subscribe(
-      () => this.router.navigate(['/login']),
+      () => this.router.navigate(['/auth/login']),
       err => {
         this.errorMessage = 'Signup failed. Please try again.';
         this.loading = false;

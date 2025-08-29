@@ -6,7 +6,7 @@
     <form (ngSubmit)="onLogin()">
         <div class="form-group">
             <label for="identifier" title="Enter your registered email or phone number">Email/Phone</label>
-            <input id="identifier" [(ngModel)]="credentials.phoneOrEmail" required name="phoneOrEmail"
+            <input id="identifier" [(ngModel)]="credentials.email" required name="phoneOrEmail"
                 title="Required for login validation">
         </div>
         <div class="form-group">
