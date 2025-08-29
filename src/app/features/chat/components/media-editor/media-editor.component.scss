@@ -1,7 +1,73 @@
-div {
-    text-align: center;
-    img,
-    video {
-        max-width: 100%;
+// src/app/features/chat/components/media-editor/media-editor.component.scss
+@use '../../../../../variable' as *;
+
+.media-editor-wrapper {
+  padding: 1rem;
+
+  &.mobile {
+    padding: 0.5rem;
+    h2 { font-size: 1.25rem; }
+    img, video { max-height: 150px; }
+  }
+
+  &.tablet {
+    padding: 0.75rem;
+    h2 { font-size: 1.5rem; }
+    img, video { max-height: 200px; }
+  }
+
+  &.desktop {
+    h2 { font-size: 1.75rem; }
+    img, video { max-height: 300px; }
+  }
+
+  .info {
+    font-size: 0.875rem;
+    color: $secondary-color;
+    margin-bottom: 1rem;
+  }
+
+  .error {
+    color: $danger-color;
+    font-size: 0.875rem;
+    margin-bottom: 1rem;
+  }
+
+  img, video {
+    max-width: 100%;
+    margin-bottom: 1rem;
+  }
+
+  form {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+
+    .form-group {
+      display: flex;
+      flex-direction: column;
     }
+
+    &.mobile .form-group {
+      flex-direction: column;
+    }
+
+    &.tablet, &.desktop {
+      .form-group { flex-direction: row; align-items: center; gap: 0.5rem; }
+    }
+  }
+
+  .actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 0.5rem;
+    margin-top: 1rem;
+  }
+
+  .spinner {
+    text-align: center;
+    padding: 1rem;
+    font-size: 1rem;
+    color: $secondary-color;
+  }
 }

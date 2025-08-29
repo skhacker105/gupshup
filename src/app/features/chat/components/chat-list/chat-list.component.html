@@ -1,15 +1,39 @@
+<!-- src/app/features/chat/components/chat-list/chat-list.component.html -->
 <div class="chat-list-wrapper" [ngClass]="{'mobile': isMobile, 'tablet': isTablet, 'desktop': isDesktop}">
-    <h2><i class="fa fa-users"></i> Your Contacts</h2>
-    <button (click)="syncContacts()"><i class="fa fa-sync"></i> Sync Contacts</button>
-    <button (click)="openGroupCreate()"><i class="fa fa-users"></i> Create Group</button>
-    <ul *ngIf="contacts.length > 0; else loadingTemplate">
-        <li *ngFor="let contact of contacts" (click)="openChat(contact)">
-            <i class="fa fa-user-circle"></i> {{ contact.name }}
-            <span [class.online]="contact.online">{{ contact.online ? 'Online' : 'Offline' }}</span>
-            <span>Last msg: {{ contact.lastMessageTimestamp | date }}</span>
-        </li>
-    </ul>
-    <ng-template #loadingTemplate>
+    <header>
+        <h2>Chats</h2>
+        <div class="actions">
+            <button (click)="syncContacts()" [disabled]="loading" title="Sync contacts with your device">
+                <i class="fa fa-sync"></i> {{ loading ? 'Syncing...' : 'Sync Contacts' }}
+            </button>
+            <button (click)="openGroupCreate()" title="Create a new group chat">
+                <i class="fa fa-users"></i> New Group
+            </button>
+        </div>
+    </header>
+    <p class="info">Select a contact or group to start chatting. Syncing contacts may take a few moments.</p>
+    <p *ngIf="errorMessage" class="error">{{ errorMessage }}</p>
+    <div class="chat-list" *ngIf="!loading; else loadingSpinner">
+        <h3>Contacts</h3>
+        <ul>
+            <li *ngFor="let contact of contacts" (click)="openChat(contact.id)"
+                title="Click to chat with {{ contact.name }}">
+                <span class="name">{{ contact.name }}</span>
+                <span class="status" [ngClass]="{'online': contact.online, 'offline': !contact.online}">
+                    {{ contact.online ? 'Online' : 'Offline' }}
+                </span>
+                <span class="timestamp">{{ contact.lastMessageTimestamp | date:'short' }}</span>
+            </li>
+        </ul>
+        <h3>Groups</h3>
+        <ul>
+            <li *ngFor="let group of groups" (click)="openChat(group.id)" title="Chat with {{ group.name }} group">
+                <span class="name">{{ group.name }}</span>
+                <span class="members">{{ group.members.length }} members</span>
+            </li>
+        </ul>
+    </div>
+    <ng-template #loadingSpinner>
         <div class="spinner"><i class="fa fa-spinner fa-spin"></i> Loading contacts...</div>
     </ng-template>
 </div>

@@ -1,2 +1,11 @@
-<h1>Welcome to Chat App</h1>
-<p>Navigate using the menu.</p>
+<!-- src/app/features/home/home.component.html -->
+<div class="home-wrapper" [ngClass]="{'mobile': isMobile, 'tablet': isTablet, 'desktop': isDesktop}">
+    <h2>Welcome to Chat App</h2>
+    <p class="info">Your secure messaging app with file sharing and document management. Start chatting or manage your
+        files.</p>
+    <div class="quick-links">
+        <a routerLink="/chat" title="Go to your chats"><i class="fa fa-comments"></i> Chat</a>
+        <a routerLink="/docs" title="View and manage documents"><i class="fa fa-file"></i> Documents</a>
+        <a routerLink="/settings" title="Customize app settings"><i class="fa fa-cog"></i> Settings</a>
+    </div>
+</div>

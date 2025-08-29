@@ -1,4 +1,3 @@
-export * from  './app-document.model';
 export * from './contact-group.interface';
 export * from './contact.interface';
 export * from './document.interface';

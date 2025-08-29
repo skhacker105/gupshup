@@ -1,6 +1,13 @@
-<nav>
-    <a routerLink="/home">Home</a>
-    <a routerLink="/chat">Chat</a>
-    <a routerLink="/docs">Docs</a>
-    <a routerLink="/settings">Settings</a>
-</nav>
+<nav class="main-menu" [ngClass]="{'mobile': isMobile, 'tablet': isTablet, 'desktop': isDesktop}">
+    <div class="menu-header">
+      <h2>ChatApp</h2>
+      <i class="fa fa-bars menu-icon" (click)="toggleMenu()" *ngIf="isMobile" title="Toggle menu"></i>
+    </div>
+    <p class="info" *ngIf="isMobile">Tap the menu icon to navigate.</p>
+    <ul [ngClass]="{'hidden': !isMenuOpen && isMobile}">
+      <li><a routerLink="/chat" routerLinkActive="active" title="Go to chats"><i class="fa fa-comments"></i> Chat</a></li>
+      <li><a routerLink="/docs" routerLinkActive="active" title="Manage documents"><i class="fa fa-file"></i> Documents</a></li>
+      <li><a routerLink="/settings" routerLinkActive="active" title="Customize settings"><i class="fa fa-cog"></i> Settings</a></li>
+      <li><a href="javascript:void(0)" (click)="logout()" title="Sign out of your account"><i class="fa fa-sign-out"></i> Logout</a></li>
+    </ul>
+  </nav>

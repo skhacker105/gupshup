@@ -1,7 +1,10 @@
+// src/app/features/chat/chat.module.ts
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { MatDialogModule } from '@angular/material/dialog';
+import { MatButtonModule } from '@angular/material/button';
+import { MatInputModule } from '@angular/material/input';
 import { ChatRoutingModule } from './chat-routing.module';
 import { ChatListComponent } from './components/chat-list/chat-list.component';
 import { ChatWindowComponent } from './components/chat-window/chat-window.component';
@@ -19,6 +22,8 @@ import { MediaEditorComponent } from './components/media-editor/media-editor.com
     CommonModule,
     FormsModule,
     MatDialogModule,
+    MatButtonModule,
+    MatInputModule,
     ChatRoutingModule
   ]
 })

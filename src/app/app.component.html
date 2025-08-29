@@ -1,2 +1,5 @@
-<app-main-menu></app-main-menu>
-<router-outlet></router-outlet>
+<!-- src/app/app.component.html -->
+<div class="app-wrapper" [ngClass]="{'mobile': isMobile, 'tablet': isTablet, 'desktop': isDesktop}">
+    <app-main-menu></app-main-menu>
+    <router-outlet></router-outlet>
+</div>

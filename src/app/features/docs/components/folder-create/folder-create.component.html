@@ -1,8 +1,17 @@
-<mat-dialog-content>
+<div class="folder-create-wrapper" [ngClass]="{'mobile': isMobile, 'tablet': isTablet, 'desktop': isDesktop}">
     <h2>Create Folder</h2>
-    <form (ngSubmit)="create()">
-        <label for="name">Folder Name</label>
-        <input id="name" [(ngModel)]="name" required>
-        <button type="submit">Create</button>
+    <p class="info">Enter a name for the new folder.</p>
+    <p *ngIf="errorMessage" class="error">{{ errorMessage }}</p>
+    <form (ngSubmit)="createFolder()">
+        <div class="form-group">
+            <label for="name" title="Enter folder name">Folder Name</label>
+            <input id="name" [(ngModel)]="name" name="name" required title="Required for folder creation">
+        </div>
+        <div class="actions">
+            <button type="submit" [disabled]="loading" title="Create the folder">
+                {{ loading ? 'Creating...' : 'Create' }}
+            </button>
+            <button type="button" mat-dialog-close title="Cancel folder creation">Cancel</button>
+        </div>
     </form>
-</mat-dialog-content>
+</div>

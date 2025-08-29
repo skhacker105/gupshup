@@ -1,28 +1,36 @@
 <!-- src/app/features/chat/components/media-editor/media-editor.component.html -->
-<div class="media-editor-wrapper">
+<div class="media-editor-wrapper" [ngClass]="{'mobile': isMobile, 'tablet': isTablet, 'desktop': isDesktop}">
     <h2>Edit Media</h2>
+    <p class="info">Crop images or adjust video settings (start/end time, volume) before saving.</p>
+    <p *ngIf="errorMessage" class="error">{{ errorMessage }}</p>
     <div *ngIf="isImage">
-        <img #imageElement [src]="fileUrl" alt="Image to edit">
-        <button (click)="cropImage()">Crop</button>
+        <img #imageElement [src]="fileUrl" alt="Image to edit" title="Drag to crop image">
+        <button (click)="cropImage()" title="Apply crop to image">Crop Image</button>
     </div>
     <div *ngIf="isVideo">
-        <video #videoElement [src]="fileUrl" controls></video>
+        <video #videoElement [src]="fileUrl" controls title="Preview video"></video>
         <form>
-            <label>
-                Start Time:
-                <input type="number" [(ngModel)]="startTime" name="startTime" [max]="videoDuration">
-            </label>
-            <label>
-                End Time:
-                <input type="number" [(ngModel)]="endTime" name="endTime" [max]="videoDuration">
-            </label>
-            <label>
-                Volume:
-                <input type="range" min="0" max="1" step="0.1" [(ngModel)]="volume" name="volume">
-            </label>
-            <button type="button" (click)="clipVideo()">Clip</button>
+            <p class="info">Adjust video settings (0 to {{ videoDuration | number:'1.0-0' }} seconds).</p>
+            <div class="form-group">
+                <label for="startTime" title="Set video start time in seconds">Start Time (s)</label>
+                <input id="startTime" type="number" [(ngModel)]="startTime" name="startTime" [max]="videoDuration"
+                    min="0" title="Must be between 0 and video duration">
+            </div>
+            <div class="form-group">
+                <label for="endTime" title="Set video end time in seconds">End Time (s)</label>
+                <input id="endTime" type="number" [(ngModel)]="endTime" name="endTime" [max]="videoDuration" min="0"
+                    title="Must be between start time and video duration">
+            </div>
+            <div class="form-group">
+                <label for="volume" title="Adjust video volume (0 to 1)">Volume</label>
+                <input id="volume" type="range" [(ngModel)]="volume" name="volume" min="0" max="1" step="0.1"
+                    title="Slide to adjust volume">
+            </div>
+            <button type="button" (click)="clipVideo()" title="Apply video settings">Clip Video</button>
         </form>
     </div>
-    <button (click)="save()">Save</button>
-    <button mat-dialog-close>Cancel</button>
+    <div class="actions">
+        <button (click)="save()" [disabled]="!!errorMessage" title="Save edited media">Save</button>
+        <button mat-dialog-close title="Cancel editing">Cancel</button>
+    </div>
 </div>

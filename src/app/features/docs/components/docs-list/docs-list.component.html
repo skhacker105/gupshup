@@ -1,27 +1,46 @@
-<div class="filters">
-    <select [(ngModel)]="groupBy">
-        <option value="date">Date Created</option>
-        <option value="type">Type</option>
-        <option value="month">Month</option>
-        <option value="sender">Sent From</option>
-        <option value="receiver">Sent To</option>
-        <option value="contact">Contact/Group</option>
-    </select>
-    <select [(ngModel)]="orderBy">
-        <option value="date">Date</option>
-        <option value="name">Name</option>
-        <option value="sender">Sent From</option>
-        <option value="receiver">Sent To</option>
-    </select>
-    <button (click)="applyFilters()">Apply</button>
+<div class="docs-list-wrapper" [ngClass]="{'mobile': isMobile, 'tablet': isTablet, 'desktop': isDesktop}">
+    <header>
+        <h2>Documents</h2>
+        <div class="actions">
+            <mat-select [(ngModel)]="groupBy" (selectionChange)="loadDocuments()" placeholder="Group By"
+                title="Group documents by type, month, or sender">
+                <mat-option value="">None</mat-option>
+                <mat-option value="type">Type</mat-option>
+                <mat-option value="month">Month</mat-option>
+                <mat-option value="sender">Sender</mat-option>
+                <mat-option value="receiver">Receiver</mat-option>
+            </mat-select>
+            <mat-select [(ngModel)]="orderBy" (selectionChange)="loadDocuments()" placeholder="Order By"
+                title="Sort documents by date, name, or sender">
+                <mat-option value="">None</mat-option>
+                <mat-option value="createdDate">Date</mat-option>
+                <mat-option value="name">Name</mat-option>
+                <mat-option value="senderId">Sender</mat-option>
+                <mat-option value="receiverId">Receiver</mat-option>
+            </mat-select>
+            <button (click)="createFolder()" title="Create a new folder for documents"><i class="fa fa-folder"></i> New
+                Folder</button>
+        </div>
+    </header>
+    <p class="info">View and manage your documents. Use filters to organize by type, month, or sender.</p>
+    <p *ngIf="errorMessage" class="error">{{ errorMessage }}</p>
+    <div class="docs-list" *ngIf="!loading; else loadingSpinner">
+        <div *ngFor="let doc of documents; let i = index">
+            <h3 *ngIf="groupBy && (i === 0 || getGroupKey(documents[i-1]) !== getGroupKey(doc))" class="group-header">
+                {{ getGroupKey(doc) }}
+            </h3>
+            <ul>
+                <li title="Document: {{ doc.name }}">
+                    <span>{{ doc.name }}</span>
+                    <span>{{ doc.type }}</span>
+                    <span>{{ doc.createdDate | date:'short' }}</span>
+                    <button (click)="deleteDocument(doc.id)" title="Delete {{ doc.name }}"><i class="fa fa-trash"></i>
+                        Delete</button>
+                </li>
+            </ul>
+        </div>
+    </div>
+    <ng-template #loadingSpinner>
+        <div class="spinner"><i class="fa fa-spinner fa-spin"></i> Loading documents...</div>
+    </ng-template>
 </div>
-<ul>
-    <li *ngFor="let doc of documents">
-        {{ doc.name }} ({{ doc.type }}) - {{ doc.createdDate | date }}
-        <button (click)="backup(doc)">Backup</button>
-        <button (click)="deleteDoc(doc.id, false)">Delete</button>
-        <button (click)="deleteDoc(doc.id, true)">Permanent Delete</button>
-        <button (click)="moveToFolder(doc)">Move to Folder</button>
-    </li>
-</ul>
-<button (click)="createFolder()">Create Folder</button>

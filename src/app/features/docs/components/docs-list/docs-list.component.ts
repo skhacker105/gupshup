@@ -1,8 +1,8 @@
-import { Component, OnInit, Inject } from '@angular/core';
-import { MatDialog, MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
+import { Component, OnInit } from '@angular/core';
+import { MatDialog } from '@angular/material/dialog';
 import { FolderCreateComponent } from '../folder-create/folder-create.component';
 import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
-import { DbService, DocumentService, StorageAccountService } from '../../../../services';
+import { DocumentService } from '../../../../services';
 import { Document } from '../../../../models';
 
 @Component({
@@ -12,16 +12,16 @@ import { Document } from '../../../../models';
 })
 export class DocsListComponent implements OnInit {
   documents: Document[] = [];
-  groupBy = 'date';
-  orderBy = 'date';
+  groupBy = '';
+  orderBy = '';
+  loading = false;
+  errorMessage = '';
   isMobile = false;
   isTablet = false;
   isDesktop = true;
 
   constructor(
     private documentService: DocumentService,
-    private dbService: DbService,
-    private storageService: StorageAccountService,
     private dialog: MatDialog,
     private breakpointObserver: BreakpointObserver
   ) {
@@ -37,94 +37,62 @@ export class DocsListComponent implements OnInit {
   }
 
   async loadDocuments(): Promise<void> {
-    this.documents = await this.documentService.getDocuments({ groupBy: this.groupBy, orderBy: this.orderBy });
-  }
-
-  applyFilters(): void {
-    this.loadDocuments();
-  }
-
-  async backup(doc: Document): Promise<void> {
-    const accounts = await this.storageService.getAccounts().toPromise();
-    if (!accounts) {
-      console.error('No accounts present for backup');
-      return;
+    this.loading = true;
+    this.errorMessage = '';
+    try {
+      this.documents = await this.documentService.getDocuments({ groupBy: this.groupBy, orderBy: this.orderBy });
+    } catch (err) {
+      this.errorMessage = 'Failed to load documents.';
     }
-    const accountId = accounts[0]?.id;
-    if (accountId) {
-      await this.documentService.backupDocument(doc, accountId);
-      this.loadDocuments();
-    } else {
-      alert('No storage account available');
+    this.loading = false;
+  }
+
+  async deleteDocument(id: string): Promise<void> {
+    this.loading = true;
+    this.errorMessage = '';
+    try {
+      await this.documentService.deleteDocument(id, false);
+      this.documents = this.documents.filter(doc => doc.id !== id);
+      this.errorMessage = 'Document deleted successfully.';
+    } catch (err) {
+      this.errorMessage = 'Failed to delete document.';
     }
+    this.loading = false;
   }
 
-  async deleteDoc(id: string, permanent: boolean): Promise<void> {
-    await this.documentService.deleteDocument(id, permanent);
-    this.loadDocuments();
-  }
-
-  createFolder(): void {
-    this.dialog.open(FolderCreateComponent).afterClosed().subscribe(() => this.loadDocuments());
-  }
-
-  async moveToFolder(doc: Document): Promise<void> {
-    const folders = await this.dbService.getFolders();
-    const dialogRef = this.dialog.open(FolderSelectDialogComponent, {
-      data: { folders }
+  async createFolder(): Promise<void> {
+    const dialogRef = this.dialog.open(FolderCreateComponent, {
+      width: this.isMobile ? '90%' : this.isTablet ? '70%' : '500px',
+      maxHeight: this.isMobile ? '80vh' : '70vh'
     });
-    dialogRef.afterClosed().subscribe(async (folderId: string | undefined) => {
-      if (folderId) {
-        doc.folderId = folderId;
-        await this.dbService.storeDocument(doc);
-        this.loadDocuments();
+    dialogRef.afterClosed().subscribe(async (name: string | undefined) => {
+      if (name) {
+        this.loading = true;
+        this.errorMessage = '';
+        try {
+          await this.documentService.createFolder(name);
+          this.errorMessage = 'Folder created successfully.';
+          await this.loadDocuments();
+        } catch (err) {
+          this.errorMessage = 'Failed to create folder.';
+        }
+        this.loading = false;
       }
     });
   }
-}
 
-@Component({
-  selector: 'app-folder-select-dialog',
-  template: `
-    <mat-dialog-content class="folder-select-wrapper" [ngClass]="{'mobile': isMobile, 'tablet': isTablet, 'desktop': isDesktop}">
-      <h2><i class="fa fa-folder"></i> Select Folder</h2>
-      <select [(ngModel)]="selectedFolderId">
-        <option *ngFor="let folder of folders" [value]="folder.id">{{ folder.name }}</option>
-      </select>
-      <button (click)="select()"><i class="fa fa-check"></i> Select</button>
-      <button mat-dialog-close><i class="fa fa-times"></i> Cancel</button>
-    </mat-dialog-content>
-  `,
-  styles: [`
-    .folder-select-wrapper {
-      &.mobile { font-size: 0.875rem; }
-      &.tablet { padding: 1rem; }
-      select { width: 100%; margin-bottom: 1rem; }
-      button { margin-right: 1rem; }
+  getGroupKey(doc: Document): string {
+    switch (this.groupBy) {
+      case 'type':
+        return doc.type || 'unknown';
+      case 'month':
+        return doc.createdDate ? new Date(doc.createdDate).toLocaleString('default', { month: 'long', year: 'numeric' }) : 'unknown';
+      case 'sender':
+        return doc.senderId || 'unknown';
+      case 'receiver':
+        return doc.receiverId || 'unknown';
+      default:
+        return '';
     }
-  `]
-})
-export class FolderSelectDialogComponent {
-  folders: { id: string; name: string }[];
-  selectedFolderId?: string;
-  isMobile = false;
-  isTablet = false;
-  isDesktop = true;
-
-  constructor(
-    @Inject(MAT_DIALOG_DATA) data: { folders: { id: string; name: string }[] },
-    private dialogRef: MatDialogRef<FolderSelectDialogComponent>,
-    private breakpointObserver: BreakpointObserver
-  ) {
-    this.folders = data.folders;
-    this.breakpointObserver.observe([Breakpoints.Handset, Breakpoints.Tablet, Breakpoints.Web]).subscribe(result => {
-      this.isMobile = result.matches && result.breakpoints[Breakpoints.Handset];
-      this.isTablet = result.matches && result.breakpoints[Breakpoints.Tablet];
-      this.isDesktop = result.matches && result.breakpoints[Breakpoints.Web];
-    });
-  }
-
-  select(): void {
-    this.dialogRef.close(this.selectedFolderId);
   }
 }

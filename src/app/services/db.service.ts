@@ -85,6 +85,11 @@ export class DbService {
         await this.put('messages', msg);
     }
 
+    getDeviceId(): string {
+        // Replace with actual device ID logic (e.g., UUID from localStorage or device fingerprint)
+        return 'device-id-stub-' + Date.now(); // Stub for testing
+      }
+
     async getAll(entity: string): Promise<any[]> {
         return this.manager.search(this.dbId, entity, {});
     }
@@ -100,7 +105,7 @@ export class DbService {
         return user || { id: this.manager.getDeviceId()!, phoneNumber: '', password: '', targetLanguage: 'en-US', storageAccounts: [] };
     }
 
-    async updateUser(user: User): Promise<void> {
+    async updateUser(user: Partial<User>): Promise<void> {
         await this.put('users', user);
     }
 

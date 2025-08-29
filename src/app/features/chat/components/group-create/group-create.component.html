@@ -1,12 +1,30 @@
-<mat-dialog-content>
-    <h2>Create Group</h2>
+<!-- src/app/features/chat/components/group-create/group-create.component.html -->
+<div class="group-create-wrapper" [ngClass]="{'mobile': isMobile, 'tablet': isTablet, 'desktop': isDesktop}">
+    <h2>Create New Group</h2>
+    <p class="info">Choose a name and select contacts to add to your group chat.</p>
+    <p *ngIf="errorMessage" class="error">{{ errorMessage }}</p>
     <form (ngSubmit)="createGroup()">
-        <label for="name">Group Name</label>
-        <input id="name" [(ngModel)]="group.name" required>
-        <label>Select Members</label>
-        <select multiple [(ngModel)]="group.members">
-            <option *ngFor="let contact of contacts" [value]="contact.id">{{ contact.name }}</option>
-        </select>
-        <button type="submit">Create</button>
+        <div class="form-group">
+            <label for="groupName" title="Name your group chat">Group Name</label>
+            <input id="groupName" [(ngModel)]="groupName" name="groupName" placeholder="Enter group name" required
+                title="Required for group creation" />
+        </div>
+        <h3>Select Contacts ({{ selectedContacts.length }} selected)</h3>
+        <div class="contact-list" *ngIf="!loading; else loadingSpinner">
+            <label *ngFor="let contact of contacts" title="Add {{ contact.name }} to the group">
+                <input type="checkbox" [checked]="selectedContacts.includes(contact.id)"
+                    (change)="toggleContact(contact.id)" />
+                {{ contact.name }} ({{ contact.phoneNumber }})
+            </label>
+        </div>
+        <div class="actions">
+            <button type="submit" [disabled]="loading" title="Create the group chat">
+                {{ loading ? 'Creating...' : 'Create Group' }}
+            </button>
+            <button type="button" mat-dialog-close title="Cancel group creation">Cancel</button>
+        </div>
     </form>
-</mat-dialog-content>
+    <ng-template #loadingSpinner>
+        <div class="spinner"><i class="fa fa-spinner fa-spin"></i> Loading contacts...</div>
+    </ng-template>
+</div>

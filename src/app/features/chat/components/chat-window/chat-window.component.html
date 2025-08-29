@@ -1,39 +1,51 @@
 <!-- src/app/features/chat/components/chat-window/chat-window.component.html -->
 <div class="chat-window-wrapper" [ngClass]="{'mobile': isMobile, 'tablet': isTablet, 'desktop': isDesktop}">
     <header>
+        <button (click)="router.navigate(['/chat'])" title="Return to chat list"><i class="fa fa-arrow-left"></i>
+            Back</button>
         <h3><i class="fa fa-user"></i> Chat with {{ receiverName }}</h3>
-        <i class="fa fa-info-circle" (click)="showInfo()"></i>
+        <button (click)="showInfo()" title="View chat details"><i class="fa fa-info-circle"></i> Info</button>
     </header>
-    <div class="messages" #messagesContainer>
+    <p class="info">Send messages, share files, or translate conversations. Files are saved with expiration settings.
+    </p>
+    <p *ngIf="errorMessage" class="error">{{ errorMessage }}</p>
+    <div class="messages" #messagesContainer *ngIf="!loading; else loadingSpinner">
         <div *ngFor="let msg of messages" [class]="msg.senderId === currentUserId ? 'sent' : 'received'">
             <strong>{{ getContactNameForMessage(msg) | async }}</strong>
             <p>
                 <span class="timestamp">{{ msg.createdAt | date:'shortTime' }}</span>
                 {{ msg.text || '(Attachment)' }}
                 <span *ngIf="msg.translatedText" class="translated">(Translated: {{ msg.translatedText }})</span>
-                <button (click)="translateMessage(msg)" *ngIf="msg.text && !msg.translatedText"><i
-                        class="fa fa-language"></i> Translate</button>
+                <button *ngIf="msg.text && !msg.translatedText" (click)="translateMessage(msg)"
+                    title="Translate this message">
+                    <i class="fa fa-language"></i> Translate
+                </button>
             </p>
             <div *ngIf="msg.file && msg.file.type?.startsWith('image/')">
-                <img [src]="getFileUrl(msg.file)" alt="{{ msg.file.name }}">
+                <img [src]="getFileUrl(msg.file)" alt="{{ msg.file.name }}" title="Image attachment">
             </div>
             <div *ngIf="msg.file && msg.file.type?.startsWith('video/')">
-                <video [src]="getFileUrl(msg.file)" controls></video>
+                <video [src]="getFileUrl(msg.file)" controls title="Video attachment"></video>
             </div>
             <div *ngIf="msg.file && !msg.file.type?.startsWith('image/') && !msg.file.type?.startsWith('video/')">
-                <a href="javascript:void(0)" (click)="downloadAttachment(msg.file.id, msg.file.name)">
-                    <i class="fa fa-download"></i> Download {{ msg.file.name }}
+                <a href="javascript:void(0)" (click)="downloadAttachment(msg.file.id, msg.file.name)"
+                    title="Download {{ msg.file.name }}">
+                    <i class="fa fa-download"></i> {{ msg.file.name }}
                 </a>
             </div>
         </div>
     </div>
     <form (ngSubmit)="sendMessage()" class="input-form">
+        <p class="info">Type a message or attach a file (images/videos can be edited).</p>
         <input type="text" [(ngModel)]="newMessage.text" name="messageText" placeholder="Type a message"
-            (keyup.enter)="sendMessage()" />
+            title="Enter your message here" (keyup.enter)="sendMessage()" />
         <input type="file" (change)="onFileSelect($event)" id="fileInput" hidden>
-        <label for="fileInput"><i class="fa fa-paperclip"></i></label>
-        <button type="submit" [disabled]="loading"><i class="fa fa-send"></i> {{ loading ? 'Sending...' : 'Send'
-            }}</button>
-        <div *ngIf="loading" class="spinner"><i class="fa fa-spinner fa-spin"></i> Loading...</div>
+        <label for="fileInput" title="Attach an image, video, or file"><i class="fa fa-paperclip"></i></label>
+        <button type="submit" [disabled]="loading" title="Send message or file">
+            <i class="fa fa-send"></i> {{ loading ? 'Sending...' : 'Send' }}
+        </button>
     </form>
+    <ng-template #loadingSpinner>
+        <div class="spinner"><i class="fa fa-spinner fa-spin"></i> Loading messages...</div>
+    </ng-template>
 </div>

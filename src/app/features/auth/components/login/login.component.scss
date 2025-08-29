@@ -1,11 +1,56 @@
-form {
+// src/app/features/auth/login/login.component.scss
+@use '../../../../../variable' as *;
+
+.login-wrapper {
+  max-width: 400px;
+  margin: auto;
+  padding: 2rem;
+  background: $background-color;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+
+  &.mobile {
+    max-width: 100%;
+    padding: 1rem;
+    h2 { font-size: 1.25rem; }
+    .info { font-size: 0.75rem; }
+  }
+
+  &.tablet {
+    max-width: 80%;
+    padding: 1.5rem;
+    h2 { font-size: 1.5rem; }
+    .info { font-size: 0.875rem; }
+  }
+
+  &.desktop {
+    h2 { font-size: 1.75rem; }
+    .info { font-size: 1rem; }
+  }
+
+  form {
     display: flex;
     flex-direction: column;
-    max-width: 300px;
-    margin: auto;
+    gap: 1rem;
 
-    @media(max-width: 480px) {
-        max-width: 100%;
-        padding: 1rem;
+    .form-group {
+      display: flex;
+      flex-direction: column;
     }
+
+    .error {
+      color: $danger-color;
+      font-size: 0.875rem;
+    }
+  }
+
+  a {
+    display: block;
+    margin-top: 1rem;
+    color: $primary-color;
+    text-decoration: none;
+    &:hover {
+      text-decoration: underline;
+    }
+  }
 }

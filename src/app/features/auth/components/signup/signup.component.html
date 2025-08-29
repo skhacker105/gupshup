@@ -1,11 +1,27 @@
-<form (ngSubmit)="onSignup()">
-    <label for="phoneNumber">Phone Number</label>
-    <input id="phoneNumber" [(ngModel)]="user.phoneNumber" name="phoneNumber" required>
-    <label for="email">Email (optional)</label>
-    <input id="email" [(ngModel)]="user.email" name="email">
-    <label for="password">Password</label>
-    <input id="password" type="password" [(ngModel)]="user.password" name="password" required>
-    <label for="confirmPassword">Confirm Password</label>
-    <input id="confirmPassword" type="password" [(ngModel)]="confirmPassword" name="confirmPassword" required>
-    <button type="submit" [disabled]="user.password !== confirmPassword">Signup</button>
-</form>
+<!-- src/app/features/auth/signup/signup.component.html -->
+<div class="signup-wrapper" [ngClass]="{'mobile': isMobile, 'tablet': isTablet, 'desktop': isDesktop}">
+    <h2>Create a New Account</h2>
+    <p class="info">Fill in your details to sign up. Already have an account? <a routerLink="/auth/login">Sign In</a></p>
+    <form (ngSubmit)="onSignup()">
+        <div class="form-group">
+            <label for="phoneNumber" title="Your phone number is required for account recovery">Phone Number</label>
+            <input id="phoneNumber" [(ngModel)]="user.phoneNumber" required title="Must be a valid phone number" name="phoneNumber">
+        </div>
+        <div class="form-group">
+            <label for="email" title="Optional email for notifications">Email (optional)</label>
+            <input id="email" [(ngModel)]="user.email" title="Enter a valid email" name="email">
+        </div>
+        <div class="form-group">
+            <label for="password" title="Password must be at least 6 characters">Password</label>
+            <input id="password" type="password" [(ngModel)]="user.password" required title="Minimum 6 characters" name="password">
+        </div>
+        <div class="form-group">
+            <label for="confirmPassword" title="Confirm your password">Confirm Password</label>
+            <input id="confirmPassword" type="password" [(ngModel)]="confirmPassword" required name="confirmPassword"
+                title="Must match password">
+        </div>
+        <p *ngIf="errorMessage" class="error">{{ errorMessage }}</p>
+        <button type="submit" [disabled]="loading" title="Click to create account">{{ loading ? 'Signing up...' :
+            'Signup' }}</button>
+    </form>
+</div>

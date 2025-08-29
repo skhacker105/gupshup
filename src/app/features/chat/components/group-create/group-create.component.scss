@@ -1,7 +1,76 @@
-form {
+// src/app/features/chat/components/group-create/group-create.component.scss
+@use '../../../../../variable' as *;
+
+.group-create-wrapper {
+  padding: 1rem;
+
+  &.mobile {
+    padding: 0.5rem;
+    h2 { font-size: 1.25rem; }
+    h3 { font-size: 1rem; }
+    .contact-list { max-height: 150px; }
+  }
+
+  &.tablet {
+    padding: 0.75rem;
+    h2 { font-size: 1.5rem; }
+    h3 { font-size: 1.25rem; }
+    .contact-list { max-height: 200px; }
+  }
+
+  &.desktop {
+    h2 { font-size: 1.75rem; }
+    h3 { font-size: 1.5rem; }
+    .contact-list { max-height: 250px; }
+  }
+
+  .info {
+    font-size: 0.875rem;
+    color: $secondary-color;
+    margin-bottom: 1rem;
+  }
+
+  .error {
+    color: $danger-color;
+    font-size: 0.875rem;
+    margin-bottom: 1rem;
+  }
+
+  form {
     display: flex;
     flex-direction: column;
-    select {
-        height: 150px;
+    gap: 1rem;
+
+    .form-group {
+      display: flex;
+      flex-direction: column;
     }
+
+    .contact-list {
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+
+      label {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        font-size: 0.875rem;
+      }
+    }
+
+    .actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: 0.5rem;
+    }
+  }
+
+  .spinner {
+    text-align: center;
+    padding: 1rem;
+    font-size: 1rem;
+    color: $secondary-color;
+  }
 }

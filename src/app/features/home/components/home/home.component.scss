@@ -1,4 +1,68 @@
-h1 {
-    text-align: center;
-    font-size: 2rem;
+// src/app/features/home/home.component.scss
+@use '../../../../../variable' as *;
+
+.home-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: calc(100vh - 4rem);
+    padding: 2rem;
+    background-color: $background-color;
+
+    &.mobile {
+        padding: 1rem;
+        h2 {
+            font-size: 1.25rem;
+        }
+        .info {
+            font-size: 0.75rem;
+        }
+        .quick-links {
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+    }
+
+    &.tablet {
+        padding: 1.5rem;
+        h2 {
+            font-size: 1.5rem;
+        }
+        .info {
+            font-size: 0.875rem;
+        }
+        .quick-links {
+            flex-wrap: wrap;
+        }
+    }
+
+    &.desktop {
+        h2 {
+            font-size: 1.75rem;
+        }
+        .info {
+            font-size: 1rem;
+        }
+    }
+
+    .quick-links {
+        display: flex;
+        gap: 1rem;
+        margin-top: 1rem;
+
+        a {
+            padding: 0.5rem 1rem;
+            background: $primary-color;
+            color: $light-text-color;
+            text-decoration: none;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            &:hover {
+                background: darken($primary-color, 10%);
+            }
+        }
+    }
 }

@@ -1,5 +1,19 @@
-:host {
+// src/app/app.component.scss
+@use '../variable' as *;
+
+.app-wrapper {
     display: flex;
     flex-direction: column;
-    height: 100vh;
+    min-height: 100vh;
+    background-color: $background-color;
+
+    &.mobile {
+        padding: 0.5rem;
+    }
+    &.tablet {
+        padding: 0.75rem;
+    }
+    &.desktop {
+        padding: 1rem;
+    }
 }

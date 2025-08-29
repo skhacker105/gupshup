@@ -25,6 +25,10 @@ export class ContactService {
         return this.dbService.getAll('contacts');
     }
 
+    async getAll(collection: string): Promise<any[]> {
+        return await this.dbService.getAll(collection);
+    }
+
     async createGroup(group: ContactGroup): Promise<void> {
         await this.dbService.put('contactGroups', group);
     }

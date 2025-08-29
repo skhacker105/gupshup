@@ -1,3 +1,4 @@
+// src/app/features/chat/components/chat-window/chat-window.component.ts
 import { Component, OnInit, OnDestroy, ViewChild, ElementRef } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
@@ -17,7 +18,7 @@ export class ChatWindowComponent implements OnInit, OnDestroy {
   @ViewChild('messagesContainer') messagesContainer!: ElementRef;
   messages: Message[] = [];
   newMessage: Message = { id: '', senderId: '', receiverId: '', createdAt: new Date() };
-  currentUserId = 'current-user-id'; // Replace with auth service
+  currentUserId = 'current-user-id';
   receiverId = '';
   receiverName = '';
   sub!: Subscription;
@@ -26,10 +27,11 @@ export class ChatWindowComponent implements OnInit, OnDestroy {
   isMobile = false;
   isTablet = false;
   isDesktop = true;
+  errorMessage = '';
 
   constructor(
     private route: ActivatedRoute,
-    private router: Router,
+    public router: Router,
     private chatService: ChatService,
     private translationService: TranslationService,
     private documentService: DocumentService,
@@ -45,23 +47,29 @@ export class ChatWindowComponent implements OnInit, OnDestroy {
   }
 
   async ngOnInit(): Promise<void> {
+    this.loading = true;
     this.receiverId = this.route.snapshot.paramMap.get('id') || '';
     this.newMessage.receiverId = this.receiverId;
     this.newMessage.senderId = this.currentUserId;
-    const all = await this.dbService.getMessagesForReceiver(this.receiverId);
-    this.messages = all
-      .filter((m: Message) => m.receiverId === this.receiverId || m.senderId === this.receiverId)
-      .sort((a: Message, b: Message) => b.createdAt.getTime() - a.createdAt.getTime());
+    try {
+      const all = await this.dbService.getMessagesForReceiver(this.receiverId);
+      this.messages = all
+        .filter((m: Message) => m.receiverId === this.receiverId || m.senderId === this.receiverId)
+        .sort((a: Message, b: Message) => b.createdAt.getTime() - a.createdAt.getTime());
+      const contacts = await this.dbService.getAll('contacts');
+      const contact = contacts.find((c: Contact) => c.id === this.receiverId);
+      this.receiverName = contact?.name || this.receiverId;
+      this.sub = this.chatService.getMessages().subscribe(msg => {
+        if (msg.receiverId === this.receiverId || msg.senderId === this.receiverId) {
+          this.messages.push(msg);
+          this.scrollToBottom();
+        }
+      });
+    } catch (err) {
+      this.errorMessage = 'Failed to load messages.';
+    }
+    this.loading = false;
     this.scrollToBottom();
-    this.sub = this.chatService.getMessages().subscribe(msg => {
-      if (msg.receiverId === this.receiverId || msg.senderId === this.receiverId) {
-        this.messages.push(msg);
-        this.scrollToBottom();
-      }
-    });
-    const contacts = await this.dbService.getAll('contacts');
-    const contact = contacts.find((c: Contact) => c.id === this.receiverId);
-    this.receiverName = contact?.name || this.receiverId;
   }
 
   ngOnDestroy(): void {
@@ -69,40 +77,52 @@ export class ChatWindowComponent implements OnInit, OnDestroy {
   }
 
   async sendMessage(): Promise<void> {
+    if (!this.newMessage.text && !this.selectedFile) {
+      this.errorMessage = 'Please enter a message or select a file.';
+      return;
+    }
     this.loading = true;
+    this.errorMessage = '';
     this.newMessage.id = uuidv4();
     this.newMessage.createdAt = new Date();
-    if (this.selectedFile) {
-      const dialogRef = this.dialog.open(MediaEditorComponent, { data: { file: this.selectedFile } });
-      dialogRef.afterClosed().subscribe(async (editedFile: File | undefined) => {
-        if (editedFile) {
-          const doc: Document = {
-            id: uuidv4(),
-            name: editedFile.name,
-            type: editedFile.type,
-            data: editedFile as Blob,
-            senderId: this.currentUserId,
-            receiverId: this.receiverId,
-            createdDate: new Date(),
-            expiryDate: await this.calculateExpiryDate(editedFile.type)
-          };
-          await this.dbService.storeDocument(doc);
-          this.newMessage.file = doc;
-        }
+    try {
+      if (this.selectedFile) {
+        const dialogRef = this.dialog.open(MediaEditorComponent, {
+          width: this.isMobile ? '90%' : this.isTablet ? '70%' : '500px',
+          maxHeight: this.isMobile ? '80vh' : '70vh',
+          data: { file: this.selectedFile }
+        });
+        dialogRef.afterClosed().subscribe(async (editedFile: File | undefined) => {
+          if (editedFile) {
+            const doc: Document = {
+              id: uuidv4(),
+              name: editedFile.name,
+              type: editedFile.type,
+              data: editedFile as Blob,
+              senderId: this.currentUserId,
+              receiverId: this.receiverId,
+              createdDate: new Date(),
+              expiryDate: await this.calculateExpiryDate(editedFile.type)
+            };
+            await this.dbService.storeDocument(doc);
+            this.newMessage.file = doc;
+          }
+          await this.dbService.storeMessage(this.newMessage);
+          this.chatService.sendMessage(this.newMessage);
+          this.newMessage.text = '';
+          this.selectedFile = undefined;
+          this.scrollToBottom();
+        });
+      } else {
         await this.dbService.storeMessage(this.newMessage);
         this.chatService.sendMessage(this.newMessage);
         this.newMessage.text = '';
-        this.selectedFile = undefined;
-        this.loading = false;
         this.scrollToBottom();
-      });
-    } else {
-      await this.dbService.storeMessage(this.newMessage);
-      this.chatService.sendMessage(this.newMessage);
-      this.newMessage.text = '';
-      this.loading = false;
-      this.scrollToBottom();
+      }
+    } catch (err) {
+      this.errorMessage = 'Failed to send message.';
     }
+    this.loading = false;
   }
 
   onFileSelect(event: Event): void {
@@ -114,8 +134,12 @@ export class ChatWindowComponent implements OnInit, OnDestroy {
 
   async translateMessage(msg: Message): Promise<void> {
     if (msg.text && !msg.translatedText) {
-      const user = await this.dbService.getUser();
-      msg.translatedText = await this.translationService.translate(msg.text, 'auto', user.targetLanguage);
+      try {
+        const user = await this.dbService.getUser();
+        msg.translatedText = await this.translationService.translate(msg.text, 'auto', user.targetLanguage);
+      } catch (err) {
+        this.errorMessage = 'Translation failed.';
+      }
     }
   }
 
@@ -131,7 +155,7 @@ export class ChatWindowComponent implements OnInit, OnDestroy {
 
   downloadAttachment(id?: string, name?: string): void {
     if (!id || !name) {
-      console.error('Invalid document ID or name');
+      this.errorMessage = 'Invalid document.';
       return;
     }
     this.dbService.get('documents', id).then((doc: Document) => {
@@ -143,13 +167,15 @@ export class ChatWindowComponent implements OnInit, OnDestroy {
         a.click();
         URL.revokeObjectURL(url);
       } else {
-        console.error('Document not found');
+        this.errorMessage = 'Document not found.';
       }
-    }).catch(err => console.error('Error downloading document:', err));
+    }).catch(err => {
+      this.errorMessage = 'Error downloading document.';
+    });
   }
 
   showInfo(): void {
-    alert(`Chatting with ${this.receiverName}`);
+    alert(`Chatting with ${this.receiverName}\nID: ${this.receiverId}`);
   }
 
   private scrollToBottom(): void {
@@ -164,14 +190,10 @@ export class ChatWindowComponent implements OnInit, OnDestroy {
     const period = settings.typeExpirations[fileType.split('/')[0]] || settings.defaultPeriod;
     const now = new Date();
     switch (period) {
-      case '1week':
-        return new Date(now.setDate(now.getDate() + 7));
-      case '1month':
-        return new Date(now.setMonth(now.getMonth() + 1));
-      case 'immediate':
-        return new Date(now.getTime() + 60000);
-      default:
-        return undefined;
+      case '1week': return new Date(now.setDate(now.getDate() + 7));
+      case '1month': return new Date(now.setMonth(now.getMonth() + 1));
+      case 'immediate': return new Date(now.getTime() + 60000);
+      default: return undefined;
     }
   }
 }
