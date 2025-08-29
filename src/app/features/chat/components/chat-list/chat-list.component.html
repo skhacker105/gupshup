@@ -1,0 +1,15 @@
+<div class="chat-list-wrapper" [ngClass]="{'mobile': isMobile, 'tablet': isTablet, 'desktop': isDesktop}">
+    <h2><i class="fa fa-users"></i> Your Contacts</h2>
+    <button (click)="syncContacts()"><i class="fa fa-sync"></i> Sync Contacts</button>
+    <button (click)="openGroupCreate()"><i class="fa fa-users"></i> Create Group</button>
+    <ul *ngIf="contacts.length > 0; else loadingTemplate">
+        <li *ngFor="let contact of contacts" (click)="openChat(contact)">
+            <i class="fa fa-user-circle"></i> {{ contact.name }}
+            <span [class.online]="contact.online">{{ contact.online ? 'Online' : 'Offline' }}</span>
+            <span>Last msg: {{ contact.lastMessageTimestamp | date }}</span>
+        </li>
+    </ul>
+    <ng-template #loadingTemplate>
+        <div class="spinner"><i class="fa fa-spinner fa-spin"></i> Loading contacts...</div>
+    </ng-template>
+</div>

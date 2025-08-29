@@ -1,0 +1,27 @@
+<div class="filters">
+    <select [(ngModel)]="groupBy">
+        <option value="date">Date Created</option>
+        <option value="type">Type</option>
+        <option value="month">Month</option>
+        <option value="sender">Sent From</option>
+        <option value="receiver">Sent To</option>
+        <option value="contact">Contact/Group</option>
+    </select>
+    <select [(ngModel)]="orderBy">
+        <option value="date">Date</option>
+        <option value="name">Name</option>
+        <option value="sender">Sent From</option>
+        <option value="receiver">Sent To</option>
+    </select>
+    <button (click)="applyFilters()">Apply</button>
+</div>
+<ul>
+    <li *ngFor="let doc of documents">
+        {{ doc.name }} ({{ doc.type }}) - {{ doc.createdDate | date }}
+        <button (click)="backup(doc)">Backup</button>
+        <button (click)="deleteDoc(doc.id, false)">Delete</button>
+        <button (click)="deleteDoc(doc.id, true)">Permanent Delete</button>
+        <button (click)="moveToFolder(doc)">Move to Folder</button>
+    </li>
+</ul>
+<button (click)="createFolder()">Create Folder</button>

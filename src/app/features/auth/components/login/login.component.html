@@ -1,0 +1,9 @@
+<form (ngSubmit)="onLogin()">
+    <label for="identifier">Email/Phone</label>
+    <input id="identifier" [(ngModel)]="credentials.phoneOrEmail" name="phoneOrEmail" required>
+    <label for="password">Password</label>
+    <input id="password" type="password" [(ngModel)]="credentials.password" name="password" required>
+    <button type="submit">Login</button>
+</form>
+<a routerLink="/forgot-password">Forgot Password?</a>
+<a routerLink="/signup">Signup</a>

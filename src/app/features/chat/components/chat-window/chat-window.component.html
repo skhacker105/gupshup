@@ -1,0 +1,39 @@
+<!-- src/app/features/chat/components/chat-window/chat-window.component.html -->
+<div class="chat-window-wrapper" [ngClass]="{'mobile': isMobile, 'tablet': isTablet, 'desktop': isDesktop}">
+    <header>
+        <h3><i class="fa fa-user"></i> Chat with {{ receiverName }}</h3>
+        <i class="fa fa-info-circle" (click)="showInfo()"></i>
+    </header>
+    <div class="messages" #messagesContainer>
+        <div *ngFor="let msg of messages" [class]="msg.senderId === currentUserId ? 'sent' : 'received'">
+            <strong>{{ getContactNameForMessage(msg) | async }}</strong>
+            <p>
+                <span class="timestamp">{{ msg.createdAt | date:'shortTime' }}</span>
+                {{ msg.text || '(Attachment)' }}
+                <span *ngIf="msg.translatedText" class="translated">(Translated: {{ msg.translatedText }})</span>
+                <button (click)="translateMessage(msg)" *ngIf="msg.text && !msg.translatedText"><i
+                        class="fa fa-language"></i> Translate</button>
+            </p>
+            <div *ngIf="msg.file && msg.file.type?.startsWith('image/')">
+                <img [src]="getFileUrl(msg.file)" alt="{{ msg.file.name }}">
+            </div>
+            <div *ngIf="msg.file && msg.file.type?.startsWith('video/')">
+                <video [src]="getFileUrl(msg.file)" controls></video>
+            </div>
+            <div *ngIf="msg.file && !msg.file.type?.startsWith('image/') && !msg.file.type?.startsWith('video/')">
+                <a href="javascript:void(0)" (click)="downloadAttachment(msg.file.id, msg.file.name)">
+                    <i class="fa fa-download"></i> Download {{ msg.file.name }}
+                </a>
+            </div>
+        </div>
+    </div>
+    <form (ngSubmit)="sendMessage()" class="input-form">
+        <input type="text" [(ngModel)]="newMessage.text" name="messageText" placeholder="Type a message"
+            (keyup.enter)="sendMessage()" />
+        <input type="file" (change)="onFileSelect($event)" id="fileInput" hidden>
+        <label for="fileInput"><i class="fa fa-paperclip"></i></label>
+        <button type="submit" [disabled]="loading"><i class="fa fa-send"></i> {{ loading ? 'Sending...' : 'Send'
+            }}</button>
+        <div *ngIf="loading" class="spinner"><i class="fa fa-spinner fa-spin"></i> Loading...</div>
+    </form>
+</div>

@@ -1,0 +1,11 @@
+<form (ngSubmit)="onSignup()">
+    <label for="phoneNumber">Phone Number</label>
+    <input id="phoneNumber" [(ngModel)]="user.phoneNumber" name="phoneNumber" required>
+    <label for="email">Email (optional)</label>
+    <input id="email" [(ngModel)]="user.email" name="email">
+    <label for="password">Password</label>
+    <input id="password" type="password" [(ngModel)]="user.password" name="password" required>
+    <label for="confirmPassword">Confirm Password</label>
+    <input id="confirmPassword" type="password" [(ngModel)]="confirmPassword" name="confirmPassword" required>
+    <button type="submit" [disabled]="user.password !== confirmPassword">Signup</button>
+</form>

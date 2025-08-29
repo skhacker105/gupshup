@@ -1,0 +1,17 @@
+@use '../../../../variable' as *;
+
+nav {
+    display: flex;
+    justify-content: space-around;
+    background-color: $primary-color;
+    padding: 1rem;
+    a {
+      color: $light-text-color;
+      text-decoration: none;
+      font-size: 1rem;
+    }
+  
+    @media (max-width: 480px) {
+      flex-direction: column;
+    }
+}

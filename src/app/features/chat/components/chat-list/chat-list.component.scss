@@ -1,0 +1,11 @@
+ul {
+    list-style: none;
+    li {
+        padding: 1rem;
+        cursor: pointer;
+    }
+
+    @media(max-width: 768px) {
+        padding: 0.5rem;
+    }
+}

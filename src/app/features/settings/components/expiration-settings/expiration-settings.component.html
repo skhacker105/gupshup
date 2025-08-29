@@ -1,0 +1,16 @@
+<h2>Expiration Settings</h2>
+<form (ngSubmit)="save()">
+    <label>Default Period</label>
+    <select [(ngModel)]="defaultPeriod">
+        <option *ngFor="let period of periods" [value]="period">{{ period }}</option>
+    </select>
+    <label>By Type</label>
+    <div *ngFor="let type of types">
+        <label>{{ type }}</label>
+        <select [(ngModel)]="typeExpirations[type]">
+            <option *ngFor="let period of periods" [value]="period">{{ period }}</option>
+        </select>
+    </div>
+    <!-- Similar for contact/group specific -->
+    <button type="submit">Save</button>
+</form>
