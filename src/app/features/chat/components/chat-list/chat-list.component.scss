@@ -6,6 +6,8 @@
   background-color: $background-color;
   height: calc(100vh - 4rem);
   overflow-y: auto;
+  display: flex;
+  flex-direction: column;
 
   header {
     border-bottom: 1px solid $secondary-color;
@@ -43,9 +45,19 @@
         border-radius: 8px;
       }
     }
+
+    .orderby-select {
+      padding: 0.3rem 0.5rem;
+      border-radius: 6px;
+      border: 1px solid $secondary-color;
+      font-size: 0.85rem;
+      background: #fff;
+    }
   }
 
   .chat-list {
+    flex: 1 auto;
+    
     ul {
       list-style: none;
       padding: 0;
@@ -58,6 +70,7 @@
         border-bottom: 1px solid $secondary-color;
         cursor: pointer;
         transition: background 0.2s ease;
+        gap: 0.5rem; // keep minimal gap
 
         &:hover {
           background: lighten($secondary-color, 40%);
@@ -67,7 +80,14 @@
           background: rgba($primary-color, 0.15);
         }
 
+        input[type="checkbox"] {
+          flex: 0 0 auto;   // don’t stretch
+          width: auto;      // only as wide as needed
+          margin: 0;        // remove extra spacing
+        }
+
         .item-info {
+          flex: 1;          // take remaining space
           display: flex;
           gap: 0.6rem;
           align-items: center;
@@ -89,6 +109,7 @@
         }
 
         .row-actions {
+          flex: 0 0 auto;   // don’t stretch
           display: flex;
           gap: 0.4rem;
 
@@ -108,4 +129,3 @@
   }
 }
 
-  

@@ -2,6 +2,12 @@
     <header>
       <h2>Chats</h2>
       <div class="actions" *ngIf="!multiSelectMode; else multiSelectActions">
+        <!-- Order By -->
+        <select [(ngModel)]="orderBy" (change)="mergeLists(orderBy)" class="orderby-select" *ngIf="!appService.isMobile">
+          <option value="name">Name</option>
+          <option value="lastMessageDate">Last Message</option>
+        </select>
+  
         <!-- Sync -->
         <button (click)="sync()" [disabled]="loading" title="Sync contacts">
           <i class="fa fa-sync"></i>
@@ -21,7 +27,7 @@
             <i class="fa fa-times"></i>
             <span *ngIf="!appService.isMobile">Cancel</span>
           </button>
-          <button (click)="deleteSelected()" title="Delete selected">
+          <button (click)="deleteSelected()" [disabled]="selectedItems.length === 0" title="Delete selected">
             <i class="fa fa-trash"></i>
             <span *ngIf="!appService.isMobile">Delete</span>
           </button>
@@ -29,21 +35,27 @@
             <i class="fa fa-user-plus"></i>
             <span *ngIf="!appService.isMobile">Add Contact</span>
           </button>
-          <!-- future actions here -->
         </div>
       </ng-template>
     </header>
   
-    <!-- <p class="info">View and manage your chats and groups.</p> -->
     <p *ngIf="errorMessage" class="error">{{ errorMessage }}</p>
   
-    <div class="chat-list" *ngIf="!loading; else loadingSpinner">
+    <div class="chat-list" *ngIf="!loading; else loadingSpinner"
+        [appSwipeRight]="appService.isMobile"
+        (swiped)="enableMobileMultiSelect()">
       <ul>
-        <li *ngFor="let item of mergedList" 
+        <li *ngFor="let item of mergedList"
             [class.selected]="isSelected(item)"
-            (click)="toggleSelect(item, $event)"
+            (click)="rowClick(item, $event)"
             title="Chat with {{ item.name }}">
-          
+  
+          <!-- Checkbox (always on desktop/tablet, on mobile after swipe) -->
+          <input type="checkbox"
+                 *ngIf="showCheckbox(item)"
+                 [checked]="isSelected(item)"
+                 (click)="toggleSelect(item, $event)" />
+  
           <!-- Left Section -->
           <div class="item-info">
             <i class="fa" [ngClass]="item.type === 'contact' ? 'fa-user' : 'fa-users'"></i>
@@ -54,9 +66,9 @@
           </div>
   
           <!-- Row Actions -->
-          <div class="row-actions" *ngIf="!multiSelectMode">
-            <button (click)="openChat(item, $event)" title="Open Chat"><i class="fa fa-comment"></i></button>
-            <button (click)="deleteItem(item, $event)" title="Delete"><i class="fa fa-trash"></i></button>
+          <div class="row-actions">
+            <button *ngIf="multiSelectMode" (click)="openChat(item, $event)" title="Open Chat"><i class="fa fa-comment"></i></button>
+            <button *ngIf="!multiSelectMode" (click)="deleteItem(item, $event)" title="Delete"><i class="fa fa-trash"></i></button>
           </div>
         </li>
       </ul>

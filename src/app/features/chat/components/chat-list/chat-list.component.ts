@@ -19,6 +19,7 @@ export class ChatListComponent implements OnInit {
   mergedList: any[] = [];
   selectedItems: any[] = [];
   multiSelectMode = false;
+  orderBy: 'name' | 'lastMessageDate' = 'name';
 
 
   constructor(
@@ -48,7 +49,26 @@ export class ChatListComponent implements OnInit {
     this.loading = false;
   }
 
+  enableMobileMultiSelect(): void {
+    this.multiSelectMode = true;
+  }
+
+  rowClick(item: any, event: MouseEvent): void {
+    if (this.multiSelectMode) {
+      this.toggleSelect(item, event);
+    } else {
+      this.openChat(item, event);
+    }
+  }
+
+  showCheckbox(item: any): boolean {
+    if (this.appService.isDesktop || this.appService.isTablet) return true;
+    return this.multiSelectMode; // only after swipe for mobile
+  }
+
+  // existing mergeLists updated
   mergeLists(orderBy: 'name' | 'lastMessageDate' = 'name'): void {
+    this.orderBy = orderBy;
     this.mergedList = [
       ...this.contacts.map(c => ({ ...c, type: 'contact' })),
       ...this.groups.map(g => ({ ...g, type: 'group' }))
@@ -58,9 +78,15 @@ export class ChatListComponent implements OnInit {
       } else {
         const aTime = a.lastMessageTimestamp ? new Date(a.lastMessageTimestamp).getTime() : 0;
         const bTime = b.lastMessageTimestamp ? new Date(b.lastMessageTimestamp).getTime() : 0;
-        return bTime - aTime; // latest first
+        return bTime - aTime;
       }
     });
+  }
+
+  deleteSelected(): void {
+    if (this.selectedItems.length === 0) return;
+    // implement delete logic (contacts + groups)
+    this.cancelMultiSelect();
   }
 
   toggleSelect(item: any, event: MouseEvent): void {
@@ -80,11 +106,6 @@ export class ChatListComponent implements OnInit {
   cancelMultiSelect(): void {
     this.selectedItems = [];
     this.multiSelectMode = false;
-  }
-
-  deleteSelected(): void {
-    // implement delete logic (contacts + groups)
-    this.cancelMultiSelect();
   }
 
   openChat(item: any, event: MouseEvent): void {

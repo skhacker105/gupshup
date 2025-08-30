@@ -11,6 +11,7 @@ import { ChatWindowComponent } from './components/chat-window/chat-window.compon
 import { GroupCreateComponent } from './components/group-create/group-create.component';
 import { MediaEditorComponent } from './components/media-editor/media-editor.component';
 import { AddContactDialogComponent } from './components/add-contact-dialog/add-contact-dialog.component';
+import { SwipeRightDirective } from '../../core/directives';
 
 @NgModule({
   declarations: [
@@ -18,7 +19,8 @@ import { AddContactDialogComponent } from './components/add-contact-dialog/add-c
     ChatWindowComponent,
     GroupCreateComponent,
     MediaEditorComponent,
-    AddContactDialogComponent
+    AddContactDialogComponent,
+    SwipeRightDirective
   ],
   imports: [
     CommonModule,
