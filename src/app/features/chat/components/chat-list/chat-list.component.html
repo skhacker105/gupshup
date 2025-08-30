@@ -3,7 +3,7 @@
       <h2>Chats</h2>
       <div class="actions" *ngIf="!multiSelectMode; else multiSelectActions">
         <!-- Order By -->
-        <select [(ngModel)]="orderBy" (change)="mergeLists(orderBy)" class="orderby-select" *ngIf="!appService.isMobile">
+        <select [(ngModel)]="orderBy" (change)="mergeLists(orderBy)" class="orderby-select" [ngClass]="{'mobile': appService.isMobile}">
           <option value="name">Name</option>
           <option value="lastMessageDate">Last Message</option>
         </select>
