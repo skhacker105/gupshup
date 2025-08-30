@@ -1,5 +1,5 @@
 <!-- src/app/features/auth/login/login.component.html -->
-<div class="login-wrapper" [ngClass]="{'mobile': isMobile, 'tablet': isTablet, 'desktop': isDesktop}">
+<div class="login-wrapper" [ngClass]="{'mobile': appService.isMobile, 'tablet': appService.isTablet, 'desktop': appService.isDesktop}">
     <h2>Sign In to Chat App</h2>
     <p class="info">Use your email or phone number to sign in. Don't have an account? <a routerLink="/auth/signup">Sign
             Up</a></p>

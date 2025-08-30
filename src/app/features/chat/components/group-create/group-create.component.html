@@ -1,5 +1,5 @@
 <!-- src/app/features/chat/components/group-create/group-create.component.html -->
-<div class="group-create-wrapper" [ngClass]="{'mobile': isMobile, 'tablet': isTablet, 'desktop': isDesktop}">
+<div class="group-create-wrapper" [ngClass]="{'mobile': appService.isMobile, 'tablet': appService.isTablet, 'desktop': appService.isDesktop}">
     <h2>Create New Group</h2>
     <p class="info">Choose a name and select contacts to add to your group chat.</p>
     <p *ngIf="errorMessage" class="error">{{ errorMessage }}</p>

@@ -1,5 +1,5 @@
 <!-- src/app/features/auth/signup/signup.component.html -->
-<div class="signup-wrapper" [ngClass]="{'mobile': isMobile, 'tablet': isTablet, 'desktop': isDesktop}">
+<div class="signup-wrapper" [ngClass]="{'mobile': appService.isMobile, 'tablet': appService.isTablet, 'desktop': appService.isDesktop}">
     <h2>Create a New Account</h2>
     <p class="info">Fill in your details to sign up. Already have an account? <a routerLink="/auth/login">Sign In</a></p>
     <form (ngSubmit)="onSignup()">

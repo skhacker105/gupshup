@@ -2,7 +2,8 @@
 import { Component, OnInit, ViewChild, ElementRef, Inject } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import Cropper from 'cropperjs';
-import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
+import { AppService } from '../../../../services';
+
 
 // Custom interface for cropperjs@2.0.1
 interface CustomCropperOptions {
@@ -34,24 +35,18 @@ export class MediaEditorComponent implements OnInit {
   volume = 1;
   videoDuration = 0;
   errorMessage = '';
-  isMobile = false;
-  isTablet = false;
-  isDesktop = true;
+
 
   constructor(
     @Inject(MAT_DIALOG_DATA) data: { file: File },
     private dialogRef: MatDialogRef<MediaEditorComponent>,
-    private breakpointObserver: BreakpointObserver
+    public appService: AppService
   ) {
     this.file = data.file;
     this.fileUrl = URL.createObjectURL(this.file);
     this.isImage = this.file.type.startsWith('image/');
     this.isVideo = this.file.type.startsWith('video/');
-    this.breakpointObserver.observe([Breakpoints.Handset, Breakpoints.Tablet, Breakpoints.Web]).subscribe(result => {
-      this.isMobile = result.matches && result.breakpoints[Breakpoints.Handset];
-      this.isTablet = result.matches && result.breakpoints[Breakpoints.Tablet];
-      this.isDesktop = result.matches && result.breakpoints[Breakpoints.Web];
-    });
+    
   }
 
   ngOnInit(): void {

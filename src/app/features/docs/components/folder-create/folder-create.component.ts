@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { MatDialogRef } from '@angular/material/dialog';
-import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
-import { DocumentService } from '../../../../services';
+
+import { AppService, DocumentService } from '../../../../services';
 
 @Component({
   selector: 'app-folder-create',
@@ -12,20 +12,14 @@ export class FolderCreateComponent {
   name = '';
   errorMessage = '';
   loading = false;
-  isMobile = false;
-  isTablet = false;
-  isDesktop = true;
+
 
   constructor(
     private dialogRef: MatDialogRef<FolderCreateComponent>,
     private documentService: DocumentService,
-    private breakpointObserver: BreakpointObserver
+    public appService: AppService
   ) {
-    this.breakpointObserver.observe([Breakpoints.Handset, Breakpoints.Tablet, Breakpoints.Web]).subscribe(result => {
-      this.isMobile = result.matches && result.breakpoints[Breakpoints.Handset];
-      this.isTablet = result.matches && result.breakpoints[Breakpoints.Tablet];
-      this.isDesktop = result.matches && result.breakpoints[Breakpoints.Web];
-    });
+    
   }
 
   async createFolder(): Promise<void> {

@@ -1,9 +1,9 @@
 // src/app/features/auth/signup/signup.component.ts
 import { Component } from '@angular/core';
 import { Router } from '@angular/router';
-import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
+
 import { User } from '../../../../models';
-import { AuthService } from '../../../../services';
+import { AppService, AuthService } from '../../../../services';
 
 @Component({
   selector: 'app-signup',
@@ -15,20 +15,14 @@ export class SignupComponent {
   confirmPassword = '';
   errorMessage = '';
   loading = false;
-  isMobile = false;
-  isTablet = false;
-  isDesktop = true;
+
 
   constructor(
     private authService: AuthService,
     private router: Router,
-    private breakpointObserver: BreakpointObserver
+    public appService: AppService
   ) {
-    this.breakpointObserver.observe([Breakpoints.Handset, Breakpoints.Tablet, Breakpoints.Web]).subscribe(result => {
-      this.isMobile = result.matches && result.breakpoints[Breakpoints.Handset];
-      this.isTablet = result.matches && result.breakpoints[Breakpoints.Tablet];
-      this.isDesktop = result.matches && result.breakpoints[Breakpoints.Web];
-    });
+    
   }
 
   onSignup() {

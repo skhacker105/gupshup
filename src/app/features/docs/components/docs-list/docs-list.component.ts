@@ -1,8 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { FolderCreateComponent } from '../folder-create/folder-create.component';
-import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
-import { DocumentService } from '../../../../services';
+
+import { AppService, DocumentService } from '../../../../services';
 import { Document } from '../../../../models';
 
 @Component({
@@ -16,20 +16,14 @@ export class DocsListComponent implements OnInit {
   orderBy = '';
   loading = false;
   errorMessage = '';
-  isMobile = false;
-  isTablet = false;
-  isDesktop = true;
+
 
   constructor(
     private documentService: DocumentService,
     private dialog: MatDialog,
-    private breakpointObserver: BreakpointObserver
+    public appService: AppService
   ) {
-    this.breakpointObserver.observe([Breakpoints.Handset, Breakpoints.Tablet, Breakpoints.Web]).subscribe(result => {
-      this.isMobile = result.matches && result.breakpoints[Breakpoints.Handset];
-      this.isTablet = result.matches && result.breakpoints[Breakpoints.Tablet];
-      this.isDesktop = result.matches && result.breakpoints[Breakpoints.Web];
-    });
+    
   }
 
   async ngOnInit(): Promise<void> {
@@ -62,8 +56,8 @@ export class DocsListComponent implements OnInit {
 
   async createFolder(): Promise<void> {
     const dialogRef = this.dialog.open(FolderCreateComponent, {
-      width: this.isMobile ? '90%' : this.isTablet ? '70%' : '500px',
-      maxHeight: this.isMobile ? '80vh' : '70vh'
+      width: this.appService.isMobile ? '90%' : this.appService.isTablet ? '70%' : '500px',
+      maxHeight: this.appService.isMobile ? '80vh' : '70vh'
     });
     dialogRef.afterClosed().subscribe(async (name: string | undefined) => {
       if (name) {

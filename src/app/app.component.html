@@ -1,33 +1,33 @@
-<div class="app-wrapper" [ngClass]="{'mobile': isMobile, 'tablet': isTablet, 'desktop': isDesktop}">
+<div class="app-wrapper" [ngClass]="{'mobile': appService.isMobile, 'tablet': appService.isTablet, 'desktop': appService.isDesktop}">
     <mat-tab-group
         *ngIf="isLoggedIn"
         class="top-tabs" 
-        [ngClass]="{'mobile': isMobile, 'tablet': isTablet, 'desktop': isDesktop}"
+        [ngClass]="{'mobile': appService.isMobile, 'tablet': appService.isTablet, 'desktop': appService.isDesktop}"
         animationDuration="200ms" 
         [selectedIndex]="selectedTabIndex"
         (selectedTabChange)="onTabChange($event.index)">
         <mat-tab>
             <ng-template mat-tab-label>
                 <i class="fa fa-comments" title="Chat"></i>
-                <span class="tab-header-text" *ngIf="!isMobile">Chat</span>
+                <span class="tab-header-text" *ngIf="!appService.isMobile">Chat</span>
             </ng-template>
         </mat-tab>
         <mat-tab>
             <ng-template mat-tab-label>
                 <i class="fa fa-file" title="Documents"></i>
-                <span class="tab-header-text" *ngIf="!isMobile">Documents</span>
+                <span class="tab-header-text" *ngIf="!appService.isMobile">Documents</span>
             </ng-template>
         </mat-tab>
         <mat-tab>
             <ng-template mat-tab-label>
                 <i class="fa fa-cog" title="Settings"></i>
-                <span class="tab-header-text" *ngIf="!isMobile">Settings</span>
+                <span class="tab-header-text" *ngIf="!appService.isMobile">Settings</span>
             </ng-template>
         </mat-tab>
         <mat-tab>
             <ng-template mat-tab-label>
                 <i class="fa fa-user" title="Profile"></i>
-                <span class="tab-header-text" *ngIf="!isMobile">Profile</span>
+                <span class="tab-header-text" *ngIf="!appService.isMobile">Profile</span>
             </ng-template>
         </mat-tab>
     </mat-tab-group>
@@ -37,32 +37,32 @@
     <mat-tab-group
         *ngIf="isLoggedIn"
         class="bottom-tabs" 
-        [ngClass]="{'mobile': isMobile, 'tablet': isTablet, 'desktop': isDesktop}"
+        [ngClass]="{'mobile': appService.isMobile, 'tablet': appService.isTablet, 'desktop': appService.isDesktop}"
         animationDuration="200ms" 
         [selectedIndex]="selectedTabIndex"
         (selectedTabChange)="onTabChange($event.index)">
         <mat-tab>
             <ng-template mat-tab-label>
                 <i class="fa fa-comments" title="Chat"></i>
-                <span class="tab-header-text" *ngIf="!isMobile">Chat</span>
+                <span class="tab-header-text" *ngIf="!appService.isMobile">Chat</span>
             </ng-template>
         </mat-tab>
         <mat-tab>
             <ng-template mat-tab-label>
                 <i class="fa fa-file" title="Documents"></i>
-                <span class="tab-header-text" *ngIf="!isMobile">Documents</span>
+                <span class="tab-header-text" *ngIf="!appService.isMobile">Documents</span>
             </ng-template>
         </mat-tab>
         <mat-tab>
             <ng-template mat-tab-label>
                 <i class="fa fa-cog" title="Settings"></i>
-                <span class="tab-header-text" *ngIf="!isMobile">Settings</span>
+                <span class="tab-header-text" *ngIf="!appService.isMobile">Settings</span>
             </ng-template>
         </mat-tab>
         <mat-tab>
             <ng-template mat-tab-label>
                 <i class="fa fa-user" title="Profile"></i>
-                <span class="tab-header-text" *ngIf="!isMobile">Profile</span>
+                <span class="tab-header-text" *ngIf="!appService.isMobile">Profile</span>
             </ng-template>
         </mat-tab>
     </mat-tab-group>

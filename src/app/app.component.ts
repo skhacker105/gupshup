@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
-import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
+
 import { Router } from '@angular/router';
-import { AuthService, DbService } from './services';
+import { AppService, AuthService, DbService } from './services';
 
 @Component({
   selector: 'app-root',
@@ -9,9 +9,7 @@ import { AuthService, DbService } from './services';
   styleUrls: ['./app.component.scss']
 })
 export class AppComponent implements OnInit {
-  isMobile = false;
-  isTablet = false;
-  isDesktop = true;
+
   selectedTabIndex = 0;
 
   get isLoggedIn(): boolean {
@@ -19,20 +17,11 @@ export class AppComponent implements OnInit {
   }
 
   constructor(
-    private breakpointObserver: BreakpointObserver,
     private router: Router,
     private authService: AuthService,
-    private dbService: DbService
+    private dbService: DbService,
+    public appService: AppService
   ) {
-    this.breakpointObserver.observe([Breakpoints.Handset, Breakpoints.Tablet, Breakpoints.Web]).subscribe(result => {
-      const breakAndFind = (breakPoints: { [key: string]: boolean }, targetScreenSize: string) => {
-        const targetScreenSizes = targetScreenSize.split(', ');
-        return targetScreenSizes.some(ts => breakPoints[ts] === true)
-      }
-      this.isMobile = result.matches && breakAndFind(result.breakpoints, Breakpoints.Handset);
-      this.isTablet = result.matches && breakAndFind(result.breakpoints, Breakpoints.Tablet);
-      this.isDesktop = result.matches && breakAndFind(result.breakpoints, Breakpoints.Web);
-    });
   }
 
   ngOnInit(): void {

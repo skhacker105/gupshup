@@ -1,7 +1,8 @@
 import { Component } from '@angular/core';
 import { MatDialogRef } from '@angular/material/dialog';
-import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
+
 import { Contact } from '../../../../models';
+import { AppService } from '../../../../services';
 
 @Component({
   selector: 'app-add-contact-dialog',
@@ -12,19 +13,13 @@ export class AddContactDialogComponent {
   contact: Contact = { id: '', name: '', phoneNumber: '', online: false };
   errorMessage = '';
   loading = false;
-  isMobile = false;
-  isTablet = false;
-  isDesktop = true;
+
 
   constructor(
     private dialogRef: MatDialogRef<AddContactDialogComponent>,
-    private breakpointObserver: BreakpointObserver
+    public appService: AppService
   ) {
-    this.breakpointObserver.observe([Breakpoints.Handset, Breakpoints.Tablet, Breakpoints.Web]).subscribe(result => {
-      this.isMobile = result.matches && result.breakpoints[Breakpoints.Handset];
-      this.isTablet = result.matches && result.breakpoints[Breakpoints.Tablet];
-      this.isDesktop = result.matches && result.breakpoints[Breakpoints.Web];
-    });
+    
   }
 
   async addContact(): Promise<void> {

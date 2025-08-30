@@ -1,5 +1,5 @@
 <!-- src/app/features/chat/components/media-editor/media-editor.component.html -->
-<div class="media-editor-wrapper" [ngClass]="{'mobile': isMobile, 'tablet': isTablet, 'desktop': isDesktop}">
+<div class="media-editor-wrapper" [ngClass]="{'mobile': appService.isMobile, 'tablet': appService.isTablet, 'desktop': appService.isDesktop}">
     <h2>Edit Media</h2>
     <p class="info">Crop images or adjust video settings (start/end time, volume) before saving.</p>
     <p *ngIf="errorMessage" class="error">{{ errorMessage }}</p>

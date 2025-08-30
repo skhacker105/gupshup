@@ -1,7 +1,7 @@
 // src/app/features/auth/forgot-password/forgot-password.component.ts
 import { Component } from '@angular/core';
-import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
-import { AuthService } from '../../../../services';
+
+import { AppService, AuthService } from '../../../../services';
 
 @Component({
   selector: 'app-forgot-password',
@@ -12,19 +12,13 @@ export class ForgotPasswordComponent {
   identifier = '';
   message = '';
   loading = false;
-  isMobile = false;
-  isTablet = false;
-  isDesktop = true;
+
 
   constructor(
     private authService: AuthService,
-    private breakpointObserver: BreakpointObserver
+    public appService: AppService
   ) {
-    this.breakpointObserver.observe([Breakpoints.Handset, Breakpoints.Tablet, Breakpoints.Web]).subscribe(result => {
-      this.isMobile = result.matches && result.breakpoints[Breakpoints.Handset];
-      this.isTablet = result.matches && result.breakpoints[Breakpoints.Tablet];
-      this.isDesktop = result.matches && result.breakpoints[Breakpoints.Web];
-    });
+    
   }
 
   onReset() {

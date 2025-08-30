@@ -5,9 +5,9 @@ import { MatDialog } from '@angular/material/dialog';
 import { MediaEditorComponent } from '../media-editor/media-editor.component';
 import { Subscription } from 'rxjs';
 import { v4 as uuidv4 } from 'uuid';
-import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
+
 import { Contact, Message, Document } from '../../../../models';
-import { ChatService, DbService, DocumentService, TranslationService } from '../../../../services';
+import { AppService, ChatService, DbService, DocumentService, TranslationService } from '../../../../services';
 
 @Component({
   selector: 'app-chat-window',
@@ -24,9 +24,7 @@ export class ChatWindowComponent implements OnInit, OnDestroy {
   sub!: Subscription;
   selectedFile?: File;
   loading = false;
-  isMobile = false;
-  isTablet = false;
-  isDesktop = true;
+
   errorMessage = '';
 
   constructor(
@@ -37,13 +35,9 @@ export class ChatWindowComponent implements OnInit, OnDestroy {
     private documentService: DocumentService,
     private dbService: DbService,
     private dialog: MatDialog,
-    private breakpointObserver: BreakpointObserver
+    public appService: AppService
   ) {
-    this.breakpointObserver.observe([Breakpoints.Handset, Breakpoints.Tablet, Breakpoints.Web]).subscribe(result => {
-      this.isMobile = result.matches && result.breakpoints[Breakpoints.Handset];
-      this.isTablet = result.matches && result.breakpoints[Breakpoints.Tablet];
-      this.isDesktop = result.matches && result.breakpoints[Breakpoints.Web];
-    });
+    
   }
 
   async ngOnInit(): Promise<void> {
@@ -88,8 +82,8 @@ export class ChatWindowComponent implements OnInit, OnDestroy {
     try {
       if (this.selectedFile) {
         const dialogRef = this.dialog.open(MediaEditorComponent, {
-          width: this.isMobile ? '90%' : this.isTablet ? '70%' : '500px',
-          maxHeight: this.isMobile ? '80vh' : '70vh',
+          width: this.appService.isMobile ? '90%' : this.appService.isTablet ? '70%' : '500px',
+          maxHeight: this.appService.isMobile ? '80vh' : '70vh',
           data: { file: this.selectedFile }
         });
         dialogRef.afterClosed().subscribe(async (editedFile: File | undefined) => {

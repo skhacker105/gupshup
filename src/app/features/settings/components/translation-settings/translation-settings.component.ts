@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
+
 import { Language, SUPPORTED_LANGUAGES } from '../../../../models';
 import { DbService } from '../../../../services';
 
@@ -12,19 +12,13 @@ export class TranslationSettingsComponent implements OnInit {
   languages: Language[] = SUPPORTED_LANGUAGES;
   targetLanguage = 'en-US';
   loading = false;
-  isMobile = false;
-  isTablet = false;
-  isDesktop = true;
+
 
   constructor(
     private dbService: DbService,
-    private breakpointObserver: BreakpointObserver
+    
   ) {
-    this.breakpointObserver.observe([Breakpoints.Handset, Breakpoints.Tablet, Breakpoints.Web]).subscribe(result => {
-      this.isMobile = result.matches && result.breakpoints[Breakpoints.Handset];
-      this.isTablet = result.matches && result.breakpoints[Breakpoints.Tablet];
-      this.isDesktop = result.matches && result.breakpoints[Breakpoints.Web];
-    });
+    
   }
 
   async ngOnInit(): Promise<void> {

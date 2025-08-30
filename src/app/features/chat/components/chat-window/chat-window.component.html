@@ -1,5 +1,5 @@
 <!-- src/app/features/chat/components/chat-window/chat-window.component.html -->
-<div class="chat-window-wrapper" [ngClass]="{'mobile': isMobile, 'tablet': isTablet, 'desktop': isDesktop}">
+<div class="chat-window-wrapper" [ngClass]="{'mobile': appService.isMobile, 'tablet': appService.isTablet, 'desktop': appService.isDesktop}">
     <header>
         <button (click)="router.navigate(['/chat'])" title="Return to chat list"><i class="fa fa-arrow-left"></i>
             Back</button>

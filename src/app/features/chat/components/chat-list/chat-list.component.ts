@@ -1,9 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
-import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
+
 import { AddContactDialogComponent } from '../add-contact-dialog/add-contact-dialog.component';
 import { Contact, ContactGroup } from '../../../../models';
-import { ContactService } from '../../../../services';
+import { AppService, ContactService } from '../../../../services';
 
 @Component({
   selector: 'app-chat-list',
@@ -15,20 +15,14 @@ export class ChatListComponent implements OnInit {
   groups: ContactGroup[] = [];
   loading = false;
   errorMessage = '';
-  isMobile = false;
-  isTablet = false;
-  isDesktop = true;
+
 
   constructor(
     private contactService: ContactService,
     private dialog: MatDialog,
-    private breakpointObserver: BreakpointObserver
+    public appService: AppService
   ) {
-    this.breakpointObserver.observe([Breakpoints.Handset, Breakpoints.Tablet, Breakpoints.Web]).subscribe(result => {
-      this.isMobile = result.matches && result.breakpoints[Breakpoints.Handset];
-      this.isTablet = result.matches && result.breakpoints[Breakpoints.Tablet];
-      this.isDesktop = result.matches && result.breakpoints[Breakpoints.Web];
-    });
+    
   }
 
   async ngOnInit(): Promise<void> {
@@ -64,8 +58,8 @@ export class ChatListComponent implements OnInit {
 
   openAddContactDialog(): void {
     const dialogRef = this.dialog.open(AddContactDialogComponent, {
-      width: this.isMobile ? '90%' : this.isTablet ? '70%' : '500px',
-      maxHeight: this.isMobile ? '80vh' : '70vh'
+      width: this.appService.isMobile ? '90%' : this.appService.isTablet ? '70%' : '500px',
+      maxHeight: this.appService.isMobile ? '80vh' : '70vh'
     });
     dialogRef.afterClosed().subscribe(async (contact: Contact | undefined) => {
       if (contact) {

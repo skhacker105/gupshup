@@ -1,7 +1,7 @@
 // src/app/features/settings/settings.component.ts
 import { Component, OnInit } from '@angular/core';
-import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
-import { DbService } from '../../../../services';
+
+import { AppService, DbService } from '../../../../services';
 
 @Component({
   selector: 'app-settings',
@@ -17,19 +17,13 @@ export class SettingsComponent implements OnInit {
   loading = false;
   errorMessage = '';
   successMessage = '';
-  isMobile = false;
-  isTablet = false;
-  isDesktop = true;
+
 
   constructor(
     private dbService: DbService,
-    private breakpointObserver: BreakpointObserver
+    public appService: AppService
   ) {
-    this.breakpointObserver.observe([Breakpoints.Handset, Breakpoints.Tablet, Breakpoints.Web]).subscribe(result => {
-      this.isMobile = result.matches && result.breakpoints[Breakpoints.Handset];
-      this.isTablet = result.matches && result.breakpoints[Breakpoints.Tablet];
-      this.isDesktop = result.matches && result.breakpoints[Breakpoints.Web];
-    });
+    
   }
 
   async ngOnInit(): Promise<void> {

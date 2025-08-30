@@ -1,5 +1,5 @@
 <!-- src/app/features/home/home.component.html -->
-<div class="home-wrapper" [ngClass]="{'mobile': isMobile, 'tablet': isTablet, 'desktop': isDesktop}">
+<div class="home-wrapper" [ngClass]="{'mobile': appService.isMobile, 'tablet': appService.isTablet, 'desktop': appService.isDesktop}">
     <h2>Welcome to Chat App</h2>
     <p class="info">Your secure messaging app with file sharing and document management. Start chatting or manage your
         files.</p>

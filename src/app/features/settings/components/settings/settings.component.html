@@ -1,5 +1,5 @@
 <!-- src/app/features/settings/settings.component.html -->
-<div class="settings-wrapper" [ngClass]="{'mobile': isMobile, 'tablet': isTablet, 'desktop': isDesktop}">
+<div class="settings-wrapper" [ngClass]="{'mobile': appService.isMobile, 'tablet': appService.isTablet, 'desktop': appService.isDesktop}">
     <header>
         <h2>Settings</h2>
     </header>

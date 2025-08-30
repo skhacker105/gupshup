@@ -1,4 +1,4 @@
-<div class="chat-list-wrapper" [ngClass]="{'mobile': isMobile, 'tablet': isTablet, 'desktop': isDesktop}">
+<div class="chat-list-wrapper" [ngClass]="{'mobile': appService.isMobile, 'tablet': appService.isTablet, 'desktop': appService.isDesktop}">
     <header>
         <h2>Chats</h2>
         <div class="actions">

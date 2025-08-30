@@ -2,9 +2,9 @@
 import { Component, OnInit } from '@angular/core';
 import { MatDialogRef } from '@angular/material/dialog';
 import { v4 as uuidv4 } from 'uuid';
-import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
+
 import { Contact, ContactGroup } from '../../../../models';
-import { ContactService } from '../../../../services';
+import { AppService, ContactService } from '../../../../services';
 
 @Component({
   selector: 'app-group-create',
@@ -17,20 +17,14 @@ export class GroupCreateComponent implements OnInit {
   contacts: Contact[] = [];
   errorMessage = '';
   loading = false;
-  isMobile = false;
-  isTablet = false;
-  isDesktop = true;
+
 
   constructor(
     private dialogRef: MatDialogRef<GroupCreateComponent>,
     private contactService: ContactService,
-    private breakpointObserver: BreakpointObserver
+    public appService: AppService
   ) {
-    this.breakpointObserver.observe([Breakpoints.Handset, Breakpoints.Tablet, Breakpoints.Web]).subscribe(result => {
-      this.isMobile = result.matches && result.breakpoints[Breakpoints.Handset];
-      this.isTablet = result.matches && result.breakpoints[Breakpoints.Tablet];
-      this.isDesktop = result.matches && result.breakpoints[Breakpoints.Web];
-    });
+    
   }
 
   async ngOnInit(): Promise<void> {
