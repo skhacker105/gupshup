@@ -11,7 +11,8 @@ import { ChatWindowComponent } from './components/chat-window/chat-window.compon
 import { GroupCreateComponent } from './components/group-create/group-create.component';
 import { MediaEditorComponent } from './components/media-editor/media-editor.component';
 import { AddContactDialogComponent } from './components/add-contact-dialog/add-contact-dialog.component';
-import { SwipeRightDirective } from '../../core/directives';
+import { SharedModule } from '../../shared/shared.module';
+
 
 @NgModule({
   declarations: [
@@ -19,8 +20,7 @@ import { SwipeRightDirective } from '../../core/directives';
     ChatWindowComponent,
     GroupCreateComponent,
     MediaEditorComponent,
-    AddContactDialogComponent,
-    SwipeRightDirective
+    AddContactDialogComponent
   ],
   imports: [
     CommonModule,
@@ -28,7 +28,8 @@ import { SwipeRightDirective } from '../../core/directives';
     MatDialogModule,
     MatButtonModule,
     MatInputModule,
-    ChatRoutingModule
+    ChatRoutingModule,
+    SharedModule
   ]
 })
 export class ChatModule { }
