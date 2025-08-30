@@ -6,7 +6,6 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { MatDialogModule } from '@angular/material/dialog';
 import { FormsModule } from '@angular/forms';
 import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
-import { SharedModule } from './shared/shared.module';
 import { AuthInterceptor } from './core/interceptors/';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
 import { MatTabsModule } from '@angular/material/tabs';
@@ -22,7 +21,6 @@ import { MatTabsModule } from '@angular/material/tabs';
         MatDialogModule,
         FormsModule,
         HttpClientModule,
-        SharedModule,
         MatTabsModule
     ],
     providers: [

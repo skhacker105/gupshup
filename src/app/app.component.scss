@@ -30,33 +30,39 @@
       display: none;
     }
 
-    .mat-tab-labels {
-      display: flex;
-      justify-content: space-around;
-      width: 100%;
+    ::ng-deep {
+      .mat-tab-labels {
+        display: flex;
+        justify-content: space-around;
+        width: 100%;
+      }
     }
 
     &.tablet {
-      .mat-tab-label {
-        flex: 1;
-        padding: 0.75rem;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        i { font-size: 1.25rem; margin-right: 0.5rem; }
-        span { font-size: 0.875rem; }
+      ::ng-deep {
+        .mat-tab-label, .mat-mdc-tab, .mdc-tab, [role="tab"] {
+          flex: 1;
+          padding: 0.75rem;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          i { font-size: 1.25rem; margin-right: 0.5rem; }
+          span.tab-header-text { font-size: 0.875rem; }
+        }
       }
     }
 
     &.desktop {
-      .mat-tab-label {
-        flex: 1;
-        padding: 1rem;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        i { font-size: 1.25rem; margin-right: 0.5rem; }
-        span { font-size: 1rem; }
+      ::ng-deep {
+        .mat-tab-label, .mat-mdc-tab, .mdc-tab, [role="tab"] {
+          flex: 1;
+          padding: 1rem;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          i { font-size: 1.25rem; margin-right: 0.5rem; }
+          span.tab-header-text { font-size: 1rem; }
+        }
       }
     }
   }
@@ -81,40 +87,48 @@
       display: none;
     }
 
-    .mat-tab-labels {
-      display: flex;
-      justify-content: space-around;
-      width: 100%;
+    ::ng-deep {
+      .mat-tab-labels {
+        display: flex;
+        justify-content: space-around;
+        width: 100%;
+      }
     }
 
     &.mobile {
-      .mat-tab-label {
-        flex: 1;
-        padding: 0.5rem;
-        min-width: 0;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        i { font-size: 1.5rem; }
-        span { display: none; }
+      ::ng-deep {
+        .mat-tab-label, .mat-mdc-tab, .mdc-tab, [role="tab"] {
+          flex: 1;
+          padding: 0.5rem;
+          min-width: 0;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          i { font-size: 1.5rem; display: block; }
+          span.tab-header-text { display: none; }
+        }
       }
     }
   }
 
   .top-tabs, .bottom-tabs {
-    .mat-tab-label {
-      color: $light-text-color;
-      opacity: 0.7;
-      transition: opacity 0.2s;
+    ::ng-deep {
+      .mat-tab-label, .mat-mdc-tab, .mdc-tab, [role="tab"] {
+        color: $light-text-color;
+        opacity: 0.7;
+        transition: opacity 0.2s;
 
-      &.mat-tab-label-active {
-        opacity: 1;
-        background-color: $hover-color;
-      }
+        &.mat-tab-label-active,
+        &.mdc-tab--active,
+        &[aria-selected="true"] {
+          opacity: 1;
+          background-color: $hover-color;
+        }
 
-      &:hover {
-        opacity: 1;
-        background-color: $hover-color;
+        &:hover {
+          opacity: 1;
+          background-color: $hover-color;
+        }
       }
     }
 
@@ -129,6 +143,52 @@
 
     .mat-tab-label-container {
       width: 100%;
+    }
+  }
+}
+
+.app-wrapper {
+  ::ng-deep {
+    /* baseline for various material tab label implementations */
+    .mat-tab-label,
+    .mat-mdc-tab,
+    .mdc-tab,
+    [role="tab"] {
+      color: $light-text-color;
+      opacity: 0.7;
+      transition: color .15s, opacity .15s, background-color .15s;
+    }
+
+    /* selected / active tab — make text + icon white */
+    .mat-tab-label.mat-tab-label-active,
+    .mat-mdc-tab[aria-selected="true"],
+    .mdc-tab.mdc-tab--active,
+    [role="tab"][aria-selected="true"] {
+      color: #fff !important;
+      opacity: 1;
+      background-color: $hover-color;
+    }
+
+    /* make icons/spans inherit the color, and force white on active */
+    .mat-tab-label i,
+    .mat-mdc-tab i,
+    .mdc-tab i,
+    [role="tab"] i,
+    .mat-tab-label span,
+    .mat-mdc-tab span,
+    .mdc-tab span,
+    [role="tab"] span.tab-header-text {
+      color: inherit;
+    }
+
+    .mat-tab-label.mat-tab-label-active i,
+    .mat-mdc-tab[aria-selected="true"] i,
+    .mdc-tab.mdc-tab--active i,
+    .mat-tab-label span,
+    .mat-mdc-tab span,
+    .mdc-tab span,
+    [role="tab"][aria-selected="true"] i {
+      color: #fff !important;
     }
   }
 }
