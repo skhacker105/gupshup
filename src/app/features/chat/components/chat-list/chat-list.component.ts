@@ -16,13 +16,17 @@ export class ChatListComponent implements OnInit {
   loading = false;
   errorMessage = '';
 
+  mergedList: any[] = [];
+  selectedItems: any[] = [];
+  multiSelectMode = false;
+
 
   constructor(
     private contactService: ContactService,
     private dialog: MatDialog,
     public appService: AppService
   ) {
-    
+
   }
 
   async ngOnInit(): Promise<void> {
@@ -37,10 +41,60 @@ export class ChatListComponent implements OnInit {
     try {
       this.contacts = await this.contactService.getContacts();
       this.groups = await this.contactService.getAll('contactGroups');
-    } catch (err) {
+      this.mergeLists();
+    } catch {
       this.errorMessage = 'Failed to load contacts or groups.';
     }
     this.loading = false;
+  }
+
+  mergeLists(orderBy: 'name' | 'lastMessageDate' = 'name'): void {
+    this.mergedList = [
+      ...this.contacts.map(c => ({ ...c, type: 'contact' })),
+      ...this.groups.map(g => ({ ...g, type: 'group' }))
+    ].sort((a, b) => {
+      if (orderBy === 'name') {
+        return a.name.localeCompare(b.name);
+      } else {
+        const aTime = a.lastMessageTimestamp ? new Date(a.lastMessageTimestamp).getTime() : 0;
+        const bTime = b.lastMessageTimestamp ? new Date(b.lastMessageTimestamp).getTime() : 0;
+        return bTime - aTime; // latest first
+      }
+    });
+  }
+
+  toggleSelect(item: any, event: MouseEvent): void {
+    event.stopPropagation();
+    if (this.isSelected(item)) {
+      this.selectedItems = this.selectedItems.filter(i => i !== item);
+    } else {
+      this.selectedItems.push(item);
+    }
+    this.multiSelectMode = this.selectedItems.length > 0;
+  }
+
+  isSelected(item: any): boolean {
+    return this.selectedItems.includes(item);
+  }
+
+  cancelMultiSelect(): void {
+    this.selectedItems = [];
+    this.multiSelectMode = false;
+  }
+
+  deleteSelected(): void {
+    // implement delete logic (contacts + groups)
+    this.cancelMultiSelect();
+  }
+
+  openChat(item: any, event: MouseEvent): void {
+    event.stopPropagation();
+    // navigate to chat
+  }
+
+  deleteItem(item: any, event: MouseEvent): void {
+    event.stopPropagation();
+    // delete single contact/group
   }
 
   async sync(): Promise<void> {

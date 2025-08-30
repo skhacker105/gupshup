@@ -1,30 +1,69 @@
 <div class="chat-list-wrapper" [ngClass]="{'mobile': appService.isMobile, 'tablet': appService.isTablet, 'desktop': appService.isDesktop}">
     <header>
-        <h2>Chats</h2>
-        <div class="actions">
-            <button (click)="sync()" [disabled]="loading" title="Sync contacts"><i class="fa fa-sync"></i> Sync</button>
-            <button (click)="openAddContactDialog()" title="Add a new contact"><i class="fa fa-user-plus"></i> Add
-                Contact</button>
+      <h2>Chats</h2>
+      <div class="actions" *ngIf="!multiSelectMode; else multiSelectActions">
+        <!-- Sync -->
+        <button (click)="sync()" [disabled]="loading" title="Sync contacts">
+          <i class="fa fa-sync"></i>
+          <span *ngIf="!appService.isMobile">Sync</span>
+        </button>
+        <!-- Add -->
+        <button (click)="openAddContactDialog()" title="Add a new contact">
+          <i class="fa fa-user-plus"></i>
+          <span *ngIf="!appService.isMobile">Add Contact</span>
+        </button>
+      </div>
+  
+      <!-- Grouped Actions Mode -->
+      <ng-template #multiSelectActions>
+        <div class="actions grouped">
+          <button (click)="cancelMultiSelect()" title="Cancel selection">
+            <i class="fa fa-times"></i>
+            <span *ngIf="!appService.isMobile">Cancel</span>
+          </button>
+          <button (click)="deleteSelected()" title="Delete selected">
+            <i class="fa fa-trash"></i>
+            <span *ngIf="!appService.isMobile">Delete</span>
+          </button>
+          <button (click)="openAddContactDialog()" title="Add a new contact">
+            <i class="fa fa-user-plus"></i>
+            <span *ngIf="!appService.isMobile">Add Contact</span>
+          </button>
+          <!-- future actions here -->
         </div>
+      </ng-template>
     </header>
-    <p class="info">View and manage your chats and groups.</p>
+  
+    <!-- <p class="info">View and manage your chats and groups.</p> -->
     <p *ngIf="errorMessage" class="error">{{ errorMessage }}</p>
+  
     <div class="chat-list" *ngIf="!loading; else loadingSpinner">
-        <h3>Contacts</h3>
-        <ul>
-            <li *ngFor="let contact of contacts" title="Chat with {{ contact.name }}">
-                <span>{{ contact.name }}</span>
-                <span>{{ contact.phoneNumber }}</span>
-            </li>
-        </ul>
-        <h3>Groups</h3>
-        <ul>
-            <li *ngFor="let group of groups" title="View group {{ group.name }}">
-                <span>{{ group.name }}</span>
-            </li>
-        </ul>
+      <ul>
+        <li *ngFor="let item of mergedList" 
+            [class.selected]="isSelected(item)"
+            (click)="toggleSelect(item, $event)"
+            title="Chat with {{ item.name }}">
+          
+          <!-- Left Section -->
+          <div class="item-info">
+            <i class="fa" [ngClass]="item.type === 'contact' ? 'fa-user' : 'fa-users'"></i>
+            <div>
+              <span class="name">{{ item.name }}</span>
+              <span class="sub" *ngIf="item.phoneNumber">{{ item.phoneNumber }}</span>
+            </div>
+          </div>
+  
+          <!-- Row Actions -->
+          <div class="row-actions" *ngIf="!multiSelectMode">
+            <button (click)="openChat(item, $event)" title="Open Chat"><i class="fa fa-comment"></i></button>
+            <button (click)="deleteItem(item, $event)" title="Delete"><i class="fa fa-trash"></i></button>
+          </div>
+        </li>
+      </ul>
     </div>
+  
     <ng-template #loadingSpinner>
-        <div class="spinner"><i class="fa fa-spinner fa-spin"></i> Loading chats...</div>
+      <div class="spinner"><i class="fa fa-spinner fa-spin"></i> Loading chats...</div>
     </ng-template>
-</div>
+  </div>
+  
