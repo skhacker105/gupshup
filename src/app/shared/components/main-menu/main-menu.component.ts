@@ -41,7 +41,7 @@ export class MainMenuComponent {
   async logout(): Promise<void> {
     try {
       await this.dbService.updateUser({ id: this.dbService.getDeviceId(), phoneNumber: '' });
-      await this.router.navigate(['/login']);
+      await this.router.navigate(['/auth/login']);
     } catch (err) {
       console.error('Logout failed:', err);
       alert('Failed to log out. Please try again.');
