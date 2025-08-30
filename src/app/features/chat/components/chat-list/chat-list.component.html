@@ -1,39 +1,30 @@
-<!-- src/app/features/chat/components/chat-list/chat-list.component.html -->
 <div class="chat-list-wrapper" [ngClass]="{'mobile': isMobile, 'tablet': isTablet, 'desktop': isDesktop}">
     <header>
         <h2>Chats</h2>
         <div class="actions">
-            <button (click)="syncContacts()" [disabled]="loading" title="Sync contacts with your device">
-                <i class="fa fa-sync"></i> {{ loading ? 'Syncing...' : 'Sync Contacts' }}
-            </button>
-            <button (click)="openGroupCreate()" title="Create a new group chat">
-                <i class="fa fa-users"></i> New Group
-            </button>
+            <button (click)="sync()" [disabled]="loading" title="Sync contacts"><i class="fa fa-sync"></i> Sync</button>
+            <button (click)="openAddContactDialog()" title="Add a new contact"><i class="fa fa-user-plus"></i> Add
+                Contact</button>
         </div>
     </header>
-    <p class="info">Select a contact or group to start chatting. Syncing contacts may take a few moments.</p>
+    <p class="info">View and manage your chats and groups.</p>
     <p *ngIf="errorMessage" class="error">{{ errorMessage }}</p>
     <div class="chat-list" *ngIf="!loading; else loadingSpinner">
         <h3>Contacts</h3>
         <ul>
-            <li *ngFor="let contact of contacts" (click)="openChat(contact.id)"
-                title="Click to chat with {{ contact.name }}">
-                <span class="name">{{ contact.name }}</span>
-                <span class="status" [ngClass]="{'online': contact.online, 'offline': !contact.online}">
-                    {{ contact.online ? 'Online' : 'Offline' }}
-                </span>
-                <span class="timestamp">{{ contact.lastMessageTimestamp | date:'short' }}</span>
+            <li *ngFor="let contact of contacts" title="Chat with {{ contact.name }}">
+                <span>{{ contact.name }}</span>
+                <span>{{ contact.phoneNumber }}</span>
             </li>
         </ul>
         <h3>Groups</h3>
         <ul>
-            <li *ngFor="let group of groups" (click)="openChat(group.id)" title="Chat with {{ group.name }} group">
-                <span class="name">{{ group.name }}</span>
-                <span class="members">{{ group.members.length }} members</span>
+            <li *ngFor="let group of groups" title="View group {{ group.name }}">
+                <span>{{ group.name }}</span>
             </li>
         </ul>
     </div>
     <ng-template #loadingSpinner>
-        <div class="spinner"><i class="fa fa-spinner fa-spin"></i> Loading contacts...</div>
+        <div class="spinner"><i class="fa fa-spinner fa-spin"></i> Loading chats...</div>
     </ng-template>
 </div>

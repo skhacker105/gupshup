@@ -40,4 +40,8 @@ export class ContactService {
             await this.dbService.put('contacts', contact);
         }
     }
+
+    async storeContact(contact: Contact): Promise<void> {
+        await this.dbService.put('contacts', contact);
+    }
 }

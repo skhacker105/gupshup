@@ -1,11 +1,9 @@
-// src/app/features/chat/components/chat-list/chat-list.component.ts
 import { Component, OnInit } from '@angular/core';
-import { GroupCreateComponent } from '../group-create/group-create.component';
-import { Router } from '@angular/router';
-import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
-import { Contact, ContactGroup } from '../../../../models';
-import { ChatService, ContactService } from '../../../../services';
 import { MatDialog } from '@angular/material/dialog';
+import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
+import { AddContactDialogComponent } from '../add-contact-dialog/add-contact-dialog.component';
+import { Contact, ContactGroup } from '../../../../models';
+import { ContactService } from '../../../../services';
 
 @Component({
   selector: 'app-chat-list',
@@ -15,17 +13,15 @@ import { MatDialog } from '@angular/material/dialog';
 export class ChatListComponent implements OnInit {
   contacts: Contact[] = [];
   groups: ContactGroup[] = [];
+  loading = false;
+  errorMessage = '';
   isMobile = false;
   isTablet = false;
   isDesktop = true;
-  loading = false;
-  errorMessage = '';
 
   constructor(
-    private chatService: ChatService,
     private contactService: ContactService,
     private dialog: MatDialog,
-    private router: Router,
     private breakpointObserver: BreakpointObserver
   ) {
     this.breakpointObserver.observe([Breakpoints.Handset, Breakpoints.Tablet, Breakpoints.Web]).subscribe(result => {
@@ -51,13 +47,12 @@ export class ChatListComponent implements OnInit {
     this.loading = false;
   }
 
-  async syncContacts(): Promise<void> {
+  async sync(): Promise<void> {
     this.loading = true;
     this.errorMessage = '';
     try {
-      await this.chatService.syncContacts();
-      this.contacts = await this.contactService.getContacts();
-      this.groups = await this.contactService.getAll('contactGroups');
+      // await this.contactService.syncContacts();
+      await this.loadData();
       this.errorMessage = 'Contacts synced successfully.';
     } catch (err) {
       this.errorMessage = 'Failed to sync contacts.';
@@ -65,14 +60,24 @@ export class ChatListComponent implements OnInit {
     this.loading = false;
   }
 
-  openGroupCreate(): void {
-    this.dialog.open(GroupCreateComponent, {
+  openAddContactDialog(): void {
+    const dialogRef = this.dialog.open(AddContactDialogComponent, {
       width: this.isMobile ? '90%' : this.isTablet ? '70%' : '500px',
       maxHeight: this.isMobile ? '80vh' : '70vh'
     });
-  }
-
-  openChat(id: string): void {
-    this.router.navigate(['/chat', id]);
+    dialogRef.afterClosed().subscribe(async (contact: Contact | undefined) => {
+      if (contact) {
+        this.loading = true;
+        this.errorMessage = '';
+        try {
+          await this.contactService.storeContact(contact);
+          await this.loadData();
+          this.errorMessage = 'Contact added successfully.';
+        } catch (err) {
+          this.errorMessage = 'Failed to add contact.';
+        }
+        this.loading = false;
+      }
+    });
   }
 }

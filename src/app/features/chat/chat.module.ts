@@ -10,13 +10,15 @@ import { ChatListComponent } from './components/chat-list/chat-list.component';
 import { ChatWindowComponent } from './components/chat-window/chat-window.component';
 import { GroupCreateComponent } from './components/group-create/group-create.component';
 import { MediaEditorComponent } from './components/media-editor/media-editor.component';
+import { AddContactDialogComponent } from './components/add-contact-dialog/add-contact-dialog.component';
 
 @NgModule({
   declarations: [
     ChatListComponent,
     ChatWindowComponent,
     GroupCreateComponent,
-    MediaEditorComponent
+    MediaEditorComponent,
+    AddContactDialogComponent
   ],
   imports: [
     CommonModule,
