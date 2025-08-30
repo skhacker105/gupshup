@@ -1,33 +1,67 @@
 <div class="app-wrapper" [ngClass]="{'mobile': isMobile, 'tablet': isTablet, 'desktop': isDesktop}">
+    <mat-tab-group 
+        class="top-tabs" 
+        [ngClass]="{'mobile': isMobile, 'tablet': isTablet, 'desktop': isDesktop}"
+        animationDuration="200ms" 
+        [selectedIndex]="selectedTabIndex"
+        (selectedTabChange)="onTabChange($event.index)">
+        <mat-tab>
+            <ng-template mat-tab-label>
+                <i class="fa fa-comments" title="Chat"></i>
+                <span *ngIf="!isMobile"> {{ isMobile }} Chat</span>
+            </ng-template>
+        </mat-tab>
+        <mat-tab>
+            <ng-template mat-tab-label>
+                <i class="fa fa-file" title="Documents"></i>
+                <span *ngIf="!isMobile">Documents</span>
+            </ng-template>
+        </mat-tab>
+        <mat-tab>
+            <ng-template mat-tab-label>
+                <i class="fa fa-cog" title="Settings"></i>
+                <span *ngIf="!isMobile">Settings</span>
+            </ng-template>
+        </mat-tab>
+        <mat-tab>
+            <ng-template mat-tab-label>
+                <i class="fa fa-user" title="Profile"></i>
+                <span *ngIf="!isMobile">Profile</span>
+            </ng-template>
+        </mat-tab>
+    </mat-tab-group>
     <main>
         <router-outlet></router-outlet>
-        <mat-tab-group class="bottom-tabs" [ngClass]="{'mobile': isMobile, 'tablet': isTablet, 'desktop': isDesktop}"
-            animationDuration="200ms" [selectedIndex]="selectedTabIndex"
-            (selectedTabChange)="onTabChange($event.index)">
-            <mat-tab>
-                <ng-template mat-tab-label>
-                    <i class="fa fa-comments" title="Chat"></i>
-                    <span *ngIf="!isMobile">Chat</span>
-                </ng-template>
-            </mat-tab>
-            <mat-tab>
-                <ng-template mat-tab-label>
-                    <i class="fa fa-file" title="Documents"></i>
-                    <span *ngIf="!isMobile">Documents</span>
-                </ng-template>
-            </mat-tab>
-            <mat-tab>
-                <ng-template mat-tab-label>
-                    <i class="fa fa-cog" title="Settings"></i>
-                    <span *ngIf="!isMobile">Settings</span>
-                </ng-template>
-            </mat-tab>
-            <mat-tab>
-                <ng-template mat-tab-label>
-                    <i class="fa fa-user" title="Profile"></i>
-                    <span *ngIf="!isMobile">Profile</span>
-                </ng-template>
-            </mat-tab>
-        </mat-tab-group>
     </main>
+    <mat-tab-group 
+        class="bottom-tabs" 
+        [ngClass]="{'mobile': isMobile, 'tablet': isTablet, 'desktop': isDesktop}"
+        animationDuration="200ms" 
+        [selectedIndex]="selectedTabIndex"
+        (selectedTabChange)="onTabChange($event.index)">
+        <mat-tab>
+            <ng-template mat-tab-label>
+                <i class="fa fa-comments" title="Chat"></i>
+                <span *ngIf="!isMobile">Chat</span>
+            </ng-template>
+        </mat-tab>
+        <mat-tab>
+            <ng-template mat-tab-label>
+                <i class="fa fa-file" title="Documents"></i>
+                <span *ngIf="!isMobile">Documents</span>
+            </ng-template>
+        </mat-tab>
+        <mat-tab>
+            <ng-template mat-tab-label>
+                <i class="fa fa-cog" title="Settings"></i>
+                <span *ngIf="!isMobile">Settings</span>
+            </ng-template>
+        </mat-tab>
+        <mat-tab>
+            <ng-template mat-tab-label>
+                <i class="fa fa-user" title="Profile"></i>
+                <span *ngIf="!isMobile">Profile</span>
+            </ng-template>
+        </mat-tab>
+    </mat-tab-group>
 </div>

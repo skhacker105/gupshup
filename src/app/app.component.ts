@@ -20,9 +20,13 @@ export class AppComponent implements OnInit {
     private dbService: DbService
   ) {
     this.breakpointObserver.observe([Breakpoints.Handset, Breakpoints.Tablet, Breakpoints.Web]).subscribe(result => {
-      this.isMobile = result.matches && result.breakpoints[Breakpoints.Handset];
-      this.isTablet = result.matches && result.breakpoints[Breakpoints.Tablet];
-      this.isDesktop = result.matches && result.breakpoints[Breakpoints.Web];
+      const breakAndFind = (breakPoints: { [key: string]: boolean }, targetScreenSize: string) => {
+        const targetScreenSizes = targetScreenSize.split(', ');
+        return targetScreenSizes.some(ts => breakPoints[ts] === true)
+      }
+      this.isMobile = result.matches && breakAndFind(result.breakpoints, Breakpoints.Handset);
+      this.isTablet = result.matches && breakAndFind(result.breakpoints, Breakpoints.Tablet);
+      this.isDesktop = result.matches && breakAndFind(result.breakpoints, Breakpoints.Web);
     });
   }
 

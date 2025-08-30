@@ -12,28 +12,37 @@
     overflow-y: auto;
   }
 
-  .bottom-tabs {
-    position: fixed;
-    bottom: 0;
-    left: 0;
-    right: 0;
+  .top-tabs {
     background-color: $primary-color;
     color: $light-text-color;
-    box-shadow: 0 -2px 4px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     z-index: 1000;
+    width: 100%;
+    overflow-x: hidden;
+
+    &.desktop, &.tablet {
+      position: sticky;
+      top: 0;
+      display: block;
+    }
 
     &.mobile {
-      .mat-tab-label {
-        padding: 0.5rem;
-        min-width: 0;
-        i { font-size: 1.5rem; }
-        span { display: none; }
-      }
+      display: none;
+    }
+
+    .mat-tab-labels {
+      display: flex;
+      justify-content: space-around;
+      width: 100%;
     }
 
     &.tablet {
       .mat-tab-label {
+        flex: 1;
         padding: 0.75rem;
+        display: flex;
+        justify-content: center;
+        align-items: center;
         i { font-size: 1.25rem; margin-right: 0.5rem; }
         span { font-size: 0.875rem; }
       }
@@ -41,12 +50,58 @@
 
     &.desktop {
       .mat-tab-label {
+        flex: 1;
         padding: 1rem;
+        display: flex;
+        justify-content: center;
+        align-items: center;
         i { font-size: 1.25rem; margin-right: 0.5rem; }
         span { font-size: 1rem; }
       }
     }
+  }
 
+  .bottom-tabs {
+    background-color: $primary-color;
+    color: $light-text-color;
+    box-shadow: 0 -2px 4px rgba(0, 0, 0, 0.1);
+    z-index: 1000;
+    width: 100%;
+    overflow-x: hidden;
+
+    &.mobile {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      display: block;
+    }
+
+    &.desktop, &.tablet {
+      display: none;
+    }
+
+    .mat-tab-labels {
+      display: flex;
+      justify-content: space-around;
+      width: 100%;
+    }
+
+    &.mobile {
+      .mat-tab-label {
+        flex: 1;
+        padding: 0.5rem;
+        min-width: 0;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        i { font-size: 1.5rem; }
+        span { display: none; }
+      }
+    }
+  }
+
+  .top-tabs, .bottom-tabs {
     .mat-tab-label {
       color: $light-text-color;
       opacity: 0.7;
@@ -65,6 +120,15 @@
 
     .mat-ink-bar {
       background-color: $light-text-color;
+    }
+
+    .mat-tab-header {
+      width: 100%;
+      overflow: hidden;
+    }
+
+    .mat-tab-label-container {
+      width: 100%;
     }
   }
 }
