@@ -1,5 +1,6 @@
 <div class="app-wrapper" [ngClass]="{'mobile': isMobile, 'tablet': isTablet, 'desktop': isDesktop}">
-    <mat-tab-group 
+    <mat-tab-group
+        *ngIf="isLoggedIn"
         class="top-tabs" 
         [ngClass]="{'mobile': isMobile, 'tablet': isTablet, 'desktop': isDesktop}"
         animationDuration="200ms" 
@@ -33,7 +34,8 @@
     <main>
         <router-outlet></router-outlet>
     </main>
-    <mat-tab-group 
+    <mat-tab-group
+        *ngIf="isLoggedIn"
         class="bottom-tabs" 
         [ngClass]="{'mobile': isMobile, 'tablet': isTablet, 'desktop': isDesktop}"
         animationDuration="200ms" 

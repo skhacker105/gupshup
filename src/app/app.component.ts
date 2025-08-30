@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
 import { Router } from '@angular/router';
-import { DbService } from './services';
+import { AuthService, DbService } from './services';
 
 @Component({
   selector: 'app-root',
@@ -14,9 +14,14 @@ export class AppComponent implements OnInit {
   isDesktop = true;
   selectedTabIndex = 0;
 
+  get isLoggedIn(): boolean {
+    return this.authService.isLoggedIn();
+  }
+
   constructor(
     private breakpointObserver: BreakpointObserver,
     private router: Router,
+    private authService: AuthService,
     private dbService: DbService
   ) {
     this.breakpointObserver.observe([Breakpoints.Handset, Breakpoints.Tablet, Breakpoints.Web]).subscribe(result => {

@@ -82,6 +82,9 @@
               "buildTarget": "gup-shup:build:development"
             }
           },
+          "options": {
+            "port": 4300
+          },
           "defaultConfiguration": "development"
         },
         "extract-i18n": {

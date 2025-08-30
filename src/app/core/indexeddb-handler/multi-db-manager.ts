@@ -359,12 +359,20 @@ export class MultiDBManager {
         return ctx.db.get(entity, id);
     }
 
+    async getAll(dbId: string, entity: string) {
+        const ctx = this.resolveCtxSync(dbId).ctx;
+        return ctx.db.getAll(entity);
+    }
+
     async delete(dbId: string, entity: string, id: string) {
         const ctx = this.resolveCtxSync(dbId).ctx;
         await ctx.db.delete(entity, id);
     }
 
     async search(dbId: string, entity: string, query: any) {
+        console.log('dbId = ', dbId)
+        console.log('entity = ', entity)
+        console.log('query = ', query)
         const ctx = this.resolveCtxSync(dbId).ctx;
         return ctx.db.search(entity, query);
     }

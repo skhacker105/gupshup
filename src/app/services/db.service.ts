@@ -13,50 +13,123 @@ export class DbService {
     private manager: MultiDBManager;
     private dbId = 'chatAppDB';
     private schema = {
-        stores: [
-            {
-                name: 'users',
-                keyPath: 'id',
-                indexes: [{ name: 'phoneNumber', keyPath: 'phoneNumber', options: { unique: true } }]
-            },
-            {
-                name: 'contacts',
-                keyPath: 'id',
-                indexes: [
-                    { name: 'phoneNumber', keyPath: 'phoneNumber', options: { unique: true } },
-                    { name: 'lastMessageTimestamp', keyPath: 'lastMessageTimestamp' }
+        "version": 1,
+        "stores": {
+            "users": {
+                "keyPath": "id",
+                "indexes": [
+                    { "name": "phoneNumber", "keyPath": "phoneNumber", "options": { "unique": true } },
+                    { "name": "email", "keyPath": "email" },
+                    { "name": "username", "keyPath": "username" }
+                ],
+                "secureIndex": [
+                    "phoneNumber",
+                    "email",
+                    "username",
+                    "firstName",
+                    "lastName",
+                    "profilePicture",
+                    "status",
+                    "createdAt",
+                    "updatedAt"
                 ]
             },
-            {
-                name: 'contactGroups',
-                keyPath: 'id',
-                indexes: []
-            },
-            {
-                name: 'messages',
-                keyPath: 'id',
-                indexes: [
-                    { name: 'receiverId', keyPath: 'receiverId' },
-                    { name: 'createdAt', keyPath: 'createdAt' }
+            "contacts": {
+                "keyPath": "id",
+                "indexes": [
+                    { "name": "phoneNumber", "keyPath": "phoneNumber", "options": { "unique": true } },
+                    { "name": "lastMessageTimestamp", "keyPath": "lastMessageTimestamp" },
+                    { "name": "name", "keyPath": "name" }
+                ],
+                "secureIndex": [
+                    "phoneNumber",
+                    "name",
+                    "email",
+                    "address",
+                    "company",
+                    "lastMessageTimestamp",
+                    "createdAt",
+                    "updatedAt",
+                    "favorite"
                 ]
             },
-            {
-                name: 'documents',
-                keyPath: 'id',
-                indexes: [
-                    { name: 'type', keyPath: 'type' },
-                    { name: 'createdDate', keyPath: 'createdDate' },
-                    { name: 'senderId', keyPath: 'senderId' },
-                    { name: 'receiverId', keyPath: 'receiverId' },
-                    { name: 'expiryDate', keyPath: 'expiryDate' }
+            "contactGroups": {
+                "keyPath": "id",
+                "indexes": [
+                    { "name": "name", "keyPath": "name" }
+                ],
+                "secureIndex": [
+                    "name",
+                    "description",
+                    "createdBy",
+                    "createdAt",
+                    "updatedAt",
+                    "memberCount"
                 ]
             },
-            {
-                name: 'folders',
-                keyPath: 'id',
-                indexes: []
+            "messages": {
+                "keyPath": "id",
+                "indexes": [
+                    { "name": "receiverId", "keyPath": "receiverId" },
+                    { "name": "senderId", "keyPath": "senderId" },
+                    { "name": "createdAt", "keyPath": "createdAt" },
+                    { "name": "status", "keyPath": "status" }
+                ],
+                "secureIndex": [
+                    "receiverId",
+                    "senderId",
+                    "content",
+                    "attachments",
+                    "createdAt",
+                    "updatedAt",
+                    "status",
+                    "messageType",
+                    "isRead",
+                    "isDeleted"
+                ]
+            },
+            "documents": {
+                "keyPath": "id",
+                "indexes": [
+                    { "name": "type", "keyPath": "type" },
+                    { "name": "createdDate", "keyPath": "createdDate" },
+                    { "name": "senderId", "keyPath": "senderId" },
+                    { "name": "receiverId", "keyPath": "receiverId" },
+                    { "name": "expiryDate", "keyPath": "expiryDate" },
+                    { "name": "title", "keyPath": "title" }
+                ],
+                "secureIndex": [
+                    "type",
+                    "title",
+                    "content",
+                    "fileSize",
+                    "filePath",
+                    "mimeType",
+                    "senderId",
+                    "receiverId",
+                    "createdDate",
+                    "updatedDate",
+                    "expiryDate",
+                    "tags",
+                    "status"
+                ]
+            },
+            "folders": {
+                "keyPath": "id",
+                "indexes": [
+                    { "name": "name", "keyPath": "name" },
+                    { "name": "createdBy", "keyPath": "createdBy" }
+                ],
+                "secureIndex": [
+                    "name",
+                    "description",
+                    "createdBy",
+                    "createdAt",
+                    "updatedAt",
+                    "parentId"
+                ]
             }
-        ]
+        }
     };
 
     constructor() {
@@ -71,6 +144,10 @@ export class DbService {
 
     async get(store: string, id: string): Promise<any> {
         return this.manager.get(this.dbId, store, id);
+    }
+
+    async getAll(entity: string): Promise<any[]> {
+        return this.manager.getAll(this.dbId, entity);
     }
 
     async put(store: string, data: any): Promise<void> {
@@ -88,10 +165,6 @@ export class DbService {
     getDeviceId(): string {
         // Replace with actual device ID logic (e.g., UUID from localStorage or device fingerprint)
         return 'device-id-stub-' + Date.now(); // Stub for testing
-      }
-
-    async getAll(entity: string): Promise<any[]> {
-        return this.manager.search(this.dbId, entity, {});
     }
 
     async storeContacts(contacts: Contact[]): Promise<void> {
