@@ -1,103 +1,87 @@
 @use '../../../../../variable' as *;
 
-.docs-list-wrapper {
-  padding: 1rem;
-  background-color: $background-color;
-  height: calc(100vh - 4rem);
-  overflow-y: auto;
+:host {
+  display: block;
+}
 
-  &.mobile {
-    padding: 0.5rem;
-    h2 { font-size: 1.25rem; }
-    h3 { font-size: 1rem; }
-    .actions { flex-direction: column; gap: 0.5rem; }
+/* Style rows inside app-selectable-row */
+:host ::ng-deep app-selectable-row .selectable-row {
+  display: flex;
+  align-items: center;
+  padding: 0.6rem;
+  border-bottom: 1px solid $secondary-color;
+  cursor: pointer;
+  gap: 0.5rem;
+  transition: background 0.2s ease;
+
+  &:hover {
+    background: lighten($secondary-color, 40%);
   }
 
-  &.tablet {
-    padding: 0.75rem;
-    h2 { font-size: 1.5rem; }
-    h3 { font-size: 1.25rem; }
-    .actions { flex-wrap: wrap; }
+  &.selected {
+    background: rgba($primary-color, 0.15);
   }
 
-  &.desktop {
-    h2 { font-size: 1.75rem; }
-    h3 { font-size: 1.5rem; }
-  }
-
-  header {
-    border-bottom: 1px solid $secondary-color;
-    margin-bottom: 1rem;
+  .item-info {
+    flex: 1;
     display: flex;
-    justify-content: space-between;
-    align-items: center;
+    flex-direction: column;
 
-    .actions {
-      display: flex;
-      gap: 0.5rem;
-      align-items: center;
-
-      mat-select {
-        width: 120px;
-      }
-    }
-  }
-
-  .info {
-    font-size: 0.875rem;
-    color: $secondary-color;
-    margin-bottom: 1rem;
-  }
-
-  .error {
-    color: $danger-color;
-    font-size: 0.875rem;
-    margin-bottom: 1rem;
-  }
-
-  .docs-list {
-    .group-header {
-      font-weight: bold;
-      background: $primary-color;
-      color: $light-text-color;
-      padding: 0.5rem;
-      margin: 0.5rem 0;
+    .name {
+      font-weight: 600;
+      font-size: 0.95rem;
     }
 
-    ul {
-      list-style: none;
-      padding: 0;
-
-      li {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        padding: 0.5rem;
-        border-bottom: 1px solid $secondary-color;
-
-        span {
-          flex: 1;
-          font-size: 0.875rem;
-        }
-
-        button {
-          background-color: $danger-color;
-          &:hover { background-color: darken($danger-color, 10%); }
-        }
-      }
-    }
-
-    &.desktop ul {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-      gap: 0.5rem;
+    .sub {
+      font-size: 0.8rem;
+      color: $secondary-color;
     }
   }
+}
 
-  .spinner {
-    text-align: center;
-    padding: 1rem;
-    font-size: 1rem;
-    color: $secondary-color;
+/* Mobile dropdown style */
+:host ::ng-deep .orderby-select.mobile {
+  appearance: none;
+  border: none;
+  background: transparent;
+  font-size: 1rem;
+  font-weight: 500;
+  color: $primary-color;
+  cursor: pointer;
+  width: auto;
+}
+
+/* Spinner */
+.spinner {
+  text-align: center;
+  padding: 1rem;
+  font-size: 1rem;
+  color: $secondary-color;
+}
+
+/* Mobile: stack header items vertically */
+:host ::ng-deep .mobile.generic-wrapper header {
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.5rem;
+
+  h2 {
+    font-size: 1.2rem;   /* shrink heading */
+    margin-bottom: 0.25rem;
+  }
+
+  .actions {
+    flex-direction: row;   /* keep buttons side by side */
+    flex-wrap: wrap;       /* allow wrapping if too many */
+    gap: 0.35rem;
+
+    select, button {
+      font-size: 0.85rem;  /* shrink text a bit */
+      padding: 0.25rem 0.5rem;
+    }
+
+    button span.no-wrap {
+      display: none; /* hide text, keep only icons */
+    }
   }
 }

@@ -1,7 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { FolderCreateComponent } from '../folder-create/folder-create.component';
-
 import { AppService, DocumentService } from '../../../../services';
 import { Document } from '../../../../models';
 
@@ -12,19 +11,19 @@ import { Document } from '../../../../models';
 })
 export class DocsListComponent implements OnInit {
   documents: Document[] = [];
+  selectedItems: Document[] = [];
+  multiSelectMode = false;
+
   groupBy = '';
   orderBy = '';
   loading = false;
   errorMessage = '';
 
-
   constructor(
     private documentService: DocumentService,
     private dialog: MatDialog,
     public appService: AppService
-  ) {
-    
-  }
+  ) { }
 
   async ngOnInit(): Promise<void> {
     await this.loadDocuments();
@@ -34,21 +33,63 @@ export class DocsListComponent implements OnInit {
     this.loading = true;
     this.errorMessage = '';
     try {
-      this.documents = await this.documentService.getDocuments({ groupBy: this.groupBy, orderBy: this.orderBy });
-    } catch (err) {
+      this.documents = await this.documentService.getDocuments({
+        groupBy: this.groupBy,
+        orderBy: this.orderBy
+      });
+      console.log('this.documents = ', this.documents)
+    } catch {
       this.errorMessage = 'Failed to load documents.';
     }
     this.loading = false;
   }
 
-  async deleteDocument(id: string): Promise<void> {
+  enableMobileMultiSelect(): void {
+    this.multiSelectMode = true;
+  }
+
+  rowClick(doc: Document, event: MouseEvent): void {
+    if (this.multiSelectMode) {
+      this.toggleSelect(doc, event);
+    } else {
+      // open preview / details
+    }
+  }
+
+  toggleSelect(doc: Document, event: MouseEvent): void {
+    event.stopPropagation();
+    if (this.isSelected(doc)) {
+      this.selectedItems = this.selectedItems.filter(d => d !== doc);
+    } else {
+      this.selectedItems.push(doc);
+    }
+    this.multiSelectMode = this.selectedItems.length > 0;
+  }
+
+  isSelected(doc: Document): boolean {
+    return this.selectedItems.includes(doc);
+  }
+
+  cancelMultiSelect(): void {
+    this.selectedItems = [];
+    this.multiSelectMode = false;
+  }
+
+  async deleteSelected(): Promise<void> {
+    if (!this.selectedItems.length) return;
+    for (const doc of this.selectedItems) {
+      await this.deleteDocument(doc.id);
+    }
+    this.cancelMultiSelect();
+  }
+
+  async deleteDocument(id: string, event?: MouseEvent): Promise<void> {
+    event?.stopPropagation();
     this.loading = true;
-    this.errorMessage = '';
     try {
       await this.documentService.deleteDocument(id, false);
-      this.documents = this.documents.filter(doc => doc.id !== id);
-      this.errorMessage = 'Document deleted successfully.';
-    } catch (err) {
+      this.documents = this.documents.filter(d => d.id !== id);
+    } catch {
       this.errorMessage = 'Failed to delete document.';
     }
     this.loading = false;
@@ -61,32 +102,13 @@ export class DocsListComponent implements OnInit {
     });
     dialogRef.afterClosed().subscribe(async (name: string | undefined) => {
       if (name) {
-        this.loading = true;
-        this.errorMessage = '';
         try {
           await this.documentService.createFolder(name);
-          this.errorMessage = 'Folder created successfully.';
           await this.loadDocuments();
-        } catch (err) {
+        } catch {
           this.errorMessage = 'Failed to create folder.';
         }
-        this.loading = false;
       }
     });
-  }
-
-  getGroupKey(doc: Document): string {
-    switch (this.groupBy) {
-      case 'type':
-        return doc.type || 'unknown';
-      case 'month':
-        return doc.createdDate ? new Date(doc.createdDate).toLocaleString('default', { month: 'long', year: 'numeric' }) : 'unknown';
-      case 'sender':
-        return doc.senderId || 'unknown';
-      case 'receiver':
-        return doc.receiverId || 'unknown';
-      default:
-        return '';
-    }
   }
 }

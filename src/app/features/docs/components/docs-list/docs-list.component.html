@@ -1,46 +1,70 @@
-<div class="docs-list-wrapper" [ngClass]="{'mobile': appService.isMobile, 'tablet': appService.isTablet, 'desktop': appService.isDesktop}">
-    <header>
-        <h2>Documents</h2>
-        <div class="actions">
-            <mat-select [(ngModel)]="groupBy" (selectionChange)="loadDocuments()" placeholder="Group By"
-                title="Group documents by type, month, or sender">
-                <mat-option value="">None</mat-option>
-                <mat-option value="type">Type</mat-option>
-                <mat-option value="month">Month</mat-option>
-                <mat-option value="sender">Sender</mat-option>
-                <mat-option value="receiver">Receiver</mat-option>
-            </mat-select>
-            <mat-select [(ngModel)]="orderBy" (selectionChange)="loadDocuments()" placeholder="Order By"
-                title="Sort documents by date, name, or sender">
-                <mat-option value="">None</mat-option>
-                <mat-option value="createdDate">Date</mat-option>
-                <mat-option value="name">Name</mat-option>
-                <mat-option value="senderId">Sender</mat-option>
-                <mat-option value="receiverId">Receiver</mat-option>
-            </mat-select>
-            <button (click)="createFolder()" title="Create a new folder for documents"><i class="fa fa-folder"></i> New
-                Folder</button>
-        </div>
-    </header>
-    <p class="info">View and manage your documents. Use filters to organize by type, month, or sender.</p>
+<app-layout title="Documents" [selectionMode]="multiSelectMode" [isPopup]="false" [isMobile]="appService.isMobile"
+    [isTablet]="appService.isTablet" [isDesktop]="appService.isDesktop" (cancelMultiSelect)="cancelMultiSelect()"
+    (swipeRight)="enableMobileMultiSelect()">
+
+    <!-- Always visible actions -->
+    <ng-container action-always></ng-container>
+
+    <!-- Singular mode actions -->
+    <ng-container action-singular>
+        <!-- Group By -->
+        Group:
+        <select [(ngModel)]="groupBy" (change)="loadDocuments()" class="orderby-select"
+            [ngClass]="{'mobile': appService.isMobile}">
+            <option value="">None</option>
+            <option value="type">Type</option>
+            <option value="month">Month</option>
+            <option value="sender">Sender</option>
+            <option value="receiver">Receiver</option>
+        </select>
+
+        <!-- Order By -->
+        Order: 
+        <select [(ngModel)]="orderBy" (change)="loadDocuments()" class="orderby-select"
+            [ngClass]="{'mobile': appService.isMobile}">
+            <option value="">None</option>
+            <option value="createdDate">Date</option>
+            <option value="name">Name</option>
+            <option value="senderId">Sender</option>
+            <option value="receiverId">Receiver</option>
+        </select>
+
+        <!-- New Folder -->
+        <button (click)="createFolder()" title="Create a new folder">
+            <i class="fa fa-folder-plus"></i>
+            <span class="no-wrap" *ngIf="!appService.isMobile">Add Folder</span>
+        </button>
+    </ng-container>
+
+    <!-- Multi-select mode actions -->
+    <ng-container action-multiselect>
+        <button (click)="deleteSelected()" [disabled]="selectedItems.length === 0" title="Delete selected">
+            <i class="fa fa-trash"></i>
+            <span class="no-wrap" *ngIf="!appService.isMobile">Delete</span>
+        </button>
+    </ng-container>
+
+    <!-- Error -->
     <p *ngIf="errorMessage" class="error">{{ errorMessage }}</p>
+
+    <!-- Body -->
     <div class="docs-list" *ngIf="!loading; else loadingSpinner">
-        <div *ngFor="let doc of documents; let i = index">
-            <h3 *ngIf="groupBy && (i === 0 || getGroupKey(documents[i-1]) !== getGroupKey(doc))" class="group-header">
-                {{ getGroupKey(doc) }}
-            </h3>
-            <ul>
-                <li title="Document: {{ doc.name }}">
-                    <span>{{ doc.name }}</span>
-                    <span>{{ doc.type }}</span>
-                    <span>{{ doc.createdDate | date:'short' }}</span>
-                    <button (click)="deleteDocument(doc.id)" title="Delete {{ doc.name }}"><i class="fa fa-trash"></i>
-                        Delete</button>
-                </li>
-            </ul>
-        </div>
+        <app-selectable-row *ngFor="let doc of documents" [title]="doc.name" [description]="doc.type"
+            [isSelectable]="true" [selectionMode]="multiSelectMode" [selected]="isSelected(doc)"
+            [isDesktop]="appService.isDesktop" [isTablet]="appService.isTablet" [isMobile]="appService.isMobile"
+            (selectionChange)="toggleSelect(doc, $event)" (rowClick)="rowClick(doc, $event)">
+
+            <!-- Icon -->
+            <i row-icon class="fa" [ngClass]="doc.type === 'folder' ? 'fa-folder' : 'fa-file-alt'"></i>
+
+            <!-- Row actions -->
+            <button action-singular class="btn-subtle" (click)="deleteDocument(doc.id, $event)" title="Delete">
+                <i class="fa fa-trash"></i>
+            </button>
+        </app-selectable-row>
     </div>
+
     <ng-template #loadingSpinner>
         <div class="spinner"><i class="fa fa-spinner fa-spin"></i> Loading documents...</div>
     </ng-template>
-</div>
+</app-layout>

@@ -8,6 +8,7 @@ import { MatSelectModule } from '@angular/material/select';
 import { DocsRoutingModule } from './docs-routing.module';
 import { DocsListComponent } from './components/docs-list/docs-list.component';
 import { FolderCreateComponent } from './components/folder-create/folder-create.component';
+import { SharedModule } from '../../shared/shared.module';
 
 @NgModule({
   declarations: [
@@ -21,7 +22,8 @@ import { FolderCreateComponent } from './components/folder-create/folder-create.
     MatButtonModule,
     MatInputModule,
     MatSelectModule,
-    DocsRoutingModule
+    DocsRoutingModule,
+    SharedModule
   ]
 })
 export class DocsModule { }
