@@ -1,0 +1,28 @@
+<div class="generic-wrapper"
+     [ngClass]="{ 'popup': isPopup, 'mobile': isMobile, 'tablet': isTablet, 'desktop': isDesktop }"
+     [appSwipeRight]="isMobile"
+     (swiped)="swipeRight.emit()">
+
+  <header>
+    <h2>{{ title }}</h2>
+
+    <div class="actions">
+      <ng-content select="[action-always]"></ng-content>
+      <ng-container *ngIf="selectionMode">
+        <ng-content select="[action-multiselect]"></ng-content>
+      </ng-container>
+      <ng-container *ngIf="!selectionMode">
+        <ng-content select="[action-singular]"></ng-content>
+      </ng-container>
+    </div>
+
+    <!-- Popup close -->
+    <button *ngIf="isPopup" class="close-btn" (click)="close.emit()">
+      <i class="fa fa-times"></i>
+    </button>
+  </header>
+
+  <section class="body">
+    <ng-content></ng-content>
+  </section>
+</div>

@@ -1,0 +1,27 @@
+<li class="selectable-row" [class.selected]="selected" (click)="handleRowClick($event)" [title]="title">
+
+    <!-- Checkbox -->
+    <div class="checkbox-wrapper" *ngIf="isSelectable && (selectionMode || isDesktop || isTablet)">
+        <input type="checkbox" [checked]="selected" (click)="onCheckboxClick($event)" />
+    </div>
+
+    <!-- Projected icon -->
+    <ng-content select="[row-icon]"></ng-content>
+
+    <!-- Info -->
+    <div class="item-info">
+        <div class="name">{{ title }}</div>
+        <div class="sub" *ngIf="description">{{ description }}</div>
+    </div>
+
+    <!-- Actions -->
+    <div class="row-actions">
+        <ng-content select="[action-always]"></ng-content>
+        <ng-container *ngIf="selectionMode">
+            <ng-content select="[action-multiselect]"></ng-content>
+        </ng-container>
+        <ng-container *ngIf="!selectionMode">
+            <ng-content select="[action-singular]"></ng-content>
+        </ng-container>
+    </div>
+</li>

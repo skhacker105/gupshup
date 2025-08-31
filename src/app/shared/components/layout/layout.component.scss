@@ -1,0 +1,84 @@
+@use '../../../../variable' as *;
+
+.generic-wrapper {
+  background: $background-color;
+  height: calc(100vh - 4rem);
+  display: flex;
+  flex-direction: column;
+
+  header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    padding: 1rem;
+    border-bottom: 1px solid $secondary-color;
+    box-sizing: border-box;
+
+    .actions {
+      display: flex;
+      gap: 0.5rem;
+      align-items: center;
+
+      // Grouped actions styling restored
+      &.grouped {
+        background: lighten($secondary-color, 45%);
+        padding: 0.4rem 0.6rem;
+        border-radius: 6px;
+        display: flex;
+        gap: 0.4rem;
+      }
+
+      button {
+        // background: $light-color;
+        border: 1px solid $secondary-color;
+        border-radius: 4px;
+        padding: 0.4rem 0.8rem;
+        cursor: pointer;
+        color: $secondary-color;
+        display: flex;
+        align-items: center;
+        gap: 0.3rem;
+        font-size: 0.85rem;
+
+        i.fa {
+          font-size: 0.9rem;
+        }
+
+        &:hover {
+          background: $primary-color;
+          color: white;
+          border-color: $primary-color;
+        }
+
+        &:disabled {
+          opacity: 0.5;
+          cursor: not-allowed;
+        }
+      }
+    }
+
+    .close-btn {
+      margin-left: auto;
+      background: transparent;
+      border: none;
+      cursor: pointer;
+      color: $secondary-color;
+      font-size: 1.2rem;
+
+      &:hover {
+        color: $primary-color;
+      }
+    }
+  }
+
+  &.popup header {
+    padding: 0.5rem 1rem;
+    margin-bottom: 0.25rem;
+  }
+
+  .body {
+    flex: 1;
+    overflow-y: auto;
+  }
+}

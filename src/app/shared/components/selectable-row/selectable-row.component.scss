@@ -1,0 +1,86 @@
+@use '../../../../variable' as *;
+
+:host {
+  display: block;
+}
+
+.selectable-row {
+  display: flex;
+  align-items: center;
+  padding: 0.6rem 1rem;
+  border-bottom: 1px solid $secondary-color;
+  cursor: pointer;
+  transition: background 0.2s ease;
+  gap: 0.5rem;
+
+  &:hover {
+    background: lighten($secondary-color, 40%);
+  }
+
+  &.selected {
+    background: rgba($primary-color, 0.15);
+  }
+
+  .checkbox-wrapper {
+    flex: 0 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 0.6rem;
+
+    input[type="checkbox"] {
+      width: 16px;
+      height: 16px;
+      cursor: pointer;
+    }
+  }
+
+  .item-info {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+
+    .name {
+      font-weight: 600;
+      font-size: 0.95rem;
+    }
+    .sub {
+      font-size: 0.8rem;
+      color: $secondary-color;
+    }
+  }
+
+  .row-actions {
+    display: flex;
+    gap: 0.4rem;
+    flex: 0 0 auto;
+
+    button {
+      // background: $light-color;
+      border: 1px solid $secondary-color;
+      border-radius: 4px;
+      padding: 0.3rem 0.6rem;
+      font-size: 0.85rem;
+      cursor: pointer;
+      color: $secondary-color;
+      display: flex;
+      align-items: center;
+      gap: 0.3rem;
+
+      i.fa {
+        font-size: 0.9rem;
+      }
+
+      &:hover {
+        background: $primary-color;
+        color: white;
+        border-color: $primary-color;
+      }
+
+      &:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+      }
+    }
+  }
+}
