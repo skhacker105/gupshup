@@ -1,7 +1,7 @@
 export interface FileMeta {
     id: string;
     name: string;
-    mimeType: string;
+    type: string;
     size?: number;
     createdAt: string | Date;
     expiresAt?: string | Date;
