@@ -67,6 +67,37 @@ button {
   }
 }
 
+// Subtle row-level action buttons
+.btn-subtle {
+  background: transparent;
+  border: none;
+  color: $secondary-color;
+  padding: 0.25rem 0.4rem; // smaller than normal button
+  font-size: 0.875rem;
+  line-height: 1;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 4px;
+  transition: color 0.2s ease, background-color 0.2s ease;
+
+  i {
+    font-size: 1rem;
+  }
+
+  &:hover {
+    color: $primary-color;
+    background-color: rgba($primary-color, 0.08); // faint hover bg
+  }
+
+  &:disabled {
+    color: lighten($secondary-color, 25%);
+    cursor: not-allowed;
+  }
+}
+
+
 // Popup Styles (for Angular Material dialogs)
 .mat-dialog-container {
   padding: 1rem;

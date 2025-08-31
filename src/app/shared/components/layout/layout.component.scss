@@ -20,55 +20,42 @@
       gap: 0.5rem;
       align-items: center;
 
-      // Grouped actions styling restored
-      &.grouped {
-        background: lighten($secondary-color, 45%);
-        padding: 0.4rem 0.6rem;
-        border-radius: 6px;
-        display: flex;
-        gap: 0.4rem;
-      }
-
       button {
-        // background: $light-color;
-        border: 1px solid $secondary-color;
-        border-radius: 4px;
-        padding: 0.4rem 0.8rem;
-        cursor: pointer;
-        color: $secondary-color;
         display: flex;
         align-items: center;
-        gap: 0.3rem;
-        font-size: 0.85rem;
-
-        i.fa {
-          font-size: 0.9rem;
-        }
+        gap: 0.4rem;
+        padding: 0.4rem 0.6rem;
+        border-radius: 6px;
+        background: $primary-color;
+        color: #fff;
+        border: none;
+        cursor: pointer;
+        font-size: 0.875rem;
+        white-space: nowrap;
 
         &:hover {
-          background: $primary-color;
-          color: white;
-          border-color: $primary-color;
+          opacity: 0.9;
         }
 
-        &:disabled {
-          opacity: 0.5;
-          cursor: not-allowed;
+        i {
+          font-size: 1rem;
         }
+      }
+
+      &.grouped {
+        background: lighten($secondary-color, 35%);
+        padding: 0.5rem;
+        border-radius: 8px;
       }
     }
 
-    .close-btn {
-      margin-left: auto;
-      background: transparent;
-      border: none;
-      cursor: pointer;
-      color: $secondary-color;
-      font-size: 1.2rem;
-
-      &:hover {
-        color: $primary-color;
-      }
+    .orderby-select {
+      padding: 0.3rem 0.5rem;
+      border-radius: 6px;
+      border: 1px solid $secondary-color;
+      font-size: 0.85rem;
+      background: #fff;
+      height: 32px;
     }
   }
 
