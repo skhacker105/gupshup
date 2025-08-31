@@ -15,4 +15,5 @@ export class LayoutComponent {
 
   @Output() close = new EventEmitter<void>();
   @Output() swipeRight = new EventEmitter<void>();
+  @Output() cancelMultiSelect = new EventEmitter<void>();
 }

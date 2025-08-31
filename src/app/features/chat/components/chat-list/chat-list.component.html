@@ -1,41 +1,37 @@
 <app-layout title="Chats" [selectionMode]="multiSelectMode" [isPopup]="false" [isMobile]="appService.isMobile"
-  [isTablet]="appService.isTablet" [isDesktop]="appService.isDesktop" (close)="cancelMultiSelect()"
+  [isTablet]="appService.isTablet" [isDesktop]="appService.isDesktop" (cancelMultiSelect)="cancelMultiSelect()"
   (swipeRight)="enableMobileMultiSelect()">
 
   <!-- Always visible actions (all modes) -->
   <ng-container action-always>
+  </ng-container>
+
+  <!-- Actions visible only in singular (normal) mode -->
+  <ng-container action-singular>
     <select [(ngModel)]="orderBy" (change)="mergeLists(orderBy)" class="orderby-select"
       [ngClass]="{'mobile': appService.isMobile}">
       <option value="name">Name</option>
       <option value="lastMessageDate">Last Message</option>
     </select>
-  </ng-container>
-
-  <!-- Actions visible only in singular (normal) mode -->
-  <ng-container action-singular>
     <button (click)="sync()" [disabled]="loading" title="Sync contacts">
       <i class="fa fa-sync"></i>
-      <span *ngIf="!appService.isMobile">Sync</span>
+      <span class="no-wrap" *ngIf="!appService.isMobile">Sync</span>
     </button>
     <button (click)="openAddContactDialog()" title="Add a new contact">
       <i class="fa fa-user-plus"></i>
-      <span *ngIf="!appService.isMobile">Add Contact</span>
+      <span class="no-wrap" *ngIf="!appService.isMobile">Add Contact</span>
     </button>
   </ng-container>
 
   <!-- Actions visible only in multi-select mode -->
   <ng-container action-multiselect>
-    <button (click)="cancelMultiSelect()" title="Cancel selection">
-      <i class="fa fa-times"></i>
-      <span *ngIf="!appService.isMobile">Cancel</span>
-    </button>
     <button (click)="deleteSelected()" [disabled]="selectedItems.length === 0" title="Delete selected">
       <i class="fa fa-trash"></i>
-      <span *ngIf="!appService.isMobile">Delete</span>
+      <span class="no-wrap" *ngIf="!appService.isMobile">Delete</span>
     </button>
     <button (click)="openAddContactDialog()" title="Add a new contact">
       <i class="fa fa-user-plus"></i>
-      <span *ngIf="!appService.isMobile">Add Contact</span>
+      <span class="no-wrap" *ngIf="!appService.isMobile">Add Contact</span>
     </button>
   </ng-container>
 

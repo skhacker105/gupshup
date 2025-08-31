@@ -11,14 +11,13 @@
     justify-content: space-between;
     align-items: center;
     width: 100%;
-    padding: 1rem;
-    border-bottom: 1px solid $secondary-color;
     box-sizing: border-box;
 
     .actions {
       display: flex;
       gap: 0.5rem;
       align-items: center;
+      height: 100%;
 
       button {
         display: flex;
@@ -42,10 +41,23 @@
         }
       }
 
-      &.grouped {
-        background: lighten($secondary-color, 35%);
-        padding: 0.5rem;
-        border-radius: 8px;
+      .cancel-btn {
+        margin-left: auto;
+        background: $background-color-dark;
+        border: none;
+        padding: 1.4rem 1rem;
+        border-radius: 0px;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: $light-text-color;
+        font-size: 1rem;
+        height: 100%;
+    
+        &:hover {
+          opacity: 0.9;
+        }
       }
     }
 
@@ -67,5 +79,9 @@
   .body {
     flex: 1;
     overflow-y: auto;
+
+    &.selection-mode {
+      border: solid 5px $background-color-dark;
+    }
   }
 }

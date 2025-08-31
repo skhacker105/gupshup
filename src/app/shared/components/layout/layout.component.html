@@ -1,7 +1,6 @@
 <div class="generic-wrapper"
-     [ngClass]="{ 'popup': isPopup, 'mobile': isMobile, 'tablet': isTablet, 'desktop': isDesktop }"
-     [appSwipeRight]="isMobile"
-     (swiped)="swipeRight.emit()">
+  [ngClass]="{ 'popup': isPopup, 'mobile': isMobile, 'tablet': isTablet, 'desktop': isDesktop }"
+  [appSwipeRight]="isMobile" (swiped)="swipeRight.emit()">
 
   <header>
     <h2>{{ title }}</h2>
@@ -10,6 +9,9 @@
       <ng-content select="[action-always]"></ng-content>
       <ng-container *ngIf="selectionMode">
         <ng-content select="[action-multiselect]"></ng-content>
+        <button class="cancel-btn" (click)="cancelMultiSelect.emit();" title="Cancel selection">
+          <i class="fa fa-times"></i>
+        </button>
       </ng-container>
       <ng-container *ngIf="!selectionMode">
         <ng-content select="[action-singular]"></ng-content>
@@ -22,7 +24,7 @@
     </button>
   </header>
 
-  <section class="body">
+  <section class="body" [ngClass]="{ 'selection-mode': selectionMode }">
     <ng-content></ng-content>
   </section>
 </div>
