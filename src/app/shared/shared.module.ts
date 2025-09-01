@@ -4,10 +4,12 @@ import { SelectableRowComponent } from './components/selectable-row/selectable-r
 import { LayoutComponent } from './components/layout/layout.component';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
+import { DocumentFolderIconComponent } from './components/document-folder-icon/document-folder-icon.component';
+import { FileUploadComponent } from './components/file-upload/file-upload.component';
 
 @NgModule({
-    declarations: [SwipeRightDirective, SelectableRowComponent, LayoutComponent],
+    declarations: [SwipeRightDirective, SelectableRowComponent, LayoutComponent, DocumentFolderIconComponent, FileUploadComponent],
     imports: [FormsModule, CommonModule],
-    exports: [SwipeRightDirective, SelectableRowComponent, LayoutComponent]
+    exports: [SwipeRightDirective, SelectableRowComponent, LayoutComponent, DocumentFolderIconComponent, FileUploadComponent]
 })
 export class SharedModule { }

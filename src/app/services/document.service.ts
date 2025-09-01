@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { v4 as uuidv4 } from 'uuid';
 import { DbService, StorageAccountService } from './';
 import { Document } from '../models/document.interface';
+import { Folder } from '../models/folder.interface';
 import { Tables } from '../models';
 
 @Injectable({
@@ -14,6 +15,7 @@ export class DocumentService {
   ) { }
 
   async saveNewDocuments(doc: Document) {
+    doc.relativePath = await this.buildRelativePath(doc.parentFolderId, doc.name);
     this.dbService.put(Tables.Documents, doc);
   }
 
@@ -67,7 +69,6 @@ export class DocumentService {
       );
     }
     return documents;
-    // return this.dbService.getDocumentsWithFilters(filters);
   }
 
   async backupDocument(doc: Document, accountId: string): Promise<void> {
@@ -76,7 +77,7 @@ export class DocumentService {
     }
     await this.storageService.upload(doc, accountId);
     doc.backupAccountId = accountId;
-    await this.dbService.put(Tables.Folders, doc);
+    await this.dbService.put(Tables.Documents, doc);
   }
 
   async deleteDocument(id: string, permanent: boolean): Promise<void> {
@@ -88,12 +89,34 @@ export class DocumentService {
     await this.dbService.delete('documents', id);
   }
 
-  async getFolders(): Promise<any[]> {
+  async deleteFolder(id: string): Promise<void> {
+    await this.dbService.delete(Tables.Folders, id);
+  }
+
+  async getFolders(): Promise<Folder[]> {
     return this.dbService.getAll(Tables.Folders);
   }
 
-  async createFolder(name: string): Promise<void> {
-    const folder = { id: uuidv4(), name };
-    this.dbService.put(Tables.Folders, folder);
+  async createFolder(name: string, parentFolderId?: string): Promise<void> {
+    console.log('createFolder = ', { name });
+    const folder: Folder = {
+      id: uuidv4(),
+      name,
+      type: 'folder',
+      parentFolderId,
+      relativePath: await this.buildRelativePath(parentFolderId, name)
+    };
+    return await this.dbService.put(Tables.Folders, folder);
+  }
+
+  async buildRelativePath(parentFolderId: string | undefined, name: string): Promise<string> {
+    if (!parentFolderId) {
+      return `/${name}`;
+    }
+    const parentFolder = await this.dbService.get(Tables.Folders, parentFolderId) as Folder;
+    if (!parentFolder) {
+      return `/${name}`;
+    }
+    return `${parentFolder.relativePath}/${name}`;
   }
 }

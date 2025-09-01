@@ -27,14 +27,6 @@ export class FolderCreateComponent {
       this.errorMessage = 'Folder name is required.';
       return;
     }
-    this.loading = true;
-    this.errorMessage = '';
-    try {
-      await this.documentService.createFolder(this.name);
-      this.dialogRef.close(this.name);
-    } catch (err) {
-      this.errorMessage = 'Failed to create folder.';
-    }
-    this.loading = false;
+    this.dialogRef.close(this.name);
   }
 }

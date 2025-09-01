@@ -1,42 +1,17 @@
+/* src/app/components/docs-list/docs-list.component.scss */
 @use '../../../../../variable' as *;
 
 :host {
   display: block;
 }
 
-/* Style rows inside app-selectable-row */
-:host ::ng-deep app-selectable-row .selectable-row {
+/* Grid container for icons */
+.grid-container {
   display: flex;
-  align-items: center;
-  padding: 0.6rem;
-  border-bottom: 1px solid $secondary-color;
-  cursor: pointer;
-  gap: 0.5rem;
-  transition: background 0.2s ease;
-
-  &:hover {
-    background: lighten($secondary-color, 40%);
-  }
-
-  &.selected {
-    background: rgba($primary-color, 0.15);
-  }
-
-  .item-info {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-
-    .name {
-      font-weight: 600;
-      font-size: 0.95rem;
-    }
-
-    .sub {
-      font-size: 0.8rem;
-      color: $secondary-color;
-    }
-  }
+  flex-wrap: wrap;
+  justify-content: flex-start;
+  gap: 1rem;
+  padding-top: 1rem;
 }
 
 /* Mobile dropdown style */

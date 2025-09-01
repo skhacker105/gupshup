@@ -1,0 +1,23 @@
+<!-- src/app/components/file-upload/file-upload.component.html -->
+<div class="file-upload-wrapper"
+    [ngClass]="{'mobile': appService.isMobile, 'tablet': appService.isTablet, 'desktop': appService.isDesktop}">
+    <h2>Upload File</h2>
+    <p class="info">Enter a name and select a file to upload.</p>
+    <p *ngIf="errorMessage" class="error">{{ errorMessage }}</p>
+    <form (ngSubmit)="uploadFile()">
+        <div class="form-group">
+            <label for="name" title="Enter file name">File Name</label>
+            <input id="name" [(ngModel)]="name" name="name" required title="Required for file upload">
+        </div>
+        <div class="form-group">
+            <label for="file" title="Select file">Select File</label>
+            <input id="file" type="file" (change)="onFileSelected($event)" required title="Required for file upload">
+        </div>
+        <div class="actions">
+            <button type="submit" [disabled]="loading" title="Upload the file">
+                {{ loading ? 'Uploading...' : 'Upload' }}
+            </button>
+            <button type="button" mat-dialog-close title="Cancel file upload">Cancel</button>
+        </div>
+    </form>
+</div>

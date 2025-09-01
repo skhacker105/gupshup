@@ -3,6 +3,8 @@ export * from './contact.interface';
 export * from './db.enum';
 export * from './document.interface';
 export * from './expiration.enum';
+export * from './folder.interface';
+export * from './icon.size.enum';
 export * from './language.type';
 export * from './message.interface';
 export * from './storage-account.interface';
