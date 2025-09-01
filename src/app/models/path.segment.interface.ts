@@ -1,0 +1,1 @@
+export interface IPathSegmenmat { name: string, id?: string }

@@ -7,5 +7,6 @@ export * from './folder.interface';
 export * from './icon.size.enum';
 export * from './language.type';
 export * from './message.interface';
+export * from './path.segment.interface';
 export * from './storage-account.interface';
 export * from './user.interface';

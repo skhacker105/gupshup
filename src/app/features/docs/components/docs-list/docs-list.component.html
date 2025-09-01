@@ -3,46 +3,11 @@
     [isTablet]="appService.isTablet" [isDesktop]="appService.isDesktop" (cancelMultiSelect)="cancelMultiSelect()"
     (swipeRight)="enableMobileMultiSelect()">
 
-    <!-- Breadcrumb Navigation -->
-    <div class="breadcrumb">
-        <span *ngFor="let segment of pathSegments; let last = last" (click)="navigateToPath(segment)"
-            [ngClass]="{'clickable': !last, 'current': last}">
-            {{ segment.name }}<span *ngIf="!last"> / </span>
-        </span>
-    </div>
-
     <!-- Always visible actions -->
     <ng-container action-always></ng-container>
 
     <!-- Singular mode actions -->
     <ng-container action-singular>
-        <!-- Group By -->
-        Group:
-        <select [(ngModel)]="groupBy" (change)="loadDocumentsAndFolders()" class="orderby-select"
-            [ngClass]="{'mobile': appService.isMobile}">
-            <option value="">None</option>
-            <option value="type">Type</option>
-            <option value="month">Month</option>
-            <option value="sender">Sender</option>
-            <option value="receiver">Receiver</option>
-        </select>
-
-        <!-- Order By -->
-        Order:
-        <select [(ngModel)]="orderBy" (change)="loadDocumentsAndFolders()" class="orderby-select"
-            [ngClass]="{'mobile': appService.isMobile}">
-            <option value="">None</option>
-            <option value="createdDate">Date</option>
-            <option value="name">Name</option>
-            <option value="senderId">Sender</option>
-            <option value="receiverId">Receiver</option>
-        </select>
-
-        <!-- Icon Size -->
-        Size:
-        <select [(ngModel)]="selectedIconSize" class="orderby-select" [ngClass]="{'mobile': appService.isMobile}">
-            <option *ngFor="let size of iconSizes" [value]="size">{{size | titlecase}}</option>
-        </select>
 
         <!-- New File -->
         <button (click)="addNewFile()" title="Create a new file">
@@ -70,6 +35,46 @@
 
     <!-- Body -->
     <div class="docs-list" *ngIf="!loading; else loadingSpinner">
+
+        <!-- Group By / Order By / Sizes -->
+        <div class="filter-header">
+
+            <!-- Group By -->
+            Group:
+            <select [(ngModel)]="groupBy" (change)="loadDocumentsAndFolders()" class="orderby-select"
+                [ngClass]="{'mobile': appService.isMobile}">
+                <option value="">None</option>
+                <option value="type">Type</option>
+                <option value="month">Month</option>
+                <option value="sender">Sender</option>
+                <option value="receiver">Receiver</option>
+            </select>
+
+            <!-- Order By -->
+            Order:
+            <select [(ngModel)]="orderBy" (change)="loadDocumentsAndFolders()" class="orderby-select"
+                [ngClass]="{'mobile': appService.isMobile}">
+                <option value="">None</option>
+                <option value="createdDate">Date</option>
+                <option value="name">Name</option>
+                <option value="senderId">Sender</option>
+                <option value="receiverId">Receiver</option>
+            </select>
+
+            <!-- Icon Size -->
+            Size:
+            <select [(ngModel)]="selectedIconSize" class="orderby-select" [ngClass]="{'mobile': appService.isMobile}">
+                <option *ngFor="let size of iconSizes" [value]="size">{{size | titlecase}}</option>
+            </select>
+        </div>
+
+        <!-- Breadcrumb Navigation -->
+        <div class="breadcrumb">
+            <span *ngFor="let segment of pathSegments; let last = last" (click)="navigateToPath(segment)"
+                [ngClass]="{'clickable': !last, 'current': last}">
+                {{ segment.name }}<span *ngIf="!last"> / </span>
+            </span>
+        </div>
         <div class="grid-container">
             <app-document-folder-icon *ngFor="let folder of folders" [item]="folder" [size]="selectedIconSize"
                 (onClick)="rowClick(folder, $event)"></app-document-folder-icon>

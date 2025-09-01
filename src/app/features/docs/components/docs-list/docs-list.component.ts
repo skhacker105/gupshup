@@ -2,7 +2,7 @@
 import { Component, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { FolderCreateComponent } from '../folder-create/folder-create.component';
-import { Folder, Document, IconSize } from '../../../../models';
+import { Folder, Document, IconSize, IPathSegmenmat } from '../../../../models';
 import { AppService, DocumentService } from '../../../../services';
 import { FileUploadComponent } from '../../../../shared/components/file-upload/file-upload.component';
 
@@ -26,7 +26,7 @@ export class DocsListComponent implements OnInit {
 
   currentParentId: string | undefined = undefined; // Root level
   currentPath: string = '/'; // Current relative path
-  pathSegments: { name: string, id?: string }[] = [{ name: 'Root', id: undefined }]; // For breadcrumb
+  pathSegments: IPathSegmenmat[] = [{ name: 'Root', id: '' }]; // For breadcrumb
   selectedIconSize: IconSize = IconSize.Medium;
   iconSizes = Object.values(IconSize);
 
