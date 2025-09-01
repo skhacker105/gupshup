@@ -88,6 +88,10 @@ export class DocumentService {
     await this.dbService.delete('documents', id);
   }
 
+  async getFolders(): Promise<any[]> {
+    return this.dbService.getAll(Tables.Folders);
+  }
+
   async createFolder(name: string): Promise<void> {
     const folder = { id: uuidv4(), name };
     this.dbService.put(Tables.Folders, folder);

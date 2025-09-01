@@ -55,6 +55,8 @@
 
     <!-- Body -->
     <div class="docs-list" *ngIf="!loading; else loadingSpinner">
+        <!-- Add more code for showing relative path -->
+        <!-- Add more code for showing list of folders -->
         <app-selectable-row *ngFor="let doc of documents" [title]="doc.name" [description]="doc.type"
             [isSelectable]="true" [selectionMode]="multiSelectMode" [selected]="isSelected(doc)"
             [isDesktop]="appService.isDesktop" [isTablet]="appService.isTablet" [isMobile]="appService.isMobile"

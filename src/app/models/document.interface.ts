@@ -10,4 +10,5 @@ export interface Document {
     folderId?: string;
     backupAccountId?: string;
     relativePath?: string; // Relative to user's folder structure
+    parentFolderId?: string;
 }
