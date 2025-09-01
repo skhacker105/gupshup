@@ -45,7 +45,6 @@ export class DocsListComponent implements OnInit {
   }
 
   rowClick(item: Item, event: MouseEvent): void {
-    console.log('item = ', item)
     if (this.multiSelectMode) {
       this.toggleSelect(item, event);
     } else {
@@ -53,7 +52,7 @@ export class DocsListComponent implements OnInit {
         this.currentParentId = item.id;
         this.currentPath = item.relativePath;
         this.updatePathSegments();
-        // this.loadDocumentsAndFolders();
+        this.loadDocumentsAndFolders();
       } else {
         // Open document
       }
