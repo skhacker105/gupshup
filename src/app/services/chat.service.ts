@@ -1,10 +1,8 @@
 import { Injectable } from '@angular/core';
 import { Subject, Observable } from 'rxjs';
 import { v4 as uuidv4 } from 'uuid';
-import { Message } from '../models';
-import { WebSocketService } from './websocket.service';
-import { DbService } from './db.service';
-import { TranslationService } from './translation.service';
+import { Message, Tables } from '../models';
+import { ContactService, DbService, TranslationService, WebSocketService } from './';
 
 @Injectable({
     providedIn: 'root'
@@ -15,7 +13,8 @@ export class ChatService {
     constructor(
         private wsService: WebSocketService,
         private dbService: DbService,
-        private translationService: TranslationService
+        private translationService: TranslationService,
+        private contactService: ContactService
     ) {
         this.wsService.messages$.subscribe(msg => {
             if (msg.type === 'message') {
@@ -34,9 +33,13 @@ export class ChatService {
             const translated = await this.translationService.translate(msg.text, 'auto', user.targetLanguage);
             msg.translatedText = translated;
         }
-        await this.dbService.storeMessage(msg);
+        await this.dbService.put(Tables.Messages, msg);
         this.wsService.send({ type: 'message', data: msg });
         this.messageSubject.next(msg);
+    }
+
+    async getAllMessageByUser(receiverId: string): Promise<Message[]> {
+        return this.dbService.search(Tables.Messages, { receiverId })
     }
 
     async syncContacts(): Promise<void> {
@@ -52,6 +55,6 @@ export class ChatService {
             online: false,
             lastMessageTimestamp: new Date()
         }));
-        await this.dbService.storeContacts(mapped);
+        await this.contactService.storeContacts(mapped);
     }
 }

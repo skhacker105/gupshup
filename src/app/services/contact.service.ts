@@ -44,4 +44,8 @@ export class ContactService {
     async storeContact(contact: Contact): Promise<void> {
         await this.dbService.put('contacts', contact);
     }
+
+    storeContacts(contacts: Contact[]): Promise<void>[] {
+        return contacts.map(c => this.dbService.put('contacts', c))
+    }
 }

@@ -1,5 +1,6 @@
 export * from './contact-group.interface';
 export * from './contact.interface';
+export * from './db.enum';
 export * from './document.interface';
 export * from './expiration.enum';
 export * from './file.model';

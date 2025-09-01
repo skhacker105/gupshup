@@ -142,6 +142,10 @@ export class DbService {
         this.checkExpirations();
     }
 
+    async search(store: string, query: any): Promise<Message[]> {
+        return await this.manager.search(this.dbId, store, query);
+    }
+
     async get(store: string, id: string): Promise<any> {
         return this.manager.get(this.dbId, store, id);
     }
@@ -158,19 +162,9 @@ export class DbService {
         await this.manager.delete(this.dbId, store, id);
     }
 
-    async storeMessage(msg: Message): Promise<void> {
-        await this.put('messages', msg);
-    }
-
     getDeviceId(): string {
         // Replace with actual device ID logic (e.g., UUID from localStorage or device fingerprint)
         return 'device-id-stub-' + Date.now(); // Stub for testing
-    }
-
-    async storeContacts(contacts: Contact[]): Promise<void> {
-        for (const contact of contacts) {
-            await this.put('contacts', contact);
-        }
     }
 
     async getUser(): Promise<User> {
@@ -190,77 +184,5 @@ export class DbService {
                 await this.delete('documents', doc.id);
             }
         }, 3600000); // Run hourly
-    }
-
-    async getMessagesForReceiver(receiverId: string): Promise<Message[]> {
-        const messages = await this.manager.search(this.dbId, 'messages', { receiverId });
-        return messages.sort((a: Message, b: Message) => b.createdAt.getTime() - a.createdAt.getTime());
-    }
-
-    async storeDocument(doc: Document): Promise<void> {
-        await this.put('documents', doc);
-    }
-
-    async getDocumentsWithFilters(filters: { groupBy?: string; orderBy?: string }): Promise<Document[]> {
-        let documents = await this.manager.search(this.dbId, 'documents', {});
-
-        if (filters.orderBy) {
-            documents = documents.sort((a: Document, b: Document) => {
-                switch (filters.orderBy) {
-                    case 'date':
-                        return b.createdDate.getTime() - a.createdDate.getTime();
-                    case 'name':
-                        return a.name.localeCompare(b.name);
-                    case 'sender':
-                        return a.senderId.localeCompare(b.senderId);
-                    case 'receiver':
-                        return a.receiverId.localeCompare(b.receiverId);
-                    default:
-                        return 0;
-                }
-            });
-        }
-
-        if (filters.groupBy) {
-            const grouped: { [key: string]: Document[] } = documents.reduce((acc: any, doc: Document) => {
-                let key: string;
-                switch (filters.groupBy) {
-                    case 'type':
-                        key = doc.type;
-                        break;
-                    case 'month':
-                        key = doc.createdDate.toLocaleString('default', { month: 'long', year: 'numeric' });
-                        break;
-                    case 'sender':
-                        key = doc.senderId;
-                        break;
-                    case 'receiver':
-                        key = doc.receiverId;
-                        break;
-                    case 'contact':
-                        key = doc.senderId + '|' + doc.receiverId;
-                        break;
-                    default:
-                        key = doc.createdDate.toISOString().split('T')[0];
-                }
-                if (!acc[key]) acc[key] = [];
-                acc[key].push(doc);
-                return acc;
-            }, {});
-            return Object.entries(grouped).flatMap(([key, docs]) =>
-                docs.map(doc => ({ ...doc, groupKey: key }))
-            );
-        }
-        return documents;
-    }
-
-    async getFolders(): Promise<{ id: string; name: string }[]> {
-        return this.getAll('folders');
-    }
-
-    async createFolder(name: string): Promise<string> {
-        const folder = { id: uuidv4(), name };
-        await this.put('folders', folder);
-        return folder.id;
     }
 }

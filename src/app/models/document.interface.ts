@@ -9,4 +9,5 @@ export interface Document {
     expiryDate?: Date;
     folderId?: string;
     backupAccountId?: string;
+    relativePath?: string; // Relative to user's folder structure
 }

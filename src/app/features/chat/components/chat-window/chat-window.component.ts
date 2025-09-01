@@ -46,7 +46,7 @@ export class ChatWindowComponent implements OnInit, OnDestroy {
     this.newMessage.receiverId = this.receiverId;
     this.newMessage.senderId = this.currentUserId;
     try {
-      const all = await this.dbService.getMessagesForReceiver(this.receiverId);
+      const all = await this.chatService.getAllMessageByUser(this.receiverId);
       this.messages = all
         .filter((m: Message) => m.receiverId === this.receiverId || m.senderId === this.receiverId)
         .sort((a: Message, b: Message) => b.createdAt.getTime() - a.createdAt.getTime());
@@ -98,17 +98,17 @@ export class ChatWindowComponent implements OnInit, OnDestroy {
               createdDate: new Date(),
               expiryDate: await this.calculateExpiryDate(editedFile.type)
             };
-            await this.dbService.storeDocument(doc);
+            await this.documentService.saveNewDocuments(doc);
             this.newMessage.file = doc;
           }
-          await this.dbService.storeMessage(this.newMessage);
+          await this.chatService.sendMessage(this.newMessage);
           this.chatService.sendMessage(this.newMessage);
           this.newMessage.text = '';
           this.selectedFile = undefined;
           this.scrollToBottom();
         });
       } else {
-        await this.dbService.storeMessage(this.newMessage);
+        await this.chatService.sendMessage(this.newMessage);
         this.chatService.sendMessage(this.newMessage);
         this.newMessage.text = '';
         this.scrollToBottom();
