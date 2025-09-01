@@ -8,6 +8,7 @@
 
   <!-- Actions visible only in singular (normal) mode -->
   <ng-container action-singular>
+    Order
     <select [(ngModel)]="orderBy" (change)="mergeLists(orderBy)" class="orderby-select"
       [ngClass]="{'mobile': appService.isMobile}">
       <option value="name">Name</option>

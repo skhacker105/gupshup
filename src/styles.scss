@@ -48,6 +48,7 @@ input, textarea {
   }
 }
 
+// Button
 button {
   padding: 0.5rem 1rem;
   background-color: $primary-color;
@@ -96,6 +97,13 @@ button {
   &:disabled {
     color: lighten($secondary-color, 25%);
     cursor: not-allowed;
+  }
+}
+
+@media (max-width: 480px) { // Mobile
+  select, button {
+    font-size: 0.85rem !important;  /* shrink text a bit */
+    padding: 0.25rem 0.5rem !important;
   }
 }
 

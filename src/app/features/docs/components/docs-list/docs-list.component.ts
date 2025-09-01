@@ -29,21 +29,6 @@ export class DocsListComponent implements OnInit {
     await this.loadDocuments();
   }
 
-  async loadDocuments(): Promise<void> {
-    this.loading = true;
-    this.errorMessage = '';
-    try {
-      this.documents = await this.documentService.getDocuments({
-        groupBy: this.groupBy,
-        orderBy: this.orderBy
-      });
-      console.log('this.documents = ', this.documents)
-    } catch {
-      this.errorMessage = 'Failed to load documents.';
-    }
-    this.loading = false;
-  }
-
   enableMobileMultiSelect(): void {
     this.multiSelectMode = true;
   }
@@ -83,6 +68,39 @@ export class DocsListComponent implements OnInit {
     this.cancelMultiSelect();
   }
 
+  // Document CRUD
+  async loadDocuments(): Promise<void> {
+    this.loading = true;
+    this.errorMessage = '';
+    try {
+      this.documents = await this.documentService.getDocuments({
+        groupBy: this.groupBy,
+        orderBy: this.orderBy
+      });
+      console.log('this.documents = ', this.documents)
+    } catch {
+      this.errorMessage = 'Failed to load documents.';
+    }
+    this.loading = false;
+  }
+
+  async addNewFile(): Promise<void> {
+    // const dialogRef = this.dialog.open(FolderCreateComponent, {
+    //   width: this.appService.isMobile ? '90%' : this.appService.isTablet ? '70%' : '500px',
+    //   maxHeight: this.appService.isMobile ? '80vh' : '70vh'
+    // });
+    // dialogRef.afterClosed().subscribe(async (name: string | undefined) => {
+    //   if (name) {
+    //     try {
+    //       await this.documentService.createFolder(name);
+    //       await this.loadDocuments();
+    //     } catch {
+    //       this.errorMessage = 'Failed to create folder.';
+    //     }
+    //   }
+    // });
+  }
+
   async deleteDocument(id: string, event?: MouseEvent): Promise<void> {
     event?.stopPropagation();
     this.loading = true;
@@ -91,6 +109,22 @@ export class DocsListComponent implements OnInit {
       this.documents = this.documents.filter(d => d.id !== id);
     } catch {
       this.errorMessage = 'Failed to delete document.';
+    }
+    this.loading = false;
+  }
+
+  // Folder CRUD
+  async loadFolders(): Promise<void> {
+    this.loading = true;
+    this.errorMessage = '';
+    try {
+      // this.documents = await this.documentService.getDocuments({
+      //   groupBy: this.groupBy,
+      //   orderBy: this.orderBy
+      // });
+      // console.log('this.folders = ', this.folders)
+    } catch {
+      this.errorMessage = 'Failed to load documents.';
     }
     this.loading = false;
   }

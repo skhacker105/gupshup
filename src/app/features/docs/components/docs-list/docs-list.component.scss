@@ -75,11 +75,6 @@
     flex-wrap: wrap;       /* allow wrapping if too many */
     gap: 0.35rem;
 
-    select, button {
-      font-size: 0.85rem;  /* shrink text a bit */
-      padding: 0.25rem 0.5rem;
-    }
-
     button span.no-wrap {
       display: none; /* hide text, keep only icons */
     }

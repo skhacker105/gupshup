@@ -29,6 +29,12 @@
             <option value="receiverId">Receiver</option>
         </select>
 
+        <!-- New File -->
+        <button (click)="addNewFile()" title="Create a new folder">
+            <i class="fa-solid fa-file-circle-plus"></i>
+            <span class="no-wrap" *ngIf="!appService.isMobile">Add Folder</span>
+        </button>
+
         <!-- New Folder -->
         <button (click)="createFolder()" title="Create a new folder">
             <i class="fa fa-folder-plus"></i>
