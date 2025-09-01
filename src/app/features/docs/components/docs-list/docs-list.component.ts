@@ -25,8 +25,8 @@ export class DocsListComponent implements OnInit {
   errorMessage = '';
 
   currentParentFolder: Folder | undefined = undefined; // Root level
-  currentPath: string = '/'; // Current relative path
-  pathSegments: IPathSegmenmat[] = [{ name: 'Root', id: '' }]; // For breadcrumb
+  currentPath: string = '[]'; // Current relative path (JSON string)
+  pathSegments: IPathSegmenmat[] = [{ name: 'Root', id: undefined }]; // For breadcrumb
   selectedIconSize: IconSize = IconSize.Medium;
   iconSizes = Object.values(IconSize);
 
@@ -109,32 +109,28 @@ export class DocsListComponent implements OnInit {
     this.loading = false;
   }
 
-  async navigateToPath(segment: { name: string, id?: string }): Promise<void> {
-    this.currentParentFolder = this.folders.find(f => f.id === segment.id);
-    if (segment.id) {
+  async navigateToPath(segment: IPathSegmenmat): Promise<void> {
+    if (!segment.id) {
+      this.currentParentFolder = undefined;
+      this.currentPath = '[]';
+    } else {
       const folder = await this.documentService.getFolders().then(folders =>
         folders.find(f => f.id === segment.id)
       );
-      this.currentPath = folder?.relativePath || '/';
-    } else {
-      this.currentPath = '/';
+      this.currentParentFolder = folder;
+      this.currentPath = folder?.relativePath || '[]';
     }
     this.updatePathSegments();
     this.loadDocumentsAndFolders();
   }
 
   updatePathSegments(): void {
-    const segments = this.currentPath.split('/').filter(segment => segment);
+    const parsedPath = JSON.parse(this.currentPath || '[]') as { name: string, id: string }[];
     this.pathSegments = [{ name: 'Root', id: undefined }];
-    let currentId: string | undefined = undefined;
-    let pathSoFar = '';
-    for (const segment of segments) {
-      pathSoFar += `/${segment}`;
-      // Find folder ID for this segment (simplified; in practice, may need async lookup)
-      const folder = this.folders.find(f => f.relativePath === pathSoFar);
-      this.pathSegments.push({ name: segment, id: folder?.id });
-      currentId = folder?.id;
-    }
+    this.pathSegments.push(...parsedPath.map(segment => ({
+      name: segment.name,
+      id: segment.id
+    })));
   }
 
   loadDocuments(): Promise<Document[]> {

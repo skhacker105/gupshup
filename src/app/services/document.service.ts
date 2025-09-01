@@ -15,7 +15,7 @@ export class DocumentService {
   ) { }
 
   async saveNewDocuments(doc: Document, parentFolder?: Folder) {
-    doc.relativePath = await this.buildRelativePath(parentFolder, doc.name);
+    doc.relativePath = await this.buildRelativePath(parentFolder, doc.name, doc.id);
     this.dbService.put(Tables.Documents, doc);
   }
 
@@ -98,20 +98,23 @@ export class DocumentService {
   }
 
   async createFolder(name: string, parentFolder?: Folder): Promise<void> {
+    const id = uuidv4();
     const folder: Folder = {
-      id: uuidv4(),
+      id,
       name,
       type: 'folder',
       parentFolderId: parentFolder?.id,
-      relativePath: await this.buildRelativePath(parentFolder, name)
+      relativePath: await this.buildRelativePath(parentFolder, name, id)
     };
     return await this.dbService.put(Tables.Folders, folder);
   }
 
-  async buildRelativePath(parentFolder: Folder | undefined, name: string): Promise<string> {
+  async buildRelativePath(parentFolder: Folder | undefined, name: string, id: string): Promise<string> {
+    const pathSegment = { name, id };
     if (!parentFolder) {
-      return `/${name}`;
+      return JSON.stringify([pathSegment]);
     }
-    return `${parentFolder.relativePath}/${name}`;
+    const parentPath = JSON.parse(parentFolder.relativePath || '[]');
+    return JSON.stringify([...parentPath, pathSegment]);
   }
 }

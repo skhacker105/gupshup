@@ -1,4 +1,5 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { IPathSegmenmat } from '../../../models';
 
 @Component({
   selector: 'app-breadcrumb',
@@ -6,7 +7,7 @@ import { Component, EventEmitter, Input, Output } from '@angular/core';
   styleUrls: ['./breadcrumb.component.scss']
 })
 export class BreadcrumbComponent {
-  @Input() pathSegments: { name: string, id?: string }[] = [];
+  @Input() pathSegments: IPathSegmenmat[] = [];
   @Output() segmentClick = new EventEmitter<{ name: string, id?: string }>();
 
   get displayedSegments(): { name: string, id?: string, isEllipsis?: boolean }[] {
