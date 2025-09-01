@@ -24,7 +24,7 @@ export class DocsListComponent implements OnInit {
   loading = false;
   errorMessage = '';
 
-  currentParentId: string | undefined = undefined; // Root level
+  currentParentFolder: Folder | undefined = undefined; // Root level
   currentPath: string = '/'; // Current relative path
   pathSegments: IPathSegmenmat[] = [{ name: 'Root', id: '' }]; // For breadcrumb
   selectedIconSize: IconSize = IconSize.Medium;
@@ -49,7 +49,7 @@ export class DocsListComponent implements OnInit {
       this.toggleSelect(item, event);
     } else {
       if (!('data' in item)) { // Folder
-        this.currentParentId = item.id;
+        this.currentParentFolder = item;
         this.currentPath = item.relativePath;
         this.updatePathSegments();
         this.loadDocumentsAndFolders();
@@ -101,10 +101,8 @@ export class DocsListComponent implements OnInit {
         }),
         this.documentService.getFolders()
       ]);
-      this.documents = documents.filter(d => d.parentFolderId === this.currentParentId);
-      this.folders = folders.filter(f => f.parentFolderId === this.currentParentId);
-      console.log('this.documents = ', this.documents);
-      console.log('this.folders = ', this.folders);
+      this.documents = documents.filter(d => d.parentFolderId === this.currentParentFolder?.id);
+      this.folders = folders.filter(f => f.parentFolderId === this.currentParentFolder?.id);
     } catch {
       this.errorMessage = 'Failed to load documents.';
     }
@@ -112,7 +110,7 @@ export class DocsListComponent implements OnInit {
   }
 
   async navigateToPath(segment: { name: string, id?: string }): Promise<void> {
-    this.currentParentId = segment.id;
+    this.currentParentFolder = this.folders.find(f => f.id === segment.id);
     if (segment.id) {
       const folder = await this.documentService.getFolders().then(folders =>
         folders.find(f => f.id === segment.id)
@@ -150,11 +148,17 @@ export class DocsListComponent implements OnInit {
     const dialogRef = this.dialog.open(FileUploadComponent, {
       width: this.appService.isMobile ? '90%' : this.appService.isTablet ? '70%' : '500px',
       maxHeight: this.appService.isMobile ? '80vh' : '70vh',
-      data: { parentFolderId: this.currentParentId }
+      data: {
+        parentFolderId: this.currentParentFolder?.id,
+        isDesktop: this.appService.isDesktop,
+        isTablet: this.appService.isTablet,
+        isMobile: this.appService.isMobile
+      }
     });
     dialogRef.afterClosed().subscribe(async (doc: Document | undefined) => {
       if (doc) {
         try {
+          await this.documentService.saveNewDocuments(doc);
           await this.loadDocumentsAndFolders();
         } catch {
           this.errorMessage = 'Failed to add file.';
@@ -192,16 +196,14 @@ export class DocsListComponent implements OnInit {
   }
 
   async createFolder(): Promise<void> {
-    console.log('\ncreateFolder start')
     const dialogRef = this.dialog.open(FolderCreateComponent, {
       width: this.appService.isMobile ? '90%' : this.appService.isTablet ? '70%' : '500px',
       maxHeight: this.appService.isMobile ? '80vh' : '70vh'
     });
     dialogRef.afterClosed().subscribe(async (name: string | undefined) => {
       if (name) {
-        console.log('createFolder by name = ', name)
         try {
-          await this.documentService.createFolder(name, this.currentParentId);
+          await this.documentService.createFolder(name, this.currentParentFolder);
           await this.loadDocumentsAndFolders();
         } catch {
           this.errorMessage = 'Failed to create folder.';

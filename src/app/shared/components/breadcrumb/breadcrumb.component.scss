@@ -1,0 +1,39 @@
+@use '../../../../variable' as *;
+
+.breadcrumb {
+  padding: 1rem 1rem;
+  font-size: 0.9rem;
+  color: $secondary-color;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: nowrap;
+  overflow-x: auto;
+  white-space: nowrap;
+
+  .clickable {
+    cursor: pointer;
+    color: $primary-color;
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+
+  .current {
+    font-weight: 600;
+    color: $primary-color;
+  }
+
+  .ellipsis {
+    color: $secondary-color;
+    cursor: default;
+  }
+
+  .slash {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: $secondary-color;
+    font-size: 1rem;
+  }
+}

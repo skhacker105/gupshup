@@ -2,7 +2,6 @@
 import { Component, Inject } from '@angular/core';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { v4 as uuidv4 } from 'uuid';
-import { AppService, DocumentService } from '../../../services';
 import { Document } from '../../../models';
 
 
@@ -12,6 +11,7 @@ import { Document } from '../../../models';
   styleUrls: ['./file-upload.component.scss']
 })
 export class FileUploadComponent {
+
   name = '';
   selectedFile: File | null = null;
   errorMessage = '';
@@ -19,11 +19,9 @@ export class FileUploadComponent {
 
   constructor(
     private dialogRef: MatDialogRef<FileUploadComponent>,
-    private documentService: DocumentService,
-    public appService: AppService,
-    @Inject(MAT_DIALOG_DATA) public data: { parentFolderId?: string }
+    @Inject(MAT_DIALOG_DATA) public data: { parentFolderId?: string, isDesktop: boolean, isTablet: boolean, isMobile: boolean }
   ) {
-    
+
   }
 
   onFileSelected(event: Event): void {
@@ -58,7 +56,6 @@ export class FileUploadComponent {
         createdDate: new Date(),
         parentFolderId: this.data.parentFolderId
       };
-      await this.documentService.saveNewDocuments(doc);
       this.dialogRef.close(doc);
     } catch (err) {
       this.errorMessage = 'Failed to upload file.';

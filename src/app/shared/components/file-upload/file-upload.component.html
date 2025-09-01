@@ -1,6 +1,6 @@
 <!-- src/app/components/file-upload/file-upload.component.html -->
 <div class="file-upload-wrapper"
-    [ngClass]="{'mobile': appService.isMobile, 'tablet': appService.isTablet, 'desktop': appService.isDesktop}">
+    [ngClass]="{'mobile': data.isMobile, 'tablet': data.isTablet, 'desktop': data.isDesktop}">
     <h2>Upload File</h2>
     <p class="info">Enter a name and select a file to upload.</p>
     <p *ngIf="errorMessage" class="error">{{ errorMessage }}</p>

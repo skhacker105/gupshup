@@ -126,7 +126,7 @@ export class DbService {
                     "createdBy",
                     "createdAt",
                     "updatedAt",
-                    "parentId"
+                    "parentFolderId"
                 ]
             }
         }

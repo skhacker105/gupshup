@@ -1,0 +1,9 @@
+<div class="breadcrumb">
+    <ng-container *ngFor="let segment of displayedSegments; let last = last">
+        <span (click)="onSegmentClick(segment, $event)"
+            [ngClass]="{'clickable': !last && !segment.isEllipsis, 'current': last, 'ellipsis': segment.isEllipsis}">
+            {{ segment.name }}
+        </span>
+        <span class="slash" *ngIf="!last">/</span>
+    </ng-container>
+</div>

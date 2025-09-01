@@ -69,17 +69,18 @@
         </div>
 
         <!-- Breadcrumb Navigation -->
-        <div class="breadcrumb">
-            <span *ngFor="let segment of pathSegments; let last = last" (click)="navigateToPath(segment)"
-                [ngClass]="{'clickable': !last, 'current': last}">
-                {{ segment.name }}<span *ngIf="!last"> / </span>
-            </span>
-        </div>
+        <app-breadcrumb [pathSegments]="pathSegments" (segmentClick)="navigateToPath($event)"></app-breadcrumb>
+
+        <!-- Grid -->
         <div class="grid-container">
             <app-document-folder-icon *ngFor="let folder of folders" [item]="folder" [size]="selectedIconSize"
-                (onClick)="rowClick(folder, $event)"></app-document-folder-icon>
+                (onClick)="rowClick(folder, $event)" [isDesktop]="appService.isDesktop" [isTablet]="appService.isTablet"
+                [isMobile]="appService.isMobile">
+            </app-document-folder-icon>
             <app-document-folder-icon *ngFor="let doc of documents" [item]="doc" [size]="selectedIconSize"
-                (onClick)="rowClick(doc, $event)"></app-document-folder-icon>
+                (onClick)="rowClick(doc, $event)" [isDesktop]="appService.isDesktop" [isTablet]="appService.isTablet"
+                [isMobile]="appService.isMobile">
+            </app-document-folder-icon>
         </div>
     </div>
 
