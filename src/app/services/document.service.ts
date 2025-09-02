@@ -33,29 +33,38 @@ export class DocumentService {
 
 
   set selectedIconSize(val: IconSize) {
-      localStorage.setItem(this.selectedIconSizeStoreKey, val)
+    if (val)
+      localStorage.setItem(this.selectedIconSizeStoreKey, val);
+    else
+      localStorage.removeItem(this.selectedIconSizeStoreKey);
   }
 
   get selectedIconSize(): IconSize {
-      return localStorage.getItem(this.selectedIconSizeStoreKey) as IconSize ?? IconSize.Medium
+    return localStorage.getItem(this.selectedIconSizeStoreKey) as IconSize ?? IconSize.Medium
   }
 
 
   set selectedGroupBy(val: string) {
+    if (val)
       localStorage.setItem(this.selectedGroupByStoreKey, val);
+    else
+      localStorage.removeItem(this.selectedGroupByStoreKey);
   }
 
   get selectedGroupBy(): string {
-      return localStorage.getItem(this.selectedGroupByStoreKey) ?? '';
+    return localStorage.getItem(this.selectedGroupByStoreKey) ?? '';
   }
 
 
   set selectedOrderBy(val: string) {
+    if (val)
       localStorage.setItem(this.selectedOrderByStoreKey, val);
+    else
+      localStorage.removeItem(this.selectedOrderByStoreKey);
   }
 
   get selectedOrderBy(): string {
-      return localStorage.getItem(this.selectedOrderByStoreKey) ?? '';
+    return localStorage.getItem(this.selectedOrderByStoreKey) ?? '';
   }
 
   constructor(
