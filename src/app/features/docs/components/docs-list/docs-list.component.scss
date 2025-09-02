@@ -26,6 +26,11 @@
   width: auto;
 }
 
+:host ::ng-deep .body {
+  overflow: hidden;
+  display: flex;
+}
+
 /* Spinner */
 .spinner {
   text-align: center;
@@ -34,29 +39,18 @@
   color: $secondary-color;
 }
 
+.docs-list {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+
+  .grid-container {
+    flex: 1 auto;
+    overflow-y: auto;
+  }
+}
+
 .filter-header {
   display: flex;
   align-items: center;
 }
-
-/* Mobile: stack header items vertically */
-// :host ::ng-deep .mobile.generic-wrapper header {
-//   flex-direction: column;
-//   align-items: flex-start;
-//   gap: 0.5rem;
-
-//   h2 {
-//     font-size: 1.2rem;   /* shrink heading */
-//     margin-bottom: 0.25rem;
-//   }
-
-//   .actions {
-//     flex-direction: row;   /* keep buttons side by side */
-//     flex-wrap: wrap;       /* allow wrapping if too many */
-//     gap: 0.35rem;
-
-//     button span.no-wrap {
-//       display: none; /* hide text, keep only icons */
-//     }
-//   }
-// }

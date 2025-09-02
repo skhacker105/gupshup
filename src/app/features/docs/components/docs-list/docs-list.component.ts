@@ -15,13 +15,13 @@ type Item = Document | Folder;
   styleUrls: ['./docs-list.component.scss']
 })
 export class DocsListComponent implements OnInit {
-  documents: Document[] = [];
-  folders: Folder[] = [];
+  items: Item[] = [];
+  groups: { groupKey: string, documents: Document[] }[] = [];
   selectedItems: Item[] = [];
   multiSelectMode = false;
 
-  groupBy = '';
-  orderBy = '';
+  // groupBy = '';
+  // orderBy = '';
   loading = false;
   errorMessage = '';
 
@@ -30,9 +30,8 @@ export class DocsListComponent implements OnInit {
   pathSegments: IPathSegmenmat[] = [{ name: 'Root', id: undefined }]; // For breadcrumb
   iconSizes = Object.values(IconSize);
 
-
   constructor(
-    private documentService: DocumentService,
+    public documentService: DocumentService,
     private dialog: MatDialog,
     public appService: AppService,
     private route: ActivatedRoute,
@@ -54,7 +53,7 @@ export class DocsListComponent implements OnInit {
       this.currentPath = this.currentFolder?.relativePath ?? '[]';
     }
     this.updatePathSegments();
-    this.loadDocumentsAndFolders();
+    this.loadItems();
   }
 
   enableMobileMultiSelect(): void {
@@ -107,25 +106,50 @@ export class DocsListComponent implements OnInit {
       }
     }
     this.cancelMultiSelect();
+    await this.loadItems();
   }
 
-  async loadDocumentsAndFolders() {
+  async loadItems() {
     this.loading = true;
     this.errorMessage = '';
     try {
-      const [documents, folders] = await Promise.all([
-        this.documentService.getDocuments(this.currentFolder?.id, {
-          groupBy: this.groupBy,
-          orderBy: this.orderBy
-        }),
-        this.documentService.getFolders(this.currentFolder?.id)
-      ]);
-      this.documents = documents//.filter(d => d.parentFolderId === this.currentFolder?.id);
-      this.folders = folders//.filter(f => f.parentFolderId === this.currentFolder?.id);
+      if (this.documentService.selectedGroupBy) {
+        this.groups = await this.documentService.getGroupedDocuments(this.documentService.selectedGroupBy, this.documentService.selectedOrderBy);
+        this.items = [];
+      } else {
+        const [documents, folders] = await Promise.all([
+          this.documentService.getDocuments(this.currentFolder?.id),
+          this.documentService.getFolders(this.currentFolder?.id)
+        ]);
+        this.items = [...folders, ...documents];
+        if (this.documentService.selectedOrderBy) {
+          this.items = this.items.sort(this.sortItems.bind(this));
+        }
+        this.groups = [];
+      }
     } catch (err) {
       this.errorMessage = 'Failed to load documents.';
     }
     this.loading = false;
+  }
+
+  sortItems(a: Item, b: Item): number {
+    switch (this.documentService.selectedOrderBy) {
+      case 'createdDate':
+        return new Date(a.createdDate).getTime() - new Date(b.createdDate).getTime();
+      case 'name':
+        return a.name.localeCompare(b.name);
+      case 'senderId':
+        const aSender = 'senderId' in a ? a.senderId : '';
+        const bSender = 'senderId' in b ? b.senderId : '';
+        return aSender.localeCompare(bSender);
+      case 'receiverId':
+        const aReceiver = 'receiverId' in a ? a.receiverId : '';
+        const bReceiver = 'receiverId' in b ? b.receiverId : '';
+        return aReceiver.localeCompare(bReceiver);
+      default:
+        return 0;
+    }
   }
 
   async navigateToPath(segment: IPathSegmenmat): Promise<void> {
@@ -158,8 +182,8 @@ export class DocsListComponent implements OnInit {
     dialogRef.afterClosed().subscribe(async (doc: Document | undefined) => {
       if (doc) {
         try {
-          await this.documentService.saveNewDocuments(doc);
-          await this.loadDocumentsAndFolders();
+          await this.documentService.saveNewDocuments(doc, this.currentFolder);
+          await this.loadItems();
         } catch {
           this.errorMessage = 'Failed to add file.';
         }
@@ -172,7 +196,7 @@ export class DocsListComponent implements OnInit {
     this.loading = true;
     try {
       await this.documentService.deleteDocument(id, false);
-      this.documents = this.documents.filter(d => d.id !== id);
+      await this.loadItems();
     } catch {
       this.errorMessage = 'Failed to delete document.';
     }
@@ -184,7 +208,7 @@ export class DocsListComponent implements OnInit {
     this.loading = true;
     try {
       await this.documentService.deleteFolder(id);
-      this.folders = this.folders.filter(f => f.id !== id);
+      await this.loadItems();
     } catch {
       this.errorMessage = 'Failed to delete folder.';
     }
@@ -200,7 +224,7 @@ export class DocsListComponent implements OnInit {
       if (name) {
         try {
           await this.documentService.createFolder(name, this.currentFolder);
-          await this.loadDocumentsAndFolders();
+          await this.loadItems();
         } catch {
           this.errorMessage = 'Failed to create folder.';
         }

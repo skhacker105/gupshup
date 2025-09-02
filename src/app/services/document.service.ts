@@ -3,13 +3,61 @@ import { v4 as uuidv4 } from 'uuid';
 import { DbService, StorageAccountService } from './';
 import { Document } from '../models/document.interface';
 import { Folder } from '../models/folder.interface';
-import { Tables } from '../models';
+import { IconSize, Tables } from '../models';
 import { ISearchQuery } from '../core/indexeddb-handler';
 
 @Injectable({
   providedIn: 'root'
 })
 export class DocumentService {
+
+  private readonly MIME_TYPE_MAP: { [key: string]: string } = {
+    'application/pdf': 'PDF',
+    'application/vnd.openxmlformats-officedocument.wordprocessingml.document': 'Word',
+    'application/msword': 'Word',
+    'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet': 'Excel',
+    'application/vnd.ms-excel': 'Excel',
+    'application/vnd.openxmlformats-officedocument.presentationml.presentation': 'PowerPoint',
+    'application/vnd.ms-powerpoint': 'PowerPoint',
+    'image/png': 'PNG Image',
+    'image/jpeg': 'JPEG Image',
+    'image/gif': 'GIF Image',
+    'text/plain': 'Text',
+    'text/csv': 'CSV',
+    // Add more MIME types as needed
+  };
+
+  selectedIconSizeStoreKey = 'selectedIconSize';
+  selectedGroupByStoreKey = 'groupBy';
+  selectedOrderByStoreKey = 'orderBy';
+
+
+  set selectedIconSize(val: IconSize) {
+      localStorage.setItem(this.selectedIconSizeStoreKey, val)
+  }
+
+  get selectedIconSize(): IconSize {
+      return localStorage.getItem(this.selectedIconSizeStoreKey) as IconSize ?? IconSize.Medium
+  }
+
+
+  set selectedGroupBy(val: string) {
+      localStorage.setItem(this.selectedGroupByStoreKey, val);
+  }
+
+  get selectedGroupBy(): string {
+      return localStorage.getItem(this.selectedGroupByStoreKey) ?? '';
+  }
+
+
+  set selectedOrderBy(val: string) {
+      localStorage.setItem(this.selectedOrderByStoreKey, val);
+  }
+
+  get selectedOrderBy(): string {
+      return localStorage.getItem(this.selectedOrderByStoreKey) ?? '';
+  }
+
   constructor(
     private dbService: DbService,
     private storageService: StorageAccountService
@@ -20,57 +68,55 @@ export class DocumentService {
     return await this.dbService.put(Tables.Documents, doc);
   }
 
-  async getDocuments(parentFolderId?: string, filters?: { groupBy?: string; orderBy?: string }): Promise<Document[]> {
+  async getDocuments(parentFolderId?: string): Promise<Document[]> {
     const query: ISearchQuery = { text: parentFolderId ?? '', fields: ['parentFolderId'] };
-    let documents = await this.dbService.search(Tables.Documents, query);
-    if (filters?.orderBy) {
-      documents = documents.sort((a: Document, b: Document) => {
-        switch (filters.orderBy) {
-          case 'date':
-            return b.createdDate.getTime() - a.createdDate.getTime();
-          case 'name':
-            return a.name.localeCompare(b.name);
-          case 'sender':
-            return a.senderId.localeCompare(b.senderId);
-          case 'receiver':
-            return a.receiverId.localeCompare(b.receiverId);
-          default:
-            return 0;
-        }
-      });
-    }
+    return this.dbService.search(Tables.Documents, query);
+  }
 
-    if (filters?.groupBy) {
-      const grouped: { [key: string]: Document[] } = documents.reduce((acc: any, doc: Document) => {
-        let key: string;
-        switch (filters.groupBy) {
-          case 'type':
-            key = doc.type;
-            break;
-          case 'month':
-            key = doc.createdDate.toLocaleString('default', { month: 'long', year: 'numeric' });
-            break;
-          case 'sender':
-            key = doc.senderId;
-            break;
-          case 'receiver':
-            key = doc.receiverId;
-            break;
-          case 'contact':
-            key = doc.senderId + '|' + doc.receiverId;
-            break;
-          default:
-            key = doc.createdDate.toISOString().split('T')[0];
-        }
-        if (!acc[key]) acc[key] = [];
-        acc[key].push(doc);
-        return acc;
-      }, {});
-      return Object.entries(grouped).flatMap(([key, docs]) =>
-        docs.map(doc => ({ ...doc, groupKey: key }))
-      );
+  async getGroupedDocuments(groupBy: string, orderBy: string): Promise<{ groupKey: string, documents: Document[] }[]> {
+    let documents = await this.dbService.getAll(Tables.Documents);
+    const sortFn = (a: Document, b: Document) => {
+      switch (orderBy) {
+        case 'createdDate':
+          return new Date(a.createdDate).getTime() - new Date(b.createdDate).getTime();
+        case 'name':
+          return a.name.localeCompare(b.name);
+        case 'senderId':
+          return a.senderId.localeCompare(b.senderId);
+        case 'receiverId':
+          return a.receiverId.localeCompare(b.receiverId);
+        default:
+          return 0;
+      }
+    };
+    const grouped: { [key: string]: Document[] } = documents.reduce((acc: any, doc: Document) => {
+      let key: string;
+      switch (groupBy) {
+        case 'type':
+          key = this.MIME_TYPE_MAP[doc.type] || doc.type.split('/').pop() || 'Unknown';
+          break;
+        case 'month':
+          key = new Date(doc.createdDate).toLocaleString('default', { month: 'long', year: 'numeric' });
+          break;
+        case 'sender':
+          key = doc.senderId;
+          break;
+        case 'receiver':
+          key = doc.receiverId;
+          break;
+        default:
+          key = 'Unknown';
+      }
+      if (!acc[key]) acc[key] = [];
+      acc[key].push(doc);
+      return acc;
+    }, {});
+    if (orderBy) {
+      for (const key in grouped) {
+        grouped[key] = grouped[key].sort(sortFn);
+      }
     }
-    return documents;
+    return Object.entries(grouped).map(([groupKey, documents]) => ({ groupKey, documents }));
   }
 
   async backupDocument(doc: Document, accountId: string): Promise<void> {
@@ -111,7 +157,8 @@ export class DocumentService {
       name,
       type: 'folder',
       parentFolderId: parentFolder?.id,
-      relativePath: await this.buildRelativePath(parentFolder, name, id)
+      relativePath: await this.buildRelativePath(parentFolder, name, id),
+      createdDate: new Date() // Added for sorting support
     };
     return await this.dbService.put(Tables.Folders, folder);
   }

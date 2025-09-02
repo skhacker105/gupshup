@@ -41,7 +41,7 @@
 
             <!-- Group By -->
             Group:
-            <select [(ngModel)]="groupBy" (change)="loadDocumentsAndFolders()" class="orderby-select"
+            <select [(ngModel)]="documentService.selectedGroupBy" (change)="loadItems()" class="orderby-select"
                 [ngClass]="{'mobile': appService.isMobile}">
                 <option value="">None</option>
                 <option value="type">Type</option>
@@ -52,7 +52,7 @@
 
             <!-- Order By -->
             Order:
-            <select [(ngModel)]="orderBy" (change)="loadDocumentsAndFolders()" class="orderby-select"
+            <select [(ngModel)]="documentService.selectedOrderBy" (change)="loadItems()" class="orderby-select"
                 [ngClass]="{'mobile': appService.isMobile}">
                 <option value="">None</option>
                 <option value="createdDate">Date</option>
@@ -63,24 +63,33 @@
 
             <!-- Icon Size -->
             Size:
-            <select [(ngModel)]="appService.selectedIconSize" class="orderby-select" [ngClass]="{'mobile': appService.isMobile}">
+            <select [(ngModel)]="documentService.selectedIconSize" class="orderby-select" [ngClass]="{'mobile': appService.isMobile}">
                 <option *ngFor="let size of iconSizes" [value]="size">{{size | titlecase}}</option>
             </select>
         </div>
 
         <!-- Breadcrumb Navigation -->
-        <app-breadcrumb [pathSegments]="pathSegments" (segmentClick)="navigateToPath($event)"></app-breadcrumb>
+        <app-breadcrumb *ngIf="!documentService.selectedGroupBy" [pathSegments]="pathSegments" (segmentClick)="navigateToPath($event)"></app-breadcrumb>
 
-        <!-- Grid -->
-        <div class="grid-container">
-            <app-document-folder-icon *ngFor="let folder of folders" [item]="folder" [size]="appService.selectedIconSize"
-                [selectionMode]="multiSelectMode" [selected]="isSelected(folder)" (onClick)="rowClick(folder, $event)"
+        <!-- Non-grouped view -->
+        <div *ngIf="!documentService.selectedGroupBy" class="grid-container">
+            <app-document-folder-icon *ngFor="let item of items" [item]="item" [size]="documentService.selectedIconSize"
+                [selectionMode]="multiSelectMode" [selected]="isSelected(item)" (onClick)="rowClick(item, $event)"
                 [isDesktop]="appService.isDesktop" [isTablet]="appService.isTablet" [isMobile]="appService.isMobile">
             </app-document-folder-icon>
-            <app-document-folder-icon *ngFor="let doc of documents" [item]="doc" [size]="appService.selectedIconSize"
-                [selectionMode]="multiSelectMode" [selected]="isSelected(doc)" (onClick)="rowClick(doc, $event)"
-                [isDesktop]="appService.isDesktop" [isTablet]="appService.isTablet" [isMobile]="appService.isMobile">
-            </app-document-folder-icon>
+        </div>
+
+        <!-- Grouped view -->
+        <div *ngIf="documentService.selectedGroupBy" class="grid-container">
+            <div *ngFor="let group of groups">
+                <h3>{{ group.groupKey }}</h3>
+                <div class="grid-container">
+                    <app-document-folder-icon *ngFor="let doc of group.documents" [item]="doc" [size]="documentService.selectedIconSize"
+                        [selectionMode]="multiSelectMode" [selected]="isSelected(doc)" (onClick)="rowClick(doc, $event)"
+                        [isDesktop]="appService.isDesktop" [isTablet]="appService.isTablet" [isMobile]="appService.isMobile">
+                    </app-document-folder-icon>
+                </div>
+            </div>
         </div>
     </div>
 

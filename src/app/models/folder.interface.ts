@@ -4,5 +4,5 @@ export interface Folder {
     type: 'folder';
     relativePath: string; // Changed to required field
     parentFolderId?: string;
-    createdDate?: Date;
+    createdDate: Date;
 }
