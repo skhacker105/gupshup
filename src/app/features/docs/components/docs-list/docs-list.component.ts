@@ -180,10 +180,6 @@ export class DocsListComponent implements OnInit {
     this.loading = false;
   }
 
-  async loadFolders(): Promise<Folder[]> {
-    return this.documentService.getFolders();
-  }
-
   async createFolder(): Promise<void> {
     const dialogRef = this.dialog.open(FolderCreateComponent, {
       width: this.appService.isMobile ? '90%' : this.appService.isTablet ? '70%' : '500px',

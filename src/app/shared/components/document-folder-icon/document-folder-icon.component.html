@@ -1,6 +1,5 @@
-<div class="icon-container" [ngClass]="size" (click)="onClick.emit($event)"
-    [ngClass]="classes">
-    <i class="fa" [ngClass]="isFolder ? 'fa-folder' : 'fa-file-alt'"></i>
+<div class="icon-container" (click)="onClick.emit($event)" [ngClass]="classes">
+    <i class="fa" [ngClass]="iconClass"></i>
     <span class="name" title="{{item.name}}">{{item.name}}</span> <!-- Ellipsis handled in CSS -->
     <ng-container *ngIf="isDocument && documentItem.expiryDate">
         <span class="expiry">Expires: {{documentItem.expiryDate | date: 'shortDate'}}</span>

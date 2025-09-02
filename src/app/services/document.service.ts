@@ -16,7 +16,7 @@ export class DocumentService {
 
   async saveNewDocuments(doc: Document, parentFolder?: Folder) {
     doc.relativePath = await this.buildRelativePath(parentFolder, doc.name, doc.id);
-    this.dbService.put(Tables.Documents, doc);
+    return await this.dbService.put(Tables.Documents, doc);
   }
 
   async getDocuments(filters: { groupBy?: string; orderBy?: string }): Promise<Document[]> {

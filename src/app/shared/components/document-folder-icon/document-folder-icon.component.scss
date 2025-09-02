@@ -42,39 +42,63 @@
     cursor: pointer;
   }
 
-  &.small {
-    width: 3rem;
-    i.fa { font-size: 1.5rem; }
-    .name { font-size: 0.8rem; }
+  &.icon-container.mobile{
+    &.small {
+      width: 3rem;
+      i.fa { font-size: 1.5rem; }
+      .name { font-size: 0.6rem; }
+    }
+
+    &.medium {
+      width: 5rem;
+      i.fa { font-size: 2rem; }
+      .name { font-size: 0.9rem; }
+    }
+
+    &.large {
+      width: 8rem;
+      i.fa { font-size: 2.5rem; }
+      .name { font-size: 1rem; }
+    }
   }
 
-  &.medium {
-    width: 5rem;
-    i.fa { font-size: 2rem; }
-    .name { font-size: 0.9rem; }
+  &.icon-container.tablet{
+    &.small {
+      width: 4rem;
+      i.fa { font-size: 2rem; }
+      .name { font-size: 0.8rem; }
+    }
+
+    &.medium {
+      width: 6rem;
+      i.fa { font-size: 2.5rem; }
+      .name { font-size: 0.9rem; }
+    }
+
+    &.large {
+      width: 10rem;
+      i.fa { font-size: 4rem; }
+      .name { font-size: 1.2rem; }
+    }
   }
 
-  &.large {
-    width: 8rem;
-    i.fa { font-size: 2.5rem; }
-    .name { font-size: 1rem; }
+  &.icon-container.desktop{
+    &.small {
+      width: 6rem;
+      i.fa { font-size: 2.5rem; }
+      .name { font-size: 1rem; }
+    }
+
+    &.medium {
+      width: 8rem;
+      i.fa { font-size: 3rem; }
+      .name { font-size: 1.2rem; }
+    }
+
+    &.large {
+      width: 12rem;
+      i.fa { font-size: 3.5rem; }
+      .name { font-size: 1.5rem; }
+    }
   }
-}
-
-.icon-container.mobile {
-  &.small { width: 3rem; }
-  &.medium { width: 5rem; }
-  &.large { width: 8rem; }
-}
-
-.icon-container.tablet {
-  &.small { width: 3rem; }
-  &.medium { width: 5rem; }
-  &.large { width: 8rem; }
-}
-
-.icon-container.desktop {
-  &.small { width: 3rem; }
-  &.medium { width: 5rem; }
-  &.large { width: 8rem; }
 }

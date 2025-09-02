@@ -28,6 +28,47 @@ export class DocumentFolderIconComponent {
     return this.item as Document;
   }
 
+  get iconClass(): string {
+    if (this.isFolder) {
+      return 'fa-folder';
+    }
+
+    const extension = this.item.name.split('.').pop()?.toLowerCase();
+    switch (extension) {
+      case 'pdf':
+        return 'fa-file-pdf';
+      case 'doc':
+      case 'docx':
+        return 'fa-file-word';
+      case 'zip':
+      case 'rar':
+        return 'fa-file-archive';
+      case 'txt':
+        return 'fa-file-alt';
+      case 'jpg':
+      case 'jpeg':
+      case 'png':
+      case 'gif':
+        return 'fa-file-image';
+      case 'xls':
+      case 'xlsx':
+        return 'fa-file-excel';
+      case 'ppt':
+      case 'pptx':
+        return 'fa-file-powerpoint';
+      case 'mp3':
+      case 'wav':
+        return 'fa-file-audio';
+      case 'mp4':
+      case 'avi':
+        return 'fa-file-video';
+      case 'csv':
+        return 'fa-file-csv';
+      default:
+        return 'fa-file';
+    }
+  }
+
   get classes() {
     return {
       [this.size]: true,
