@@ -63,7 +63,7 @@
 
             <!-- Icon Size -->
             Size:
-            <select [(ngModel)]="selectedIconSize" class="orderby-select" [ngClass]="{'mobile': appService.isMobile}">
+            <select [(ngModel)]="appService.selectedIconSize" class="orderby-select" [ngClass]="{'mobile': appService.isMobile}">
                 <option *ngFor="let size of iconSizes" [value]="size">{{size | titlecase}}</option>
             </select>
         </div>
@@ -73,11 +73,11 @@
 
         <!-- Grid -->
         <div class="grid-container">
-            <app-document-folder-icon *ngFor="let folder of folders" [item]="folder" [size]="selectedIconSize"
+            <app-document-folder-icon *ngFor="let folder of folders" [item]="folder" [size]="appService.selectedIconSize"
                 [selectionMode]="multiSelectMode" [selected]="isSelected(folder)" (onClick)="rowClick(folder, $event)"
                 [isDesktop]="appService.isDesktop" [isTablet]="appService.isTablet" [isMobile]="appService.isMobile">
             </app-document-folder-icon>
-            <app-document-folder-icon *ngFor="let doc of documents" [item]="doc" [size]="selectedIconSize"
+            <app-document-folder-icon *ngFor="let doc of documents" [item]="doc" [size]="appService.selectedIconSize"
                 [selectionMode]="multiSelectMode" [selected]="isSelected(doc)" (onClick)="rowClick(doc, $event)"
                 [isDesktop]="appService.isDesktop" [isTablet]="appService.isTablet" [isMobile]="appService.isMobile">
             </app-document-folder-icon>

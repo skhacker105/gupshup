@@ -28,8 +28,8 @@ export class DocsListComponent implements OnInit {
   currentFolder: Folder | undefined = undefined; // Root level
   currentPath: string = '[]'; // Current relative path (JSON string)
   pathSegments: IPathSegmenmat[] = [{ name: 'Root', id: undefined }]; // For breadcrumb
-  selectedIconSize: IconSize = IconSize.Medium;
   iconSizes = Object.values(IconSize);
+
 
   constructor(
     private documentService: DocumentService,
@@ -43,7 +43,6 @@ export class DocsListComponent implements OnInit {
     this.route.paramMap.subscribe(params => {
       this.loadAndProcessFolder(params.get('folderId') ?? undefined)
     })
-    // await this.loadDocumentsAndFolders();
   }
 
   async loadAndProcessFolder(parentFolderId?: string) {
