@@ -14,6 +14,9 @@ export class DocumentFolderIconComponent {
   @Input() isTablet = false;
   @Input() isMobile = false;
 
+  @Input() selectionMode = false;
+  @Input() selected = false;
+
   @Output() onClick = new EventEmitter<MouseEvent>();
 
   get isFolder(): boolean {
@@ -83,5 +86,10 @@ export class DocumentFolderIconComponent {
     // Placeholder for backup functionality
     console.log('Mark for backup:', this.documentItem.id);
     // TODO: Implement backup marking process
+  }
+
+  onRadioClick(event: MouseEvent): void {
+    event.stopPropagation();
+    this.onClick.emit();
   }
 }

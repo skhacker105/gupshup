@@ -3,7 +3,14 @@ import { RouterModule, Routes } from '@angular/router';
 import { DocsListComponent } from './components/docs-list/docs-list.component';
 
 const routes: Routes = [
-  { path: '', component: DocsListComponent }
+  {
+    path: '',
+    component: DocsListComponent
+  },
+  {
+    path: ':folderId',
+    component: DocsListComponent
+  }
 ];
 
 @NgModule({

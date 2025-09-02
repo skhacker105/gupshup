@@ -1,4 +1,4 @@
-import { CreatorHubSyncManager, CryptoManager, DBContext, DBListEntry, IndexedDBAbstraction, ROLES, RoleGrant, SecretBundle, WebSocketTransport, bootstrapSecrets, fromB64, issueRoleGrant, toB64 } from "./";
+import { CreatorHubSyncManager, CryptoManager, DBContext, DBListEntry, ISearchQuery, IndexedDBAbstraction, ROLES, RoleGrant, SecretBundle, WebSocketTransport, bootstrapSecrets, fromB64, issueRoleGrant, toB64 } from "./";
 
 export class MultiDBManager {
     private static LS_KEY_DBS = 'multiDBManager_dbs';
@@ -369,10 +369,7 @@ export class MultiDBManager {
         await ctx.db.delete(entity, id);
     }
 
-    async search(dbId: string, entity: string, query: any) {
-        console.log('dbId = ', dbId)
-        console.log('entity = ', entity)
-        console.log('query = ', query)
+    async search(dbId: string, entity: string, query: ISearchQuery) {
         const ctx = this.resolveCtxSync(dbId).ctx;
         return ctx.db.search(entity, query);
     }

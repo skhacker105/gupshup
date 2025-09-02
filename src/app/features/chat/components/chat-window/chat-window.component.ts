@@ -96,7 +96,7 @@ export class ChatWindowComponent implements OnInit, OnDestroy {
               senderId: this.currentUserId,
               receiverId: this.receiverId,
               createdDate: new Date(),
-              expiryDate: await this.calculateExpiryDate(editedFile.type)
+              expiryDate: await this.documentService.calculateExpiryDate(editedFile.type)
             };
             await this.documentService.saveNewDocuments(doc);
             this.newMessage.file = doc;
@@ -176,18 +176,5 @@ export class ChatWindowComponent implements OnInit, OnDestroy {
     setTimeout(() => {
       this.messagesContainer.nativeElement.scrollTop = this.messagesContainer.nativeElement.scrollHeight;
     }, 0);
-  }
-
-  private async calculateExpiryDate(fileType: string): Promise<Date | undefined> {
-    const user = await this.dbService.getUser();
-    const settings = user.expirationSettings || { defaultPeriod: '1week', typeExpirations: {} };
-    const period = settings.typeExpirations[fileType.split('/')[0]] || settings.defaultPeriod;
-    const now = new Date();
-    switch (period) {
-      case '1week': return new Date(now.setDate(now.getDate() + 7));
-      case '1month': return new Date(now.setMonth(now.getMonth() + 1));
-      case 'immediate': return new Date(now.getTime() + 60000);
-      default: return undefined;
-    }
   }
 }

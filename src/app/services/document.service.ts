@@ -4,6 +4,7 @@ import { DbService, StorageAccountService } from './';
 import { Document } from '../models/document.interface';
 import { Folder } from '../models/folder.interface';
 import { Tables } from '../models';
+import { ISearchQuery } from '../core/indexeddb-handler';
 
 @Injectable({
   providedIn: 'root'
@@ -19,9 +20,10 @@ export class DocumentService {
     return await this.dbService.put(Tables.Documents, doc);
   }
 
-  async getDocuments(filters: { groupBy?: string; orderBy?: string }): Promise<Document[]> {
-    let documents = await this.dbService.getAll(Tables.Documents);
-    if (filters.orderBy) {
+  async getDocuments(parentFolderId?: string, filters?: { groupBy?: string; orderBy?: string }): Promise<Document[]> {
+    const query: ISearchQuery = { text: parentFolderId ?? '', fields: ['parentFolderId'] };
+    let documents = await this.dbService.search(Tables.Documents, query);
+    if (filters?.orderBy) {
       documents = documents.sort((a: Document, b: Document) => {
         switch (filters.orderBy) {
           case 'date':
@@ -38,7 +40,7 @@ export class DocumentService {
       });
     }
 
-    if (filters.groupBy) {
+    if (filters?.groupBy) {
       const grouped: { [key: string]: Document[] } = documents.reduce((acc: any, doc: Document) => {
         let key: string;
         switch (filters.groupBy) {
@@ -93,8 +95,13 @@ export class DocumentService {
     await this.dbService.delete(Tables.Folders, id);
   }
 
-  async getFolders(): Promise<Folder[]> {
-    return this.dbService.getAll(Tables.Folders);
+  async getFolder(folderId: string): Promise<Folder | undefined> {
+    return this.dbService.get(Tables.Folders, folderId);
+  }
+
+  async getFolders(parentFolderId?: string): Promise<Folder[]> {
+    const query: ISearchQuery = { text: parentFolderId ?? '', fields: ['parentFolderId'] };
+    return this.dbService.search(Tables.Folders, query);
   }
 
   async createFolder(name: string, parentFolder?: Folder): Promise<void> {
@@ -116,5 +123,18 @@ export class DocumentService {
     }
     const parentPath = JSON.parse(parentFolder.relativePath || '[]');
     return JSON.stringify([...parentPath, pathSegment]);
+  }
+
+  async calculateExpiryDate(fileType: string): Promise<Date | undefined> {
+    const user = await this.dbService.getUser();
+    const settings = user.expirationSettings || { defaultPeriod: '1week', typeExpirations: {} };
+    const period = settings.typeExpirations[fileType.split('/')[0]] || settings.defaultPeriod;
+    const now = new Date();
+    switch (period) {
+      case '1week': return new Date(now.setDate(now.getDate() + 7));
+      case '1month': return new Date(now.setMonth(now.getMonth() + 1));
+      case 'immediate': return new Date(now.getTime() + 60000);
+      default: return undefined;
+    }
   }
 }

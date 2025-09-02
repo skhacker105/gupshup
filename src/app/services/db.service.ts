@@ -1,10 +1,8 @@
 import { Injectable } from '@angular/core';
 import { v4 as uuidv4 } from 'uuid';
-import { Message } from '../models/message.interface';
-import { Contact } from '../models/contact.interface';
 import { Document } from '../models/document.interface';
 import { User } from '../models/user.interface';
-import { MultiDBManager } from '../core/indexeddb-handler';
+import { ISearchQuery, MultiDBManager } from '../core/indexeddb-handler';
 
 @Injectable({
     providedIn: 'root'
@@ -109,9 +107,9 @@ export class DbService {
                     "receiverId",
                     "createdDate",
                     "updatedDate",
-                    "expiryDate",
                     "tags",
-                    "status"
+                    "status",
+                    "parentFolderId"
                 ]
             },
             "folders": {
@@ -126,6 +124,7 @@ export class DbService {
                     "createdBy",
                     "createdAt",
                     "updatedAt",
+                    "parentFolderId"
                 ]
             }
         }
@@ -141,7 +140,7 @@ export class DbService {
         this.checkExpirations();
     }
 
-    async search(store: string, query: any): Promise<Message[]> {
+    async search(store: string, query: ISearchQuery): Promise<any[]> {
         return await this.manager.search(this.dbId, store, query);
     }
 
@@ -149,8 +148,8 @@ export class DbService {
         return this.manager.get(this.dbId, store, id);
     }
 
-    async getAll(entity: string): Promise<any[]> {
-        return this.manager.getAll(this.dbId, entity);
+    async getAll(store: string): Promise<any[]> {
+        return this.manager.getAll(this.dbId, store);
     }
 
     async put(store: string, data: any): Promise<void> {

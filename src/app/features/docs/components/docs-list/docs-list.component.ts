@@ -5,6 +5,7 @@ import { FolderCreateComponent } from '../folder-create/folder-create.component'
 import { Folder, Document, IconSize, IPathSegmenmat } from '../../../../models';
 import { AppService, DocumentService } from '../../../../services';
 import { FileUploadComponent } from '../../../../shared/components/file-upload/file-upload.component';
+import { ActivatedRoute, Router } from '@angular/router';
 
 type Item = Document | Folder;
 
@@ -24,7 +25,7 @@ export class DocsListComponent implements OnInit {
   loading = false;
   errorMessage = '';
 
-  currentParentFolder: Folder | undefined = undefined; // Root level
+  currentFolder: Folder | undefined = undefined; // Root level
   currentPath: string = '[]'; // Current relative path (JSON string)
   pathSegments: IPathSegmenmat[] = [{ name: 'Root', id: undefined }]; // For breadcrumb
   selectedIconSize: IconSize = IconSize.Medium;
@@ -33,26 +34,45 @@ export class DocsListComponent implements OnInit {
   constructor(
     private documentService: DocumentService,
     private dialog: MatDialog,
-    public appService: AppService
+    public appService: AppService,
+    private route: ActivatedRoute,
+    private router: Router
   ) { }
 
   async ngOnInit(): Promise<void> {
-    await this.loadDocumentsAndFolders();
+    this.route.paramMap.subscribe(params => {
+      this.loadAndProcessFolder(params.get('folderId') ?? undefined)
+    })
+    // await this.loadDocumentsAndFolders();
+  }
+
+  async loadAndProcessFolder(parentFolderId?: string) {
+    if (!parentFolderId) {
+      this.currentFolder = undefined;
+      this.currentPath = '[]';
+    } else {
+      this.currentFolder = await this.documentService.getFolder(parentFolderId);
+      this.currentPath = this.currentFolder?.relativePath ?? '[]';
+    }
+    this.updatePathSegments();
+    this.loadDocumentsAndFolders();
   }
 
   enableMobileMultiSelect(): void {
     this.multiSelectMode = true;
   }
 
+  isFolder(item: Item): boolean {
+    return !('data' in item); // Discriminator: Documents have 'data: Blob'
+  }
+
   rowClick(item: Item, event: MouseEvent): void {
     if (this.multiSelectMode) {
-      this.toggleSelect(item, event);
+      if (!this.isFolder(item))
+        this.toggleSelect(item, event);
     } else {
-      if (!('data' in item)) { // Folder
-        this.currentParentFolder = item;
-        this.currentPath = item.relativePath;
-        this.updatePathSegments();
-        this.loadDocumentsAndFolders();
+      if (this.isFolder(item)) { // Folder
+        this.router.navigate(['/docs', item.id]);
       } else {
         // Open document
       }
@@ -95,33 +115,25 @@ export class DocsListComponent implements OnInit {
     this.errorMessage = '';
     try {
       const [documents, folders] = await Promise.all([
-        this.documentService.getDocuments({
+        this.documentService.getDocuments(this.currentFolder?.id, {
           groupBy: this.groupBy,
           orderBy: this.orderBy
         }),
-        this.documentService.getFolders()
+        this.documentService.getFolders(this.currentFolder?.id)
       ]);
-      this.documents = documents.filter(d => d.parentFolderId === this.currentParentFolder?.id);
-      this.folders = folders.filter(f => f.parentFolderId === this.currentParentFolder?.id);
-    } catch {
+      this.documents = documents//.filter(d => d.parentFolderId === this.currentFolder?.id);
+      this.folders = folders//.filter(f => f.parentFolderId === this.currentFolder?.id);
+    } catch (err) {
       this.errorMessage = 'Failed to load documents.';
     }
     this.loading = false;
   }
 
   async navigateToPath(segment: IPathSegmenmat): Promise<void> {
-    if (!segment.id) {
-      this.currentParentFolder = undefined;
-      this.currentPath = '[]';
-    } else {
-      const folder = await this.documentService.getFolders().then(folders =>
-        folders.find(f => f.id === segment.id)
-      );
-      this.currentParentFolder = folder;
-      this.currentPath = folder?.relativePath || '[]';
-    }
-    this.updatePathSegments();
-    this.loadDocumentsAndFolders();
+    if (segment.id)
+      this.router.navigate(['/docs', segment.id]);
+    else
+      this.router.navigateByUrl('/docs');
   }
 
   updatePathSegments(): void {
@@ -138,7 +150,7 @@ export class DocsListComponent implements OnInit {
       width: this.appService.isMobile ? '90%' : this.appService.isTablet ? '70%' : '500px',
       maxHeight: this.appService.isMobile ? '80vh' : '70vh',
       data: {
-        parentFolderId: this.currentParentFolder?.id,
+        parentFolderId: this.currentFolder?.id,
         isDesktop: this.appService.isDesktop,
         isTablet: this.appService.isTablet,
         isMobile: this.appService.isMobile
@@ -188,7 +200,7 @@ export class DocsListComponent implements OnInit {
     dialogRef.afterClosed().subscribe(async (name: string | undefined) => {
       if (name) {
         try {
-          await this.documentService.createFolder(name, this.currentParentFolder);
+          await this.documentService.createFolder(name, this.currentFolder);
           await this.loadDocumentsAndFolders();
         } catch {
           this.errorMessage = 'Failed to create folder.';

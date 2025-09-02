@@ -6,6 +6,12 @@ import { eventTarget, toPromise, uid } from "../utils/basics";
 
 type TxWithDone = IDBTransaction & { done: Promise<void> };
 
+export interface ISearchQuery {
+  text: string;
+  fields?: string[];
+  minMatch?: 'ALL' | 'ANY'
+}
+
 export class IndexedDBAbstraction {
   dbId: string;
   deviceId: string;
@@ -139,7 +145,7 @@ export class IndexedDBAbstraction {
         for (const [storeName, def] of Object.entries(stores)) {
           if (!db.objectStoreNames.contains(storeName)) {
             const os = db.createObjectStore(storeName, { keyPath: def?.keyPath || 'id', autoIncrement: !!def?.autoIncrement });
-            
+
             // normal indexes
             (def?.indexes || []).forEach((idx) => os.createIndex(idx.name, idx.keyPath, idx.options || {}));
 
@@ -376,19 +382,43 @@ export class IndexedDBAbstraction {
   }
 
   // Encrypted partial search over blind index
-  async search(store: string, { text, fields, minMatch = 'ALL' }: { text: string; fields?: string[]; minMatch?: 'ALL' | 'ANY' }) {
+  async search(store: string, { text, fields, minMatch = 'ALL' }: ISearchQuery) {
     await this._assertPermission('READ');
     if (!this.crypto) throw new Error('CryptoManager not attached');
     const def = this.schema?.stores?.[store];
     if (!def?.secureIndex?.length) throw new Error('No secure index configured for store');
 
     const activeFields = (fields && fields.length) ? fields : def.secureIndex;
-    const queryTokens = await this.crypto.blindTokens(String(text || ''), 3);
-    if (!queryTokens.length) return [];
+    const queryTokens = await this.crypto.blindTokens(String(text ?? ''), 3);
 
     const tx = this._tx([store]);
     const os = tx.objectStore(store);
 
+    // Special case: queryTokens empty → search for undefined/blank fields
+    if (!queryTokens.length) {
+      const allRows = await toPromise(os.getAll());
+      const out: any[] = [];
+      for (const row of allRows) {
+        let match = false;
+        for (const f of activeFields) {
+          const val = row[f];
+          // For undefined/null, val is missing or not an array
+          if (val === undefined || val === null ||
+            (Array.isArray(val) && val.length === 0)) {
+            match = true;
+            if (minMatch === 'ANY') break;
+          } else if (minMatch === 'ALL') {
+            match = false;
+            break;
+          }
+        }
+        if (match) out.push(await this.crypto.decryptJson(row._enc));
+      }
+      await tx.done;
+      return out;
+    }
+
+    // --- normal flow when tokens are non-empty ---
     const candidateCounts = new Map<string, number>();
     for (const field of activeFields) {
       const idxName = `sidx_${field}`;
@@ -420,6 +450,7 @@ export class IndexedDBAbstraction {
     await tx.done;
     return out;
   }
+
 
   // ------------------- Sync helpers (refresh-safe) -------------------
 

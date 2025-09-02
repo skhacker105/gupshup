@@ -1,6 +1,11 @@
 <div class="icon-container" (click)="onClick.emit($event)" [ngClass]="classes">
-    <i class="fa" [ngClass]="iconClass"></i>
-    <span class="name" title="{{item.name}}">{{item.name}}</span> <!-- Ellipsis handled in CSS -->
+    <div class="icon-wrapper">
+        <ng-container *ngIf="selectionMode && isDocument">
+            <input type="radio" [checked]="selected" (click)="onRadioClick($event)" class="radio-btn">
+        </ng-container>
+        <i class="fa" [ngClass]="iconClass"></i>
+    </div>
+    <span class="name" title="{{item.name}}">{{item.name}}</span>
     <ng-container *ngIf="isDocument && documentItem.expiryDate">
         <span class="expiry">Expires: {{documentItem.expiryDate | date: 'shortDate'}}</span>
     </ng-container>

@@ -3,6 +3,7 @@ import { Subject, Observable } from 'rxjs';
 import { v4 as uuidv4 } from 'uuid';
 import { Message, Tables } from '../models';
 import { ContactService, DbService, TranslationService, WebSocketService } from './';
+import { ISearchQuery } from '../core/indexeddb-handler';
 
 @Injectable({
     providedIn: 'root'
@@ -39,7 +40,8 @@ export class ChatService {
     }
 
     async getAllMessageByUser(receiverId: string): Promise<Message[]> {
-        return this.dbService.search(Tables.Messages, { receiverId })
+        const query: ISearchQuery = { text: receiverId ?? '', fields: ['receiverId'] }
+        return this.dbService.search(Tables.Messages, query);
     }
 
     async syncContacts(): Promise<void> {

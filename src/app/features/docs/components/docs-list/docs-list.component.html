@@ -74,12 +74,12 @@
         <!-- Grid -->
         <div class="grid-container">
             <app-document-folder-icon *ngFor="let folder of folders" [item]="folder" [size]="selectedIconSize"
-                (onClick)="rowClick(folder, $event)" [isDesktop]="appService.isDesktop" [isTablet]="appService.isTablet"
-                [isMobile]="appService.isMobile">
+                [selectionMode]="multiSelectMode" [selected]="isSelected(folder)" (onClick)="rowClick(folder, $event)"
+                [isDesktop]="appService.isDesktop" [isTablet]="appService.isTablet" [isMobile]="appService.isMobile">
             </app-document-folder-icon>
             <app-document-folder-icon *ngFor="let doc of documents" [item]="doc" [size]="selectedIconSize"
-                (onClick)="rowClick(doc, $event)" [isDesktop]="appService.isDesktop" [isTablet]="appService.isTablet"
-                [isMobile]="appService.isMobile">
+                [selectionMode]="multiSelectMode" [selected]="isSelected(doc)" (onClick)="rowClick(doc, $event)"
+                [isDesktop]="appService.isDesktop" [isTablet]="appService.isTablet" [isMobile]="appService.isMobile">
             </app-document-folder-icon>
         </div>
     </div>
