@@ -133,13 +133,6 @@ export class DocsListComponent implements OnInit {
     })));
   }
 
-  loadDocuments(): Promise<Document[]> {
-    return this.documentService.getDocuments({
-      groupBy: this.groupBy,
-      orderBy: this.orderBy
-    });
-  }
-
   async addNewFile(): Promise<void> {
     const dialogRef = this.dialog.open(FileUploadComponent, {
       width: this.appService.isMobile ? '90%' : this.appService.isTablet ? '70%' : '500px',
