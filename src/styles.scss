@@ -142,6 +142,60 @@ select {
   font-size: 1rem;
 }
 
+/* Icon-specific colors */
+i.fa-folder {
+  color: $fa-folder-color; /* macOS-like blue folder */
+}
+
+i.fa-file-pdf {
+  color: $fa-file-pdf-color; /* PDF red */
+}
+
+i.fa-file-word {
+  color: $fa-file-word-color; /* White background for Word */
+  background: $fa-file-word-background; /* Blue background */
+  border: 1px solid $fa-file-word-border; /* Blue border */
+  border-radius: 4px;
+}
+
+i.fa-file-archive {
+  color: $fa-file-archive-color; /* Yellow for ZIP/RAR */
+}
+
+i.fa-file-alt {
+  color: $fa-file-alt-color; /* Grey for TXT */
+  background: $fa-file-alt-background; /* White background */
+  border: 1px solid $fa-file-alt-border; /* Grey border */
+}
+
+i.fa-file-image {
+  color: $fa-file-image-color; /* Purple for images */
+}
+
+i.fa-file-excel {
+  color: $fa-file-excel-color; /* Green for Excel */
+}
+
+i.fa-file-powerpoint {
+  color: $fa-file-powerpoint-color; /* Orange for PowerPoint */
+}
+
+i.fa-file-audio {
+  color: $fa-file-audio-color; /* Light blue for audio */
+}
+
+i.fa-file-video {
+  color: $fa-file-video-color; /* Light blue for video */
+}
+
+i.fa-file-csv {
+  color: $fa-file-csv-color; /* Green for CSV, similar to Excel */
+}
+
+i.fa-file {
+  color: $fa-file-color; /* Default grey for unknown files */
+}
+
 // Responsive Font Sizes (all components use rem/em for relative sizing)
 h1 { font-size: 2rem; }
 h2 { font-size: 1.5rem; }
