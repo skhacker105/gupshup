@@ -87,9 +87,14 @@
 
         <!-- Grouped view -->
         <div *ngIf="documentService.selectedGroupBy" class="grid-container">
-            <div *ngFor="let group of groups">
-                <h3>{{ group.groupKey }}</h3>
-                <div class="grid-container">
+            <div *ngFor="let group of groups" class="group">
+                <h3 class="group-key" [ngClass]="documentService.selectedIconSize">
+                    <ng-container *ngIf="multiSelectMode">
+                        <!-- <input type="radio" [checked]="selected" (click)="onRadioClick($event)" class="radio-btn"> -->
+                    </ng-container>
+                    {{ group.groupKey }}
+                </h3>
+                <div class="group-files">
                     <app-document-folder-icon *ngFor="let doc of group.documents" [item]="doc" [size]="documentService.selectedIconSize"
                         [selectionMode]="multiSelectMode" [selected]="isSelected(doc)" (onClick)="rowClick(doc, $event)"
                         [isDesktop]="appService.isDesktop" [isTablet]="appService.isTablet" [isMobile]="appService.isMobile">

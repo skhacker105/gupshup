@@ -9,6 +9,11 @@ import { ActivatedRoute, Router } from '@angular/router';
 
 type Item = Document | Folder;
 
+interface IGroup {
+  groupKey: string;
+  documents: Document[];
+}
+
 @Component({
   selector: 'app-docs-list',
   templateUrl: './docs-list.component.html',
@@ -16,8 +21,9 @@ type Item = Document | Folder;
 })
 export class DocsListComponent implements OnInit {
   items: Item[] = [];
-  groups: { groupKey: string, documents: Document[] }[] = [];
+  groups: IGroup[] = [];
   selectedItems: Item[] = [];
+  selectedGroups: string[] = [];
   multiSelectMode = false;
 
   loading = false;
