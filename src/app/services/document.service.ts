@@ -74,6 +74,7 @@ export class DocumentService {
 
   async saveNewDocuments(doc: Document, parentFolder?: Folder) {
     doc.relativePath = await this.buildRelativePath(parentFolder, doc.name, doc.id);
+    doc.expiryDate = await this.calculateExpiryDate(doc.type)
     return await this.dbService.put(Tables.Documents, doc);
   }
 

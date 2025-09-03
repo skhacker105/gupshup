@@ -54,7 +54,7 @@ export class FileUploadComponent {
         senderId: '', // Default or TODO: add input if needed
         receiverId: '', // Default or TODO: add input if needed
         createdDate: new Date(),
-        parentFolderId: this.data.parentFolderId
+        parentFolderId: this.data.parentFolderId,
       };
       this.dialogRef.close(doc);
     } catch (err) {

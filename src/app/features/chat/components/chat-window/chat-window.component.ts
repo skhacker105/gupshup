@@ -96,7 +96,7 @@ export class ChatWindowComponent implements OnInit, OnDestroy {
               senderId: this.currentUserId,
               receiverId: this.receiverId,
               createdDate: new Date(),
-              expiryDate: await this.documentService.calculateExpiryDate(editedFile.type)
+              // expiryDate: await this.documentService.calculateExpiryDate(editedFile.type)
             };
             await this.documentService.saveNewDocuments(doc);
             this.newMessage.file = doc;
