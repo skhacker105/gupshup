@@ -218,7 +218,12 @@ export class DocsListComponent implements OnInit {
   async createFolder(): Promise<void> {
     const dialogRef = this.dialog.open(FolderCreateComponent, {
       width: this.appService.isMobile ? '90%' : this.appService.isTablet ? '70%' : '500px',
-      maxHeight: this.appService.isMobile ? '80vh' : '70vh'
+      maxHeight: this.appService.isMobile ? '80vh' : '70vh',
+      data: {
+        isDesktop: this.appService.isDesktop,
+        isTablet: this.appService.isTablet,
+        isMobile: this.appService.isMobile
+      }
     });
     dialogRef.afterClosed().subscribe(async (name: string | undefined) => {
       if (name) {

@@ -7,10 +7,14 @@ import { CommonModule } from '@angular/common';
 import { DocumentFolderIconComponent } from './components/document-folder-icon/document-folder-icon.component';
 import { FileUploadComponent } from './components/file-upload/file-upload.component';
 import { BreadcrumbComponent } from './components/breadcrumb/breadcrumb.component';
+import { MatDialogModule } from '@angular/material/dialog';
 
 @NgModule({
     declarations: [SwipeRightDirective, SelectableRowComponent, LayoutComponent, DocumentFolderIconComponent, FileUploadComponent, BreadcrumbComponent],
-    imports: [FormsModule, CommonModule],
-    exports: [SwipeRightDirective, SelectableRowComponent, LayoutComponent, DocumentFolderIconComponent, FileUploadComponent, BreadcrumbComponent]
+    imports: [FormsModule, CommonModule, MatDialogModule],
+    exports: [
+        MatDialogModule,
+        SwipeRightDirective, SelectableRowComponent, LayoutComponent, DocumentFolderIconComponent, FileUploadComponent, BreadcrumbComponent
+    ]
 })
 export class SharedModule { }

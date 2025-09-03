@@ -1,4 +1,5 @@
-<div class="folder-create-wrapper" [ngClass]="{'mobile': appService.isMobile, 'tablet': appService.isTablet, 'desktop': appService.isDesktop}">
+<div class="folder-create-wrapper"
+    [ngClass]="{'mobile': data.isMobile, 'tablet': data.isTablet, 'desktop': data.isDesktop}">
     <h2>Create Folder</h2>
     <p class="info">Enter a name for the new folder.</p>
     <p *ngIf="errorMessage" class="error">{{ errorMessage }}</p>

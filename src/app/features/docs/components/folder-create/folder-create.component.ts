@@ -1,7 +1,5 @@
-import { Component } from '@angular/core';
-import { MatDialogRef } from '@angular/material/dialog';
-
-import { AppService, DocumentService } from '../../../../services';
+import { Component, Inject } from '@angular/core';
+import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 
 @Component({
   selector: 'app-folder-create',
@@ -16,8 +14,7 @@ export class FolderCreateComponent {
 
   constructor(
     private dialogRef: MatDialogRef<FolderCreateComponent>,
-    private documentService: DocumentService,
-    public appService: AppService
+    @Inject(MAT_DIALOG_DATA) public data: { isDesktop: boolean, isTablet: boolean, isMobile: boolean }
   ) {
     
   }
