@@ -72,6 +72,17 @@ export class DocsListComponent implements OnInit {
     if (this.multiSelectMode) {
       // if (!this.isFolder(item))
       this.toggleSelect(item, event);
+      if (this.documentService.selectedGroupBy) {
+        const parentGroup = this.groups.find(g => g.documents.some(d => d.id === item.id));
+        if (parentGroup) {
+          const allSelected = parentGroup.documents.every(d => this.isSelected(d));
+          if (allSelected && !this.isGroupSelected(parentGroup.groupKey)) {
+            this.selectedGroups.push(parentGroup.groupKey);
+          } else if (!allSelected && this.isGroupSelected(parentGroup.groupKey)) {
+            this.selectedGroups = this.selectedGroups.filter(g => g !== parentGroup.groupKey);
+          }
+        }
+      }
     } else {
       if (this.isFolder(item)) { // Folder
         this.router.navigate(['/docs', item.id]);
@@ -80,6 +91,29 @@ export class DocsListComponent implements OnInit {
       }
     }
   }
+
+  isGroupSelected(groupKey: string): boolean {
+    return this.selectedGroups.includes(groupKey);
+  }
+
+  onGroupRadioClick(group: IGroup, event: MouseEvent): void {
+    event.stopPropagation();
+    if (this.isGroupSelected(group.groupKey)) {
+      this.selectedGroups = this.selectedGroups.filter(g => g !== group.groupKey);
+      this.selectedItems = this.selectedItems.filter(
+        item => !this.isFolder(item) && !group.documents.includes(item)
+      );
+    } else {
+      this.selectedGroups.push(group.groupKey);
+      for (const doc of group.documents) {
+        if (!this.isSelected(doc)) {
+          this.selectedItems.push(doc);
+        }
+      }
+    }
+    this.multiSelectMode = this.selectedItems.length > 0 || this.selectedGroups.length > 0;
+  }
+
 
   toggleSelect(item: Item, event: MouseEvent): void {
     event.stopPropagation();
@@ -97,6 +131,7 @@ export class DocsListComponent implements OnInit {
 
   cancelMultiSelect(): void {
     this.selectedItems = [];
+    this.selectedGroups = [];
     this.multiSelectMode = false;
   }
 

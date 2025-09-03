@@ -90,8 +90,11 @@
             <div *ngFor="let group of groups" class="group">
                 <h3 class="group-key" [ngClass]="documentService.selectedIconSize">
                     <ng-container *ngIf="multiSelectMode">
-                        <!-- <input type="radio" [checked]="selected" (click)="onRadioClick($event)" class="radio-btn"> -->
-                    </ng-container>
+                        <input type="radio" [checked]="isGroupSelected(group.groupKey)" 
+                               (click)="onGroupRadioClick(group, $event)" 
+                               class="radio-btn">
+                      </ng-container>
+                      
                     {{ group.groupKey }}
                 </h3>
                 <div class="group-files">

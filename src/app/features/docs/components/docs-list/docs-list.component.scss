@@ -72,6 +72,17 @@
   border-bottom: solid 1px $primary-border;
 
   .group-key {
+    display: flex;
+    align-items: center;
+    gap: 0.3rem;
+    font-weight: 600;
+
+    .radio-btn {
+      margin-right: 0.5rem;
+      cursor: pointer;
+      accent-color: $accent-color;
+    }
+
     &.small { font-size: 0.7rem; }
     &.medium { font-size: 0.9rem; }
     &.large { font-size: 1.2rem; }
