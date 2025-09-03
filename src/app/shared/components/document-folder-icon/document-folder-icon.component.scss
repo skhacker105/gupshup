@@ -35,11 +35,17 @@
   }
 
   .expiry {
-    font-size: 0.75rem;
+    font-size: 0.7rem;
     color: $secondary-color;
+    background: lighten($background-color-dark, 10%);
+    padding: 0.1rem 0.4rem;
+    border-radius: 3px;
+    opacity: 0.85;
+    margin-top: -0.1rem;
+    white-space: nowrap;
   }
 
-  .backup-btn {
+  /* .backup-btn {
     font-size: 0.75rem;
     padding: 0.2rem 0.5rem;
     background: $primary-color;
@@ -47,7 +53,7 @@
     border: none;
     border-radius: 4px;
     cursor: pointer;
-  }
+  } */
 
   .radio-btn {
     position: absolute;
@@ -62,18 +68,21 @@
       width: 3rem;
       i.fa { font-size: 1.5rem; }
       .name { font-size: 0.6rem; }
+      .expiry { font-size: 0.55rem; padding: 0.05rem 0.2rem; }
     }
 
     &.medium {
       width: 5rem;
       i.fa { font-size: 2rem; }
       .name { font-size: 0.9rem; }
+      .expiry { font-size: 0.65rem; padding: 0.1rem 0.3rem; }
     }
 
     &.large {
       width: 8rem;
       i.fa { font-size: 2.5rem; }
       .name { font-size: 1rem; }
+      .expiry { font-size: 0.75rem; padding: 0.15rem 0.4rem; }
     }
   }
 
@@ -82,18 +91,21 @@
       width: 4rem;
       i.fa { font-size: 2rem; }
       .name { font-size: 0.8rem; }
+      .expiry { font-size: 0.6rem; padding: 0.1rem 0.3rem; }
     }
 
     &.medium {
       width: 6rem;
       i.fa { font-size: 2.5rem; }
       .name { font-size: 0.9rem; }
+      .expiry { font-size: 0.7rem; padding: 0.15rem 0.35rem; }
     }
 
     &.large {
       width: 10rem;
       i.fa { font-size: 4rem; }
       .name { font-size: 1.2rem; }
+      .expiry { font-size: 0.85rem; padding: 0.2rem 0.5rem; }
     }
   }
 
@@ -102,18 +114,21 @@
       width: 6rem;
       i.fa { font-size: 2.5rem; }
       .name { font-size: 1rem; }
+      .expiry { font-size: 0.75rem; padding: 0.15rem 0.4rem; }
     }
 
     &.medium {
       width: 8rem;
       i.fa { font-size: 3rem; }
       .name { font-size: 1.2rem; }
+      .expiry { font-size: 0.85rem; padding: 0.2rem 0.5rem; }
     }
 
     &.large {
       width: 12rem;
       i.fa { font-size: 3.5rem; }
       .name { font-size: 1.5rem; }
+      .expiry { font-size: 0.95rem; padding: 0.25rem 0.6rem; }
     }
   }
 }

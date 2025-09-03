@@ -90,6 +90,6 @@ export class DocumentFolderIconComponent {
 
   onRadioClick(event: MouseEvent): void {
     event.stopPropagation();
-    this.onClick.emit();
+    this.onClick.emit(event);
   }
 }

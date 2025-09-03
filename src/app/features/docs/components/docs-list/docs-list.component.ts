@@ -20,8 +20,6 @@ export class DocsListComponent implements OnInit {
   selectedItems: Item[] = [];
   multiSelectMode = false;
 
-  // groupBy = '';
-  // orderBy = '';
   loading = false;
   errorMessage = '';
 
@@ -66,8 +64,8 @@ export class DocsListComponent implements OnInit {
 
   rowClick(item: Item, event: MouseEvent): void {
     if (this.multiSelectMode) {
-      if (!this.isFolder(item))
-        this.toggleSelect(item, event);
+      // if (!this.isFolder(item))
+      this.toggleSelect(item, event);
     } else {
       if (this.isFolder(item)) { // Folder
         this.router.navigate(['/docs', item.id]);

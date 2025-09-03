@@ -1,15 +1,15 @@
 <div class="icon-container" (click)="onClick.emit($event)" [ngClass]="classes">
     <div class="icon-wrapper">
-        <ng-container *ngIf="selectionMode && isDocument">
+        <ng-container *ngIf="selectionMode">
             <input type="radio" [checked]="selected" (click)="onRadioClick($event)" class="radio-btn">
         </ng-container>
         <i class="fa" [ngClass]="iconClass"></i>
     </div>
     <span class="name" title="{{item.name}}">{{item.name}}</span>
     <ng-container *ngIf="isDocument && documentItem.expiryDate">
-        <span class="expiry">Expires: {{documentItem.expiryDate | date: 'shortDate'}}</span>
+        <span class="expiry">Exp: {{documentItem.expiryDate | date: 'shortDate'}}</span>
     </ng-container>
-    <ng-container *ngIf="isDocument && documentItem.expiryDate && !documentItem.backupAccountId">
+    <!-- <ng-container *ngIf="isDocument && documentItem.expiryDate && !documentItem.backupAccountId">
         <button class="backup-btn" (click)="markForBackup($event)">Mark for Backup</button>
-    </ng-container>
+    </ng-container> -->
 </div>
