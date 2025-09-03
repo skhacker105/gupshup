@@ -61,6 +61,10 @@
     left: -1.7rem;
     cursor: pointer;
     z-index: 1;
+
+    &.big-icon {
+      left: -3rem;
+    }
   }
 
   &.icon-container.mobile {

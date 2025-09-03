@@ -69,19 +69,22 @@
 
             <!-- Icon Size -->
             Size:
-            <select [(ngModel)]="documentService.selectedIconSize" class="orderby-select" [ngClass]="{'mobile': appService.isMobile}">
+            <select [(ngModel)]="documentService.selectedIconSize" class="orderby-select"
+                [ngClass]="{'mobile': appService.isMobile}">
                 <option *ngFor="let size of iconSizes" [value]="size">{{size | titlecase}}</option>
             </select>
         </div>
 
         <!-- Breadcrumb Navigation -->
-        <app-breadcrumb *ngIf="!documentService.selectedGroupBy" [pathSegments]="pathSegments" (segmentClick)="navigateToPath($event)"></app-breadcrumb>
+        <app-breadcrumb *ngIf="!documentService.selectedGroupBy" [pathSegments]="pathSegments"
+            (segmentClick)="navigateToPath($event)"></app-breadcrumb>
 
         <!-- Non-grouped view -->
         <div *ngIf="!documentService.selectedGroupBy" class="grid-container">
             <app-document-folder-icon *ngFor="let item of items" [item]="item" [size]="documentService.selectedIconSize"
                 [selectionMode]="multiSelectMode" [selected]="isSelected(item)" (onClick)="rowClick(item, $event)"
-                [isDesktop]="appService.isDesktop" [isTablet]="appService.isTablet" [isMobile]="appService.isMobile">
+                (longPress)="enableMobileMultiSelect()" [isDesktop]="appService.isDesktop"
+                [isTablet]="appService.isTablet" [isMobile]="appService.isMobile">
             </app-document-folder-icon>
         </div>
 
@@ -90,17 +93,18 @@
             <div *ngFor="let group of groups" class="group">
                 <h3 class="group-key" [ngClass]="documentService.selectedIconSize">
                     <ng-container *ngIf="multiSelectMode">
-                        <input type="radio" [checked]="isGroupSelected(group.groupKey)" 
-                               (click)="onGroupRadioClick(group, $event)" 
-                               class="radio-btn">
-                      </ng-container>
-                      
+                        <input type="radio" [checked]="isGroupSelected(group.groupKey)"
+                            (click)="onGroupRadioClick(group, $event)" class="radio-btn">
+                    </ng-container>
+
                     {{ group.groupKey }}
                 </h3>
                 <div class="group-files">
-                    <app-document-folder-icon *ngFor="let doc of group.documents" [item]="doc" [size]="documentService.selectedIconSize"
-                        [selectionMode]="multiSelectMode" [selected]="isSelected(doc)" (onClick)="rowClick(doc, $event)"
-                        [isDesktop]="appService.isDesktop" [isTablet]="appService.isTablet" [isMobile]="appService.isMobile">
+                    <app-document-folder-icon *ngFor="let doc of group.documents" [item]="doc"
+                        [size]="documentService.selectedIconSize" [selectionMode]="multiSelectMode"
+                        [selected]="isSelected(doc)" (onClick)="rowClick(doc, $event)"
+                        (longPress)="enableMobileMultiSelect()" [isDesktop]="appService.isDesktop"
+                        [isTablet]="appService.isTablet" [isMobile]="appService.isMobile">
                     </app-document-folder-icon>
                 </div>
             </div>

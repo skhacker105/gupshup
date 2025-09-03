@@ -1,5 +1,5 @@
 import { NgModule } from '@angular/core';
-import { SwipeRightDirective } from './directives';
+import { LongPressDirective, SwipeRightDirective } from './directives';
 import { SelectableRowComponent } from './components/selectable-row/selectable-row.component';
 import { LayoutComponent } from './components/layout/layout.component';
 import { FormsModule } from '@angular/forms';
@@ -11,11 +11,15 @@ import { MatDialogModule } from '@angular/material/dialog';
 import { ConfirmDeleteDialogComponent } from './components/confirm-delete-dialog/confirm-delete-dialog.component';
 
 @NgModule({
-    declarations: [SwipeRightDirective, SelectableRowComponent, LayoutComponent, DocumentFolderIconComponent, FileUploadComponent, BreadcrumbComponent, ConfirmDeleteDialogComponent],
+    declarations: [
+        SwipeRightDirective, LongPressDirective,
+        SelectableRowComponent, LayoutComponent, DocumentFolderIconComponent, FileUploadComponent, BreadcrumbComponent, ConfirmDeleteDialogComponent
+    ],
     imports: [FormsModule, CommonModule, MatDialogModule],
     exports: [
         MatDialogModule,
-        SwipeRightDirective, SelectableRowComponent, LayoutComponent, DocumentFolderIconComponent, FileUploadComponent, BreadcrumbComponent, ConfirmDeleteDialogComponent
+        SwipeRightDirective, LongPressDirective,
+        SelectableRowComponent, LayoutComponent, DocumentFolderIconComponent, FileUploadComponent, BreadcrumbComponent, ConfirmDeleteDialogComponent
     ]
 })
 export class SharedModule { }

@@ -17,6 +17,7 @@ export class DocumentFolderIconComponent {
   @Input() selectionMode = false;
   @Input() selected = false;
 
+  @Output() longPress = new EventEmitter<void>();
   @Output() onClick = new EventEmitter<MouseEvent>();
 
   get isFolder(): boolean {

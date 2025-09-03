@@ -1,7 +1,10 @@
 <div class="icon-container" (click)="onClick.emit($event)" [ngClass]="classes">
-    <div class="icon-wrapper">
+    <div class="icon-wrapper" [appLongPress]="isDesktop" (modeSwitched)="longPress.emit()">
         <ng-container *ngIf="selectionMode">
-            <input type="radio" [checked]="selected" (click)="onRadioClick($event)" class="radio-btn">
+            <input type="radio" [checked]="selected" (click)="onRadioClick($event)" class="radio-btn"
+                [ngClass]="{
+                    'big-icon': isTablet || isDesktop
+                }">
         </ng-container>
         <i class="fa" [ngClass]="iconClass"></i>
     </div>
