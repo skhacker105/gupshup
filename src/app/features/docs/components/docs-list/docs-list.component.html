@@ -10,7 +10,7 @@
     <ng-container action-singular>
 
         <!-- Delete Current Folder -->
-        <button (click)="addNewFile()" title="Delete Current Folder" [disabled]="!currentFolder">
+        <button (click)="deleteFolder(currentFolder, true, $event)" title="Delete Current Folder" [disabled]="!currentFolder">
             <i class="fa-solid fa-trash"></i>
             <span class="no-wrap" *ngIf="!appService.isMobile">Delete Folder</span>
         </button>

@@ -96,11 +96,16 @@ export class DocsListComponent implements OnInit {
 
   async deleteSelected(): Promise<void> {
     if (!this.selectedItems.length) return;
+
+    const selectNames = this.selectedItems.map(item => item.name).join(', ')
+    const confirmToDelete = await this.appService.confirmForDelete(selectNames)
+    if (!confirmToDelete) return;
+    
     for (const item of this.selectedItems) {
       if ('data' in item) {
         await this.deleteDocument(item.id);
       } else {
-        await this.deleteFolder(item.id);
+        await this.deleteFolder(item);
       }
     }
     this.cancelMultiSelect();
@@ -201,11 +206,19 @@ export class DocsListComponent implements OnInit {
     this.loading = false;
   }
 
-  async deleteFolder(id: string, event?: MouseEvent): Promise<void> {
+  async deleteFolder(folder?: Folder, confirmBeforeDelete?: boolean, event?: MouseEvent): Promise<void> {
     event?.stopPropagation();
+
+    if (!folder) return;
+
+    if (confirmBeforeDelete) {
+      const confirmToDelete = await this.appService.confirmForDelete(folder.name)
+      if (!confirmToDelete) return;
+    }
+
     this.loading = true;
     try {
-      await this.documentService.deleteFolder(id);
+      await this.documentService.deleteFolder(folder.id);
       await this.loadItems();
     } catch {
       this.errorMessage = 'Failed to delete folder.';

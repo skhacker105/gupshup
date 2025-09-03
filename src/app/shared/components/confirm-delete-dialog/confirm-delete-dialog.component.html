@@ -1,0 +1,9 @@
+<div class="confirm-delete-wrapper"
+    [ngClass]="{'mobile': data.isMobile, 'tablet': data.isTablet, 'desktop': data.isDesktop}">
+    <h2>Confirm Delete</h2>
+    <p class="info">Are you sure you want to delete "{{ data.itemName }}"?</p>
+    <div class="actions">
+        <button type="button" (click)="dialogRef.close(true)" title="Confirm deletion">Delete</button>
+        <button type="button" mat-dialog-close title="Cancel deletion">Cancel</button>
+    </div>
+</div>

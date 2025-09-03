@@ -8,13 +8,14 @@ import { DocumentFolderIconComponent } from './components/document-folder-icon/d
 import { FileUploadComponent } from './components/file-upload/file-upload.component';
 import { BreadcrumbComponent } from './components/breadcrumb/breadcrumb.component';
 import { MatDialogModule } from '@angular/material/dialog';
+import { ConfirmDeleteDialogComponent } from './components/confirm-delete-dialog/confirm-delete-dialog.component';
 
 @NgModule({
-    declarations: [SwipeRightDirective, SelectableRowComponent, LayoutComponent, DocumentFolderIconComponent, FileUploadComponent, BreadcrumbComponent],
+    declarations: [SwipeRightDirective, SelectableRowComponent, LayoutComponent, DocumentFolderIconComponent, FileUploadComponent, BreadcrumbComponent, ConfirmDeleteDialogComponent],
     imports: [FormsModule, CommonModule, MatDialogModule],
     exports: [
         MatDialogModule,
-        SwipeRightDirective, SelectableRowComponent, LayoutComponent, DocumentFolderIconComponent, FileUploadComponent, BreadcrumbComponent
+        SwipeRightDirective, SelectableRowComponent, LayoutComponent, DocumentFolderIconComponent, FileUploadComponent, BreadcrumbComponent, ConfirmDeleteDialogComponent
     ]
 })
 export class SharedModule { }
