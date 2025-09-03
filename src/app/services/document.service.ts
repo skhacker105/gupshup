@@ -148,7 +148,7 @@ export class DocumentService {
   }
 
   async deleteFolder(id: string): Promise<void> {
-    await this.dbService.delete(Tables.Folders, id);
+    return await this.dbService.delete(Tables.Folders, id);
   }
 
   async getFolder(folderId: string): Promise<Folder | undefined> {

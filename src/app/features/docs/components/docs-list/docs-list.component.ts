@@ -58,7 +58,7 @@ export class DocsListComponent implements OnInit {
     this.multiSelectMode = true;
   }
 
-  isFolder(item: Item): boolean {
+  isFolder(item: Item): item is Folder {
     return !('data' in item); // Discriminator: Documents have 'data: Blob'
   }
 
@@ -97,12 +97,14 @@ export class DocsListComponent implements OnInit {
   async deleteSelected(): Promise<void> {
     if (!this.selectedItems.length) return;
 
-    const selectNames = this.selectedItems.map(item => item.name).join(', ')
-    const confirmToDelete = await this.appService.confirmForDelete(selectNames)
+    const isAnyFolderSelected = this.selectedItems.some(item => this.isFolder(item));
+    const selectNames = this.selectedItems.map(item => item.name).join(', ');
+    const confirmationMessage = selectNames + (isAnyFolderSelected ? ' and all sub folders and files' : '');
+    const confirmToDelete = await this.appService.confirmForDelete(confirmationMessage);
     if (!confirmToDelete) return;
-    
+
     for (const item of this.selectedItems) {
-      if ('data' in item) {
+      if (!this.isFolder(item)) {
         await this.deleteDocument(item.id);
       } else {
         await this.deleteFolder(item);
@@ -206,20 +208,51 @@ export class DocsListComponent implements OnInit {
     this.loading = false;
   }
 
-  async deleteFolder(folder?: Folder, confirmBeforeDelete?: boolean, event?: MouseEvent): Promise<void> {
+  async collectAllSubItems(folder: Folder) {
+    let items: Item[] = [];
+    try {
+      const [documents, folders] = await Promise.all([
+        this.documentService.getDocuments(folder.id),
+        this.documentService.getFolders(folder?.id)
+      ]);
+      items = [...items, ...documents, ...folders];
+      for (let f of folders) {
+        const childItems = await this.collectAllSubItems(f);
+        items = items.concat(childItems);
+      }
+    } catch (err) { }
+    return items;
+  }
+
+  async deleteFolder(folder?: Folder, event?: MouseEvent): Promise<void> {
     event?.stopPropagation();
 
     if (!folder) return;
 
-    if (confirmBeforeDelete) {
-      const confirmToDelete = await this.appService.confirmForDelete(folder.name)
+    const isCurrentFolder = folder.id === this.currentFolder?.id;
+    if (isCurrentFolder) {
+      const confirmationMessage = `${folder.name} and all sub folders and files`
+      const confirmToDelete = await this.appService.confirmForDelete(confirmationMessage)
       if (!confirmToDelete) return;
     }
 
+    const subItems = await this.collectAllSubItems(folder);
     this.loading = true;
     try {
-      await this.documentService.deleteFolder(folder.id);
-      await this.loadItems();
+      const deletePromise = subItems.map(sitem => {
+        return this.isFolder(sitem)
+          ? this.documentService.deleteFolder(sitem.id)
+          : this.documentService.deleteDocument(sitem.id, true)
+      }).concat([this.documentService.deleteFolder(folder.id)]);
+      if (deletePromise.length > 0)
+        await Promise.all(deletePromise);
+
+      if (isCurrentFolder) {
+        this.navigateToPath({ name: folder.name, id: folder.parentFolderId })
+        this.router.navigate(['/docs', folder.parentFolderId]);
+      } else {
+        await this.loadItems();
+      }
     } catch {
       this.errorMessage = 'Failed to delete folder.';
     }
