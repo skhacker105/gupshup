@@ -163,6 +163,7 @@ export class DocsListComponent implements OnInit {
         this.groups = await this.documentService.getGroupedDocuments(this.documentService.selectedGroupBy, this.documentService.selectedOrderBy);
         this.items = [];
       } else {
+        console.log('loadItems this.currentFolder = ', this.currentFolder)
         const [documents, folders] = await Promise.all([
           this.documentService.getDocuments(this.currentFolder?.id),
           this.documentService.getFolders(this.currentFolder?.id)
@@ -174,6 +175,7 @@ export class DocsListComponent implements OnInit {
         this.groups = [];
       }
     } catch (err) {
+      console.log('loadItems err = ', err)
       this.errorMessage = 'Failed to load documents.';
     }
     this.loading = false;
@@ -225,10 +227,14 @@ export class DocsListComponent implements OnInit {
         isMobile: this.appService.isMobile
       }
     });
-    dialogRef.afterClosed().subscribe(async (doc: Document | undefined) => {
-      if (doc) {
+    dialogRef.afterClosed().subscribe(async (docs: Document[] | undefined) => {
+      if (docs) {
         try {
-          await this.documentService.saveNewDocuments(doc, this.currentFolder);
+          for (let i=0; i < docs.length; i++) {
+            await this.documentService.saveNewDocuments(docs[i], this.currentFolder)
+          }
+          // await docs.map(async (d) => await this.documentService.saveNewDocuments(d, this.currentFolder));
+          // await this.documentService.saveNewDocuments(doc, this.currentFolder);
           await this.loadItems();
         } catch {
           this.errorMessage = 'Failed to add file.';
@@ -313,6 +319,7 @@ export class DocsListComponent implements OnInit {
     dialogRef.afterClosed().subscribe(async (name: string | undefined) => {
       if (name) {
         try {
+          console.log('createFolder this.currentFolder = ', this.currentFolder)
           await this.documentService.createFolder(name, this.currentFolder);
           await this.loadItems();
         } catch {

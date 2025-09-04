@@ -79,6 +79,7 @@
   .body {
     flex: 1;
     overflow-y: auto;
+    flex-direction: column;
 
     &.selection-mode {
       border: solid 1px $background-color-dark;

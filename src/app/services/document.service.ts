@@ -73,7 +73,7 @@ export class DocumentService {
   ) { }
 
   async saveNewDocuments(doc: Document, parentFolder?: Folder) {
-    doc.relativePath = await this.buildRelativePath(parentFolder, doc.name, doc.id);
+    doc.relativePath = this.buildRelativePath(parentFolder, doc.name, doc.id);
     doc.expiryDate = await this.calculateExpiryDate(doc.type)
     return await this.dbService.put(Tables.Documents, doc);
   }
@@ -173,7 +173,7 @@ export class DocumentService {
     return await this.dbService.put(Tables.Folders, folder);
   }
 
-  async buildRelativePath(parentFolder: Folder | undefined, name: string, id: string): Promise<string> {
+  buildRelativePath(parentFolder: Folder | undefined, name: string, id: string): string {
     const pathSegment = { name, id };
     if (!parentFolder) {
       return JSON.stringify([pathSegment]);

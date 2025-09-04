@@ -153,11 +153,11 @@ export class DbService {
     }
 
     async put(store: string, data: any): Promise<void> {
-        await this.manager.put(this.dbId, store, data);
+        return await this.manager.put(this.dbId, store, data);
     }
 
     async delete(store: string, id: string): Promise<void> {
-        await this.manager.delete(this.dbId, store, id);
+        return await this.manager.delete(this.dbId, store, id);
     }
 
     getDeviceId(): string {
