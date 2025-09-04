@@ -57,6 +57,13 @@
 .filter-header {
   display: flex;
   align-items: center;
+  gap: 0.5rem;
+
+  .filter-action {
+    padding-left: 0.5rem;
+    display: flex;
+    align-items: center;
+  }
 }
 
 ::ng-deep .generic-wrapper.mobile {

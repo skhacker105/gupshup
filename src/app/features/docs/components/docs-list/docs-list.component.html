@@ -46,33 +46,46 @@
         <div class="filter-header">
 
             <!-- Group By -->
-            Group:
-            <select [(ngModel)]="documentService.selectedGroupBy" (change)="loadItems()" class="orderby-select"
-                [ngClass]="{'mobile': appService.isMobile}">
-                <option value="">None</option>
-                <option value="type">Type</option>
-                <option value="month">Month</option>
-                <option value="sender">Sender</option>
-                <option value="receiver">Receiver</option>
-            </select>
+            <div class="filter-action">
+                Group:
+                <select [(ngModel)]="documentService.selectedGroupBy" (change)="loadItems()" class="orderby-select"
+                    [ngClass]="{'mobile': appService.isMobile}">
+                    <option value="">None</option>
+                    <option value="type">Type</option>
+                    <option value="month">Month</option>
+                    <option value="sender">Sender</option>
+                    <option value="receiver">Receiver</option>
+                </select>
+            </div>
 
             <!-- Order By -->
-            Order:
-            <select [(ngModel)]="documentService.selectedOrderBy" (change)="loadItems()" class="orderby-select"
-                [ngClass]="{'mobile': appService.isMobile}">
-                <option value="">None</option>
-                <option value="createdDate">Date</option>
-                <option value="name">Name</option>
-                <option value="senderId">Sender</option>
-                <option value="receiverId">Receiver</option>
-            </select>
+            <div class="filter-action">
+                Order:
+                <select [(ngModel)]="documentService.selectedOrderBy" (change)="loadItems()" class="orderby-select"
+                    [ngClass]="{'mobile': appService.isMobile}">
+                    <option value="">None</option>
+                    <option value="createdDate">Date</option>
+                    <option value="name">Name</option>
+                    <option value="senderId">Sender</option>
+                    <option value="receiverId">Receiver</option>
+                </select>
+            </div>
+
 
             <!-- Icon Size -->
-            Size:
-            <select [(ngModel)]="documentService.selectedIconSize" class="orderby-select"
-                [ngClass]="{'mobile': appService.isMobile}">
-                <option *ngFor="let size of iconSizes" [value]="size">{{size | titlecase}}</option>
-            </select>
+            <div class="filter-action">
+                Size:
+                <select [(ngModel)]="documentService.selectedIconSize" class="orderby-select"
+                    [ngClass]="{'mobile': appService.isMobile}">
+                    <option *ngFor="let size of iconSizes" [value]="size">{{size | titlecase}}</option>
+                </select>
+            </div>
+
+            <!-- Enable Disable Selection -->
+            <div class="filter-action" *ngIf="!appService.isMobile">
+                Selection:
+                <input [checked]="multiSelectMode" type="radio" (click)="multiSelectMode ? cancelMultiSelect() : enableMobileMultiSelect()">
+            </div>
         </div>
 
         <!-- Breadcrumb Navigation -->
