@@ -7,17 +7,31 @@ import { CommonModule } from '@angular/common';
 import { DocumentFolderIconComponent } from './components/document-folder-icon/document-folder-icon.component';
 import { FileUploadComponent } from './components/file-upload/file-upload.component';
 import { BreadcrumbComponent } from './components/breadcrumb/breadcrumb.component';
-import { MatDialogModule } from '@angular/material/dialog';
 import { ConfirmDeleteDialogComponent } from './components/confirm-delete-dialog/confirm-delete-dialog.component';
-
+import { MatDialogModule } from '@angular/material/dialog';
+import { MatTabsModule } from '@angular/material/tabs';
+import { MatButtonModule } from '@angular/material/button';
+import { MatInputModule } from '@angular/material/input';
+import { MatSelectModule } from '@angular/material/select';
 @NgModule({
     declarations: [
         SwipeRightDirective, LongPressDirective,
         SelectableRowComponent, LayoutComponent, DocumentFolderIconComponent, FileUploadComponent, BreadcrumbComponent, ConfirmDeleteDialogComponent
     ],
-    imports: [FormsModule, CommonModule, MatDialogModule],
+    imports: [
+        FormsModule, CommonModule,
+        MatDialogModule,
+        MatButtonModule,
+        MatInputModule,
+        MatSelectModule,
+        MatTabsModule,
+    ],
     exports: [
         MatDialogModule,
+        MatButtonModule,
+        MatInputModule,
+        MatSelectModule,
+        MatTabsModule,
         SwipeRightDirective, LongPressDirective,
         SelectableRowComponent, LayoutComponent, DocumentFolderIconComponent, FileUploadComponent, BreadcrumbComponent, ConfirmDeleteDialogComponent
     ]

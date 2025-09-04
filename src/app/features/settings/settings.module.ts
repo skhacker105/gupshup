@@ -1,13 +1,12 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { MatSelectModule } from '@angular/material/select';
 import { SettingsRoutingModule } from './settings-routing.module';
 import { SettingsComponent } from './components/settings/settings.component';
 import { TranslationSettingsComponent } from './components/translation-settings/translation-settings.component';
 import { StorageAccountsComponent } from './components/storage-accounts/storage-accounts.component';
 import { ExpirationSettingsComponent } from './components/expiration-settings/expiration-settings.component';
-
+import { SharedModule } from '../../shared/shared.module';
 @NgModule({
   declarations: [
     SettingsComponent,
@@ -18,8 +17,8 @@ import { ExpirationSettingsComponent } from './components/expiration-settings/ex
   imports: [
     CommonModule,
     FormsModule,
-    MatSelectModule,
-    SettingsRoutingModule
+    SettingsRoutingModule,
+    SharedModule
   ]
 })
 export class SettingsModule { }
