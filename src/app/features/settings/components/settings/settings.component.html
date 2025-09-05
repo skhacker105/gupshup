@@ -12,18 +12,16 @@
     <p class="info">Customize your app experience, including translation language and document expiration settings.</p>
     <p *ngIf="errorMessage" class="error">{{ errorMessage }}</p>
     <p *ngIf="successMessage" class="success">{{ successMessage }}</p>
-    <form (ngSubmit)="saveSettings()" *ngIf="!loading; else loadingSpinner">
+    <form [formGroup]="settingsForm" (ngSubmit)="saveSettings()" *ngIf="!loading; else loadingSpinner">
         <div class="form-group">
             <label for="targetLanguage" title="Select language for translations">Translation Language</label>
-            <select id="targetLanguage" [(ngModel)]="targetLanguage" name="targetLanguage"
-                title="Affects message translations">
+            <select id="targetLanguage" formControlName="targetLanguage" title="Affects message translations">
                 <option *ngFor="let lang of availableLanguages" [value]="lang.code">{{ lang.name }}</option>
             </select>
         </div>
         <div class="form-group">
             <label for="defaultPeriod" title="Default expiration for documents">Default Expiration Period</label>
-            <select id="defaultPeriod" [(ngModel)]="defaultPeriod" name="defaultPeriod"
-                title="Applied to documents without specific settings">
+            <select id="defaultPeriod" formControlName="defaultPeriod" title="Applied to documents without specific settings">
                 <option *ngFor="let period of periods" [value]="period.key">{{ period.text }}</option>
             </select>
         </div>
@@ -32,15 +30,14 @@
         <ul>
             <li *ngFor="let type of typeExpirations | keyvalue" title="Expiration for {{ type.key }} files">
                 {{ type.key }}:
-                <select [(ngModel)]="typeExpirations[type.key]" [name]="'typeExpiration-' + type.key"
-                    title="Select expiration for {{ type.key }}">
-                    <option *ngFor="let period of periods" [value]="period">{{ period }}</option>
+                <select [formControlName]="'typeExpiration-' + type.key" title="Select expiration for {{ type.key }}">
+                    <option *ngFor="let period of periods" [value]="period.key">{{ period.text }}</option>
                 </select>
             </li>
         </ul>
         <div class="actions">
-            <button type="button" (click)="addTypeExpiration()" class="btn-subtle" title="Add a new media type expiration">Add Media Type</button>
-            <button type="submit" [disabled]="loading" class="btn-subtle" title="Save all settings">{{ loading ? 'Saving...' : 'Save Settings' }}</button>
+            <button type="button" (click)="addTypeExpiration()" class="" title="Add a new media type expiration">Add Media Type</button>
+            <button type="submit" [disabled]="loading || settingsForm.pristine" class="" title="Save all settings">{{ loading ? 'Saving...' : 'Save Settings' }}</button>
         </div>
     </form>
     <ng-template #loadingSpinner>

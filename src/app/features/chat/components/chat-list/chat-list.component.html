@@ -8,12 +8,7 @@
 
   <!-- Actions visible only in singular (normal) mode -->
   <ng-container action-singular>
-    Order
-    <select [(ngModel)]="orderBy" (change)="mergeLists(orderBy)" class="orderby-select"
-      [ngClass]="{'mobile': appService.isMobile}">
-      <option value="name">Name</option>
-      <option value="lastMessageDate">Last Message</option>
-    </select>
+
     <button (click)="sync()" [disabled]="loading" title="Sync contacts">
       <i class="fa fa-sync"></i>
       <span class="no-wrap" *ngIf="!appService.isMobile">Sync</span>
@@ -40,22 +35,33 @@
   <p *ngIf="errorMessage" class="error">{{ errorMessage }}</p>
 
   <div class="chat-list" *ngIf="!loading; else loadingSpinner">
-      <app-selectable-row *ngFor="let item of mergedList" [title]="item.name" [description]="item.phoneNumber"
-        [isSelectable]="true" [selectionMode]="multiSelectMode" [selected]="isSelected(item)"
-        [isDesktop]="appService.isDesktop" [isTablet]="appService.isTablet" [isMobile]="appService.isMobile"
-        (selectionChange)="toggleSelect(item, $event)" (rowClick)="rowClick(item, $event)">
 
-        <!-- Projected icon -->
-        <i row-icon class="fa" [ngClass]="item.type === 'contact' ? 'fa-user' : 'fa-users'"></i>
+    <!-- Group By / Order By / Sizes -->
+    <div class="filter-header">
+      Order
+      <select [(ngModel)]="orderBy" (change)="mergeLists(orderBy)" class="orderby-select"
+        [ngClass]="{'mobile': appService.isMobile}">
+        <option value="name">Name</option>
+        <option value="lastMessageDate">Last Message</option>
+      </select>
+    </div>
 
-        <!-- Row-level actions -->
-        <button action-singular class="btn-subtle" (click)="deleteItem(item, $event)" title="Delete">
-          <i class="fa fa-trash"></i>
-        </button>
-        <button action-multiselect class="btn-subtle" (click)="openChat(item, $event)" title="Open Chat">
-          <i class="fa fa-comment"></i>
-        </button>
-      </app-selectable-row>
+    <app-selectable-row *ngFor="let item of mergedList" [title]="item.name" [description]="item.phoneNumber"
+      [isSelectable]="true" [selectionMode]="multiSelectMode" [selected]="isSelected(item)"
+      [isDesktop]="appService.isDesktop" [isTablet]="appService.isTablet" [isMobile]="appService.isMobile"
+      (selectionChange)="toggleSelect(item, $event)" (rowClick)="rowClick(item, $event)">
+
+      <!-- Projected icon -->
+      <i row-icon class="fa" [ngClass]="item.type === 'contact' ? 'fa-user' : 'fa-users'"></i>
+
+      <!-- Row-level actions -->
+      <button action-singular class="btn-subtle" (click)="deleteItem(item, $event)" title="Delete">
+        <i class="fa fa-trash"></i>
+      </button>
+      <button action-multiselect class="btn-subtle" (click)="openChat(item, $event)" title="Open Chat">
+        <i class="fa fa-comment"></i>
+      </button>
+    </app-selectable-row>
   </div>
 
   <ng-template #loadingSpinner>
