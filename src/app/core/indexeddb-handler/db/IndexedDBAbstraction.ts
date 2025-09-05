@@ -388,7 +388,7 @@ export class IndexedDBAbstraction {
 
   // Encrypted partial search over blind index
   async search(store: string, { text, fields, minMatch = 'ALL' }: ISearchQuery) {
-    console.log('search=',{store, text, fields, minMatch})
+    console.log('search=', { store, text, fields, minMatch })
     try {
       await this._assertPermission('READ');
       if (!this.crypto) throw new Error('CryptoManager not attached');
@@ -451,13 +451,18 @@ export class IndexedDBAbstraction {
       }
 
       const out: any[] = [];
-      for (const id of finalIds) {
-        const row = await toPromise(os.get(id));
+      const promises = finalIds.map(id => toPromise(os.get(id)));
+      const rows = await Promise.all(promises);
+      for (const row of rows) {
         if (row) out.push(await this.crypto.decryptJson(row._enc));
       }
+      // for (const id of finalIds) {
+      //   const row = await toPromise(os.get(id));
+      //   if (row) out.push(await this.crypto.decryptJson(row._enc));
+      // }
       await tx.done;
       return out;
-    } catch(err) {
+    } catch (err) {
       console.log('search err store = ', store)
       console.log('SEARCH Error: ', err);
       throw err;

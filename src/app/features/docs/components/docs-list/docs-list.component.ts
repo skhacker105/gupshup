@@ -228,6 +228,7 @@ export class DocsListComponent implements OnInit {
       }
     });
     dialogRef.afterClosed().subscribe(async (docs: Document[] | undefined) => {
+      this.loading = true;
       if (docs) {
         try {
           for (let i=0; i < docs.length; i++) {
@@ -238,8 +239,10 @@ export class DocsListComponent implements OnInit {
           await this.loadItems();
         } catch {
           this.errorMessage = 'Failed to add file.';
+          this.loading = false;
         }
       }
+      this.loading = false;
     });
   }
 
