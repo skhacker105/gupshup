@@ -27,7 +27,7 @@ export class LoginComponent {
     this.loading = true;
     this.errorMessage = '';
     this.authService.login(this.credentials).subscribe(
-      () => this.router.navigate(['/home']),
+      () => this.router.navigate(['/chat']),
       err => {
         this.errorMessage = 'Login failed. Please check your credentials.';
         this.loading = false;
