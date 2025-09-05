@@ -27,9 +27,12 @@ export class LoginComponent {
     this.loading = true;
     this.errorMessage = '';
     this.authService.login(this.credentials).subscribe(
-      () => this.router.navigate(['/chat']),
+      () => {
+
+        this.router.navigate(['/chat'])
+      },
       err => {
-        this.errorMessage = 'Login failed. Please check your credentials.';
+        this.errorMessage = err?.innerMessage ?? 'Login failed. Please check your credentials.';
         this.loading = false;
       }
     );

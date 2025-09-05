@@ -30,7 +30,8 @@ export class DbService {
                     "profilePicture",
                     "status",
                     "createdAt",
-                    "updatedAt"
+                    "updatedAt",
+                    "password"
                 ]
             },
             "contacts": {
@@ -166,13 +167,18 @@ export class DbService {
         return 'device-id-stub-' + Date.now(); // Stub for testing
     }
 
-    async getUser(): Promise<User> {
-        const user = await this.get('users', this.manager.getDeviceId()!);
-        return user || { id: this.manager.getDeviceId()!, phoneNumber: '', password: '', targetLanguage: 'en-US', storageAccounts: [] };
+    async getUser(userId: string): Promise<User | undefined> {
+        const user = await this.get('users', userId);
+        return user; // || { id: this.manager.getDeviceId()!, phoneNumber: '', password: '', targetLanguage: 'en-US', storageAccounts: [] };
     }
 
+    // async getUser(): Promise<User | undefined> {
+    //     const user = await this.get('users', this.manager.getDeviceId()!);
+    //     return user || { id: this.manager.getDeviceId()!, phoneNumber: '', password: '', targetLanguage: 'en-US', storageAccounts: [] };
+    // }
+
     async updateUser(user: Partial<User>): Promise<void> {
-        await this.put('users', user);
+        return await this.put('users', user);
     }
 
     checkExpirations(): void {

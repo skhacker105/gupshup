@@ -7,7 +7,7 @@ import { Subscription } from 'rxjs';
 import { v4 as uuidv4 } from 'uuid';
 
 import { Contact, Message, Document, Tables } from '../../../../models';
-import { AppService, ChatService, DbService, DocumentService, TranslationService } from '../../../../services';
+import { AppService, AuthService, ChatService, DbService, DocumentService, TranslationService } from '../../../../services';
 
 @Component({
   selector: 'app-chat-window',
@@ -35,7 +35,8 @@ export class ChatWindowComponent implements OnInit, OnDestroy {
     private documentService: DocumentService,
     private dbService: DbService,
     private dialog: MatDialog,
-    public appService: AppService
+    public appService: AppService,
+    private authService: AuthService
   ) {
     
   }
@@ -129,7 +130,9 @@ export class ChatWindowComponent implements OnInit, OnDestroy {
   async translateMessage(msg: Message): Promise<void> {
     if (msg.text && !msg.translatedText) {
       try {
-        const user = await this.dbService.getUser();
+        const user = await this.authService.getLoggedInUserInfo();
+        if (!user) return;
+
         msg.translatedText = await this.translationService.translate(msg.text, 'auto', user.targetLanguage);
       } catch (err) {
         this.errorMessage = 'Translation failed.';

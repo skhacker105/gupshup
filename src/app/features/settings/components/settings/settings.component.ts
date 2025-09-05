@@ -1,7 +1,7 @@
 // src/app/features/settings/settings.component.ts
 import { Component, OnInit } from '@angular/core';
 
-import { AppService, DbService } from '../../../../services';
+import { AppService, AuthService, DbService } from '../../../../services';
 
 @Component({
   selector: 'app-settings',
@@ -21,7 +21,8 @@ export class SettingsComponent implements OnInit {
 
   constructor(
     private dbService: DbService,
-    public appService: AppService
+    public appService: AppService,
+    private authService: AuthService
   ) {
     
   }
@@ -29,7 +30,9 @@ export class SettingsComponent implements OnInit {
   async ngOnInit(): Promise<void> {
     this.loading = true;
     try {
-      const user = await this.dbService.getUser();
+      const user = await this.authService.getLoggedInUserInfo();
+      if (!user) return;
+      
       this.targetLanguage = user.targetLanguage || 'en-US';
       this.defaultPeriod = user.expirationSettings?.defaultPeriod || '1week';
       this.typeExpirations = user.expirationSettings?.typeExpirations || {};
@@ -44,7 +47,9 @@ export class SettingsComponent implements OnInit {
     this.errorMessage = '';
     this.successMessage = '';
     try {
-      const user = await this.dbService.getUser();
+      const user = await this.authService.getLoggedInUserInfo();
+      if (!user) return;
+      
       user.targetLanguage = this.targetLanguage;
       user.expirationSettings = {
         defaultPeriod: this.defaultPeriod,

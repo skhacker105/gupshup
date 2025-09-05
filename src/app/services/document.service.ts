@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { v4 as uuidv4 } from 'uuid';
-import { DbService, StorageAccountService } from './';
+import { AuthService, DbService, StorageAccountService } from './';
 import { Document } from '../models/document.interface';
 import { Folder } from '../models/folder.interface';
 import { IconSize, Tables } from '../models';
@@ -69,6 +69,7 @@ export class DocumentService {
 
   constructor(
     private dbService: DbService,
+    private authService: AuthService,
     private storageService: StorageAccountService
   ) { }
 
@@ -183,7 +184,9 @@ export class DocumentService {
   }
 
   async calculateExpiryDate(fileType: string): Promise<Date | undefined> {
-    const user = await this.dbService.getUser();
+    const user = await this.authService.getLoggedInUserInfo();
+    if (!user) return;
+    
     const settings = user.expirationSettings || { defaultPeriod: '1week', typeExpirations: {} };
     const period = settings.typeExpirations[fileType.split('/')[0]] || settings.defaultPeriod;
     const now = new Date();

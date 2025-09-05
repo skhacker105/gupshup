@@ -5,6 +5,7 @@ export interface User {
     password: string;
     targetLanguage: string;
     storageAccounts: string[];
+    profilePicture?: any;
     expirationSettings?: {
         defaultPeriod: string;
         typeExpirations: { [key: string]: string };

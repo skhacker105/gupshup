@@ -8,12 +8,12 @@ import { StorageAccountService } from '../../../../services';
   styleUrls: ['./storage-accounts.component.scss']
 })
 export class StorageAccountsComponent implements OnInit {
-  accounts: StorageAccount[] = [];
+  storageAccounts: StorageAccount[] = [];
 
   constructor(private storageService: StorageAccountService) { }
 
   ngOnInit() {
-    this.storageService.getAccounts().subscribe(acc => this.accounts = acc);
+    this.storageService.getAccounts().subscribe(acc => this.storageAccounts = acc);
   }
 
   addGoogleAccount() {
