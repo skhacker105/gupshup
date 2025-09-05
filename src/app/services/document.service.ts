@@ -139,12 +139,12 @@ export class DocumentService {
   }
 
   async deleteDocument(id: string, permanent: boolean): Promise<void> {
-    const doc = await this.dbService.get('documents', id) as Document;
+    const doc = await this.dbService.get(Tables.Documents, id) as Document;
     if (permanent && doc.backupAccountId) {
       // Requires backend route
       // await this.storageService.deleteBackup(doc.id, doc.backupAccountId);
     }
-    await this.dbService.delete('documents', id);
+    await this.dbService.delete(Tables.Documents, id);
   }
 
   async deleteFolder(id: string): Promise<void> {

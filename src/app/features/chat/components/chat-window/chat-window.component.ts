@@ -6,7 +6,7 @@ import { MediaEditorComponent } from '../media-editor/media-editor.component';
 import { Subscription } from 'rxjs';
 import { v4 as uuidv4 } from 'uuid';
 
-import { Contact, Message, Document } from '../../../../models';
+import { Contact, Message, Document, Tables } from '../../../../models';
 import { AppService, ChatService, DbService, DocumentService, TranslationService } from '../../../../services';
 
 @Component({
@@ -152,7 +152,7 @@ export class ChatWindowComponent implements OnInit, OnDestroy {
       this.errorMessage = 'Invalid document.';
       return;
     }
-    this.dbService.get('documents', id).then((doc: Document) => {
+    this.dbService.get(Tables.Documents, id).then((doc: Document) => {
       if (doc) {
         const url = URL.createObjectURL(doc.data);
         const a = document.createElement('a');

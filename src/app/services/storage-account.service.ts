@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { DbService } from './';
-import { StorageAccount, Document } from '../models';
+import { StorageAccount, Document, Tables } from '../models';
 
 @Injectable({
   providedIn: 'root'
@@ -41,7 +41,7 @@ export class StorageAccountService {
   }
 
   async getBackupCount(accountId: string): Promise<number> {
-    const documents = await this.dbService.getAll('documents');
+    const documents = await this.dbService.getAll(Tables.Documents);
     return documents.filter((doc: Document) => doc.backupAccountId === accountId).length;
   }
 }

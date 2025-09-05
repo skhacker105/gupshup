@@ -3,6 +3,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { Document } from '../models/document.interface';
 import { User } from '../models/user.interface';
 import { ISearchQuery, MultiDBManager } from '../core/indexeddb-handler';
+import { Tables } from '../models';
 
 @Injectable({
     providedIn: 'root'
@@ -176,10 +177,10 @@ export class DbService {
 
     checkExpirations(): void {
         setInterval(async () => {
-            const documents: Document[] = await this.getAll('documents');
+            const documents: Document[] = await this.getAll(Tables.Documents);
             const expired = documents.filter(doc => doc.expiryDate && doc.expiryDate < new Date());
             for (const doc of expired) {
-                await this.delete('documents', doc.id);
+                await this.delete(Tables.Documents, doc.id);
             }
         }, 3600000); // Run hourly
     }
