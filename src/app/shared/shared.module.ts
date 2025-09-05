@@ -13,10 +13,11 @@ import { MatTabsModule } from '@angular/material/tabs';
 import { MatButtonModule } from '@angular/material/button';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
+import { ConfirmDialogComponent } from './components/confirm-dialog/confirm-dialog.component';
 @NgModule({
     declarations: [
         SwipeRightDirective, LongPressDirective,
-        SelectableRowComponent, LayoutComponent, DocumentFolderIconComponent, FileUploadComponent, BreadcrumbComponent, ConfirmDeleteDialogComponent
+        SelectableRowComponent, LayoutComponent, DocumentFolderIconComponent, FileUploadComponent, BreadcrumbComponent, ConfirmDeleteDialogComponent, ConfirmDialogComponent
     ],
     imports: [
         FormsModule, CommonModule,
@@ -33,7 +34,7 @@ import { MatSelectModule } from '@angular/material/select';
         MatSelectModule,
         MatTabsModule,
         SwipeRightDirective, LongPressDirective,
-        SelectableRowComponent, LayoutComponent, DocumentFolderIconComponent, FileUploadComponent, BreadcrumbComponent, ConfirmDeleteDialogComponent
+        SelectableRowComponent, LayoutComponent, DocumentFolderIconComponent, FileUploadComponent, BreadcrumbComponent, ConfirmDeleteDialogComponent, ConfirmDialogComponent
     ]
 })
 export class SharedModule { }

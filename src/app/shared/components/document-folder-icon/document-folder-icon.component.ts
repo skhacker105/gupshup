@@ -1,3 +1,4 @@
+// src/app/components/document-folder-icon/document-folder-icon.component.ts
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { Folder, Document } from '../../../models';
 
@@ -19,6 +20,7 @@ export class DocumentFolderIconComponent {
 
   @Output() longPress = new EventEmitter<void>();
   @Output() onClick = new EventEmitter<MouseEvent>();
+  @Output() onMarkForBackup = new EventEmitter<void>();
 
   get isFolder(): boolean {
     return !('data' in this.item); // Discriminator: Documents have 'data: Blob'
@@ -84,9 +86,12 @@ export class DocumentFolderIconComponent {
 
   markForBackup(event: MouseEvent): void {
     event.stopPropagation();
+    this.onMarkForBackup.emit();
     // Placeholder for backup functionality
-    console.log('Mark for backup:', this.documentItem.id);
-    // TODO: Implement backup marking process
+    // console.log('Mark for backup:', this.documentItem.id);
+    // TODO: Implement backup marking process, e.g., service call to mark document
+    // For demo, simulate local update
+    // this.documentItem.backupAccountId = 'simulated-backup-id';
   }
 
   onRadioClick(event: MouseEvent): void {

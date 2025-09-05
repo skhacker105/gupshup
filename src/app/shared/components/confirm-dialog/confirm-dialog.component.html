@@ -1,0 +1,10 @@
+<div class="confirm-dialog-wrapper"
+    [ngClass]="{'mobile': data.isMobile, 'tablet': data.isTablet, 'desktop': data.isDesktop}">
+    <h2>{{ data.title }}</h2>
+    <p class="info">{{ data.message }}</p>
+    <p class="sub-info" *ngIf="data.subInfo">{{ data.subInfo }}</p>
+    <div class="actions">
+        <button type="button" (click)="dialogRef.close(true)" [title]="data.okButtonText">{{ data.okButtonText }}</button>
+        <button type="button" mat-dialog-close [title]="data.cancelButtonText">{{ data.cancelButtonText }}</button>
+    </div>
+</div>
