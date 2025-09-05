@@ -2,6 +2,7 @@
 import { Component, OnInit } from '@angular/core';
 
 import { AppService, AuthService, DbService } from '../../../../services';
+import { ExpirationPeriod, SUPPORTED_LANGUAGES } from '../../../../models';
 
 @Component({
   selector: 'app-settings',
@@ -9,11 +10,11 @@ import { AppService, AuthService, DbService } from '../../../../services';
   styleUrls: ['./settings.component.scss']
 })
 export class SettingsComponent implements OnInit {
-  targetLanguage = 'en-US';
+  targetLanguage = 'en';
   defaultPeriod = '1week';
   typeExpirations: { [key: string]: string } = {};
-  availableLanguages = ['en-US', 'es-ES', 'fr-FR', 'de-DE'];
-  periods = ['1week', '1month', 'immediate', 'never'];
+  availableLanguages = SUPPORTED_LANGUAGES;
+  periods = Object.entries(ExpirationPeriod).map(([text, key]) => ({ text, key })); // ['1week', '1month', 'immediate', 'never'];
   loading = false;
   errorMessage = '';
   successMessage = '';
@@ -33,7 +34,7 @@ export class SettingsComponent implements OnInit {
       const user = await this.authService.getLoggedInUserInfo();
       if (!user) return;
       
-      this.targetLanguage = user.targetLanguage || 'en-US';
+      this.targetLanguage = user.targetLanguage || 'en';
       this.defaultPeriod = user.expirationSettings?.defaultPeriod || '1week';
       this.typeExpirations = user.expirationSettings?.typeExpirations || {};
     } catch (err) {

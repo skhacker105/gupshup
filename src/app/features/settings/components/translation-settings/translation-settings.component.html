@@ -1,6 +1,0 @@
-<h2>Translation Settings</h2>
-<label for="language">Target Language</label>
-<mat-select id="language" [(ngModel)]="targetLanguage">
-    <mat-option *ngFor="let lang of languages" [value]="lang.code">{{ lang.name }}</mat-option>
-</mat-select>
-<button (click)="save()">Save</button>

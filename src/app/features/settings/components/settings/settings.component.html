@@ -11,14 +11,14 @@
             <label for="targetLanguage" title="Select language for translations">Translation Language</label>
             <mat-select id="targetLanguage" [(ngModel)]="targetLanguage" name="targetLanguage"
                 title="Affects message translations">
-                <mat-option *ngFor="let lang of availableLanguages" [value]="lang">{{ lang }}</mat-option>
+                <mat-option *ngFor="let lang of availableLanguages" [value]="lang.code">{{ lang.name }}</mat-option>
             </mat-select>
         </div>
         <div class="form-group">
             <label for="defaultPeriod" title="Default expiration for documents">Default Expiration Period</label>
             <mat-select id="defaultPeriod" [(ngModel)]="defaultPeriod" name="defaultPeriod"
                 title="Applied to documents without specific settings">
-                <mat-option *ngFor="let period of periods" [value]="period">{{ period }}</mat-option>
+                <mat-option *ngFor="let period of periods" [value]="period.key">{{ period.text }}</mat-option>
             </mat-select>
         </div>
         <h3>Media Type Expirations</h3>
