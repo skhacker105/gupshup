@@ -388,7 +388,6 @@ export class IndexedDBAbstraction {
 
   // Encrypted partial search over blind index
   async search(store: string, { text, fields, minMatch = 'ALL' }: ISearchQuery) {
-    console.log('search=', { store, text, fields, minMatch })
     try {
       await this._assertPermission('READ');
       if (!this.crypto) throw new Error('CryptoManager not attached');
@@ -400,7 +399,6 @@ export class IndexedDBAbstraction {
 
       const tx = this._tx(store);
       const os = tx.objectStore(store);
-      console.log('search os = ', os)
 
       // Special case: queryTokens empty → search for undefined/blank fields
       if (!queryTokens.length) {
@@ -463,7 +461,6 @@ export class IndexedDBAbstraction {
       await tx.done;
       return out;
     } catch (err) {
-      console.log('search err store = ', store)
       console.log('SEARCH Error: ', err);
       throw err;
     }

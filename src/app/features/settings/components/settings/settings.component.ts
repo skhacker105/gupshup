@@ -53,7 +53,6 @@ export class SettingsComponent implements OnInit {
   }
 
   private async loadStorageQuotas(): Promise<void> {
-    console.log('this.storageAccounts = ', this.storageAccounts)
     for (const account of this.storageAccounts) {
       if (account.provider === 'google') {
         try {
@@ -124,7 +123,6 @@ export class SettingsComponent implements OnInit {
     obs
       .pipe(take(1))
       .subscribe(response => {
-        console.log('addGoogleDriveAccount response = ', response);
         this.authService.getLoggedInUserInfoFromBackend().subscribe(user => {
           this.storageAccounts = user?.storageAccounts || [];
           this.loadStorageQuotas();
@@ -132,15 +130,18 @@ export class SettingsComponent implements OnInit {
       });
   }
 
-  async deleteStorageAccount(accountId: string): Promise<void> {
-    if (!confirm('Are you sure you want to delete this storage account?')) return;
+  async deleteStorageAccount(storageAccount: IStorageAccount): Promise<void> {
+    const confirmDelete = await this.appService.confirmForDelete(`storage account ${storageAccount.label} provided by ${storageAccount.provider}`);
+    if (!confirmDelete) return;
 
     this.loading = true;
     try {
-      await this.storageService.deleteAccount(accountId);
-      this.storageAccounts = this.storageAccounts.filter(account => account.id !== accountId);
-      this.successMessage = 'Storage account deleted successfully.';
-      await this.authService.getLoggedInUserInfoFromBackend();
+      this.storageService.deleteAccount(storageAccount.id).subscribe(() => {
+        this.storageAccounts = this.storageAccounts.filter(account => account.id !== storageAccount.id);
+        this.successMessage = 'Storage account deleted successfully.';
+        this.authService.getLoggedInUserInfoFromBackend();
+      })
+
     } catch (err) {
       this.errorMessage = 'Failed to delete storage account.';
     }

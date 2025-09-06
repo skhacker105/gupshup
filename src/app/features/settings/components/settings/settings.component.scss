@@ -99,9 +99,9 @@ ul {
     border: 1px solid $primary-border;
     border-radius: 4px;
     margin-bottom: 0.5rem;
+    gap: 1rem;
 
     .account-info {
-      flex: 1;
       display: flex;
       flex-direction: column;
       gap: 0.3rem;
@@ -109,6 +109,8 @@ ul {
       .account-label {
         font-weight: 500;
         color: $text-color;
+        text-overflow: ellipsis;
+        overflow: hidden;
       }
 
       .account-date {
@@ -139,6 +141,7 @@ ul {
       .quota-text {
         font-size: 0.75rem;
         color: $text-color;
+        display: flex;
       }
     }
 
@@ -147,7 +150,7 @@ ul {
       align-items: center;
       gap: 0.3rem;
       padding: 0.3rem 0.6rem;
-      color: $danger-color;
+      color: $secondary-color;
 
       &:hover {
         background: rgba($danger-color, 0.1);
@@ -169,6 +172,8 @@ ul {
   display: flex;
   gap: 0.5rem;
   justify-content: flex-end;
+  margin-top: 1rem;
+  margin-bottom: 1rem;
 }
 
 .spinner {
@@ -178,36 +183,8 @@ ul {
   color: $secondary-color;
 }
 
-:host ::ng-deep .btn-subtle {
-  background: transparent;
-  border: none;
-  color: $secondary-color;
-  padding: 0.25rem 0.4rem;
-  font-size: 0.875rem;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 4px;
-  transition: color 0.2s ease, background-color 0.2s ease;
 
-  i {
-    font-size: 1rem;
-  }
-
-  &:hover {
-    color: $primary-color;
-    background-color: rgba($primary-color, 0.06);
-  }
-
-  &:disabled {
-    color: lighten($secondary-color, 25%);
-    cursor: not-allowed;
-    opacity: 0.5;
-  }
-}
-
-:host ::ng-deep app-layout.mobile .generic-wrapper {
-  padding: 0.5rem;
+:host ::ng-deep .generic-wrapper.mobile {
 
   header {
     h2 {
@@ -220,7 +197,6 @@ ul {
     align-items: flex-start;
 
     select {
-      width: 100%;
       min-width: unset;
     }
   }
@@ -241,13 +217,18 @@ ul {
 
     .account-quota {
       width: 100%;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 0.3rem;
 
       .quota-bar {
         height: 6px;
+        width: 100%;
       }
 
       .quota-text {
         font-size: 0.7rem;
+        flex-direction: column;
       }
     }
 

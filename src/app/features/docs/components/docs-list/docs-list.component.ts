@@ -210,7 +210,6 @@ export class DocsListComponent implements OnInit {
         this.groups = await this.documentService.getGroupedDocuments(this.documentService.selectedGroupBy, this.documentService.selectedOrderBy);
         this.items = [];
       } else {
-        console.log('loadItems this.currentFolder = ', this.currentFolder)
         const [documents, folders] = await Promise.all([
           this.documentService.getDocuments(this.currentFolder?.id),
           this.documentService.getFolders(this.currentFolder?.id)
@@ -222,7 +221,6 @@ export class DocsListComponent implements OnInit {
         this.groups = [];
       }
     } catch (err) {
-      console.log('loadItems err = ', err)
       this.errorMessage = 'Failed to load documents.';
     }
     this.loading = false;
@@ -369,7 +367,6 @@ export class DocsListComponent implements OnInit {
     dialogRef.afterClosed().subscribe(async (name: string | undefined) => {
       if (name) {
         try {
-          console.log('createFolder this.currentFolder = ', this.currentFolder)
           await this.documentService.createFolder(name, this.currentFolder);
           await this.loadItems();
         } catch {

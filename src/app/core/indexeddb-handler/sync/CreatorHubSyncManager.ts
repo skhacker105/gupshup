@@ -41,12 +41,12 @@ export class CreatorHubSyncManager extends SyncManager {
 
         // listen to messages
         this.transport.on('message', async (m: any) => {
-            console.log('[CreatorHubSyncManager] Incoming message:', m);
+            // console.log('[CreatorHubSyncManager] Incoming message:', m);
             await this._onMessage(m.detail);
         });
 
         this.transport.on('open', () => {
-            console.log('[CreatorHubSyncManager] Transport open');
+            // console.log('[CreatorHubSyncManager] Transport open');
             if (this.mode === 'device') this.requestInitialSync();
         });
 
@@ -55,9 +55,9 @@ export class CreatorHubSyncManager extends SyncManager {
             if (!this.syncing) {
                 const change = ev.detail || ev; // CustomEvent or raw
                 const devices = await this.sendToDeviceList();
-                console.log('[CreatorHubSyncManager] Local change → sending', change);
+                // console.log('[CreatorHubSyncManager] Local change → sending', change);
 
-                console.log('sending update to devices', devices);
+                // console.log('sending update to devices', devices);
                 this._sendDataUpdate(change);
             }
         });
@@ -72,7 +72,7 @@ export class CreatorHubSyncManager extends SyncManager {
 
     /** For device — send first sync request (idempotent, safe after refresh). */
     requestInitialSync() {
-        console.log('[CreatorHubSyncManager] Sending sync-request from device', this.db.deviceId, 'lamport', this.lastAppliedLamport);
+        // console.log('[CreatorHubSyncManager] Sending sync-request from device', this.db.deviceId, 'lamport', this.lastAppliedLamport);
         this.transport.send({
             toDeviceId: this.creatorDeviceId,
             type: 'sync-request',
@@ -99,7 +99,7 @@ export class CreatorHubSyncManager extends SyncManager {
                 break;
             case 'sync-end':
                 this.syncing = false;
-                console.log('[CreatorHubSyncManager] Sync finished');
+                // console.log('[CreatorHubSyncManager] Sync finished');
                 break;
         }
     }
@@ -109,7 +109,7 @@ export class CreatorHubSyncManager extends SyncManager {
     private async _handleSyncRequestFromDevice(msg: { fromLamport: number; fromDeviceId: string }) {
         this.syncing = true;
         const fromLamport = Number(msg.fromLamport || 0);
-        console.log('[CreatorHubSyncManager] Device requested sync from lamport', fromLamport);
+        // console.log('[CreatorHubSyncManager] Device requested sync from lamport', fromLamport);
 
         if (fromLamport <= 0) {
             // FULL SNAPSHOT
@@ -137,7 +137,7 @@ export class CreatorHubSyncManager extends SyncManager {
                             deviceId: this.db.deviceId
                         };
                     }
-                    console.log('[CreatorHubSyncManager] Sending row', change);
+                    // console.log('[CreatorHubSyncManager] Sending row', change);
                     this._sendDataUpdate(change, msg.fromDeviceId);
                 }
             }
@@ -148,7 +148,7 @@ export class CreatorHubSyncManager extends SyncManager {
             // DELTA
             const changes = await this.db.getChangesSince(fromLamport);
             this.transport.send({ type: 'sync-response', dbId: this.db.dbId, mode: 'delta', toDeviceId: msg.fromDeviceId, fromDeviceId: this.db.deviceId });
-            console.log('[CreatorHubSyncManager] Sending sync-response (delta)', changes.length, 'changes');
+            // console.log('[CreatorHubSyncManager] Sending sync-response (delta)', changes.length, 'changes');
 
             for (const change of changes) {
                 this._sendDataUpdate(change, msg.fromDeviceId);
@@ -162,12 +162,12 @@ export class CreatorHubSyncManager extends SyncManager {
 
     private async _handleSyncResponseOnDevice(msg: any) {
         this.syncing = true;
-        console.log('[CreatorHubSyncManager] Received sync-response mode=', msg.mode);
+        // console.log('[CreatorHubSyncManager] Received sync-response mode=', msg.mode);
 
         if (msg.mode === 'full') {
             if (msg.schema) {
                 await this.db.ensureSchema(msg.schema);
-                console.log('[CreatorHubSyncManager] Applied schema from full sync');
+                // console.log('[CreatorHubSyncManager] Applied schema from full sync');
             }
         }
         // actual rows come as sync-data-update
@@ -175,14 +175,14 @@ export class CreatorHubSyncManager extends SyncManager {
 
     private async _handleDataUpdate(msg: any) {
         const change = msg.change;
-        console.log('[CreatorHubSyncManager] Applying remote change', change);
+        // console.log('[CreatorHubSyncManager] Applying remote change', change);
         await this.db.applyRemoteChange(change);
 
         const lamport = Number(change?.lamport || 0);
         if (lamport > this.lastAppliedLamport) {
             this.lastAppliedLamport = lamport;
             await this.db.setPeerSyncState(this._peerKey(), this.lastAppliedLamport);
-            console.log('[CreatorHubSyncManager] Updated lamport →', this.lastAppliedLamport);
+            // console.log('[CreatorHubSyncManager] Updated lamport →', this.lastAppliedLamport);
         }
 
         if (this.mode === 'creator') {

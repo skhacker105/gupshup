@@ -14,7 +14,9 @@ export class AuthService {
     private tokenKey = 'authToken';
     private userInfoKey = 'userInfoKey';
 
-    constructor(private http: HttpClient, private dbService: DbService) { }
+    constructor(private http: HttpClient, private dbService: DbService) {
+        if (this.isLoggedIn()) this.getLoggedInUserInfoFromBackend();
+    }
 
     login(credentials: { email: string, password: string }): Observable<User> {
         return this.http.post(`${this.apiUsers}/login`, credentials).pipe(
@@ -28,7 +30,7 @@ export class AuthService {
 
                 return this.getLoggedInUserInfoFromBackend().pipe(
                     catchError(err => {
-                        localStorage.removeItem(this.tokenKey);
+                        this.logout();
                         throw err;
                     })
                 );
@@ -60,6 +62,7 @@ export class AuthService {
 
     logout() {
         localStorage.removeItem(this.tokenKey);
+        localStorage.removeItem(this.userInfoKey);
     }
 
     isLoggedIn(): boolean {

@@ -81,7 +81,6 @@ export class StorageAccountService {
     }
     window.removeEventListener('message', handleMessage);
     this.popup = null;
-    console.log('Popup closed, message event listener removed.');
   }
 
   getAccounts(): Observable<IStorageAccount[]> {

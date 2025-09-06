@@ -18,22 +18,21 @@ export class WebSocketTransport extends BaseTransport {
   }
 
   private _connect() {
-    console.log(`[WS] connecting -> ${this.url}`);
+    // console.log(`[WS] connecting -> ${this.url}`);
     this.closedByApp = false;
 
     try {
       this.socket = new WebSocket(this.url);
     } catch (err) {
-      console.warn('[WS] socket construction failed', err);
+      // console.warn('[WS] socket construction failed', err);
       setTimeout(() => this._connect(), this.reconnectDelay);
       this.reconnectDelay = Math.min(this.reconnectDelay * 2, this.maxReconnectDelay);
       return;
     }
 
     this.socket.onopen = () => {
-      console.log('[WS] connected');
+      // console.log('[WS] connected');
       // drain queue
-      console.log('this.outboundQueue = ', this.outboundQueue)
       const q = this.outboundQueue.splice(0);
       for (const m of q) this._sendNow(m);
       this.reconnectDelay = 1000;
@@ -43,15 +42,15 @@ export class WebSocketTransport extends BaseTransport {
     this.socket.onmessage = (e: MessageEvent) => {
       try {
         const msg = JSON.parse(e.data);
-        console.log('[WS] recv', msg);
+        // console.log('[WS] recv', msg);
         this._emit('message', msg);
       } catch (err) {
-        console.warn('[WS] failed to parse message', err);
+        // console.warn('[WS] failed to parse message', err);
       }
     };
 
     this.socket.onclose = (ev) => {
-      console.log('[WS] closed', ev && ev.code);
+      // console.log('[WS] closed', ev && ev.code);
       this._emit('close');
       this.socket = null;
       if (this.closedByApp) return;
@@ -66,8 +65,8 @@ export class WebSocketTransport extends BaseTransport {
   }
 
   override async send(msg: any) {
-    console.log('[WS] send queued', msg);
-    console.log(`Socket in ${this.socket?.readyState} state.`)
+    // console.log('[WS] send queued', msg);
+    // console.log(`Socket in ${this.socket?.readyState} state.`)
     if (this.socket && this.socket.readyState === WebSocket.OPEN) {
       this._sendNow(msg);
     } else {
@@ -80,9 +79,9 @@ export class WebSocketTransport extends BaseTransport {
     try {
       const s = JSON.stringify(msg);
       this.socket?.send(s);
-      console.log('[WS] sent', msg);
+      // console.log('[WS] sent', msg);
     } catch (err) {
-      console.warn('[WS] send failed, queuing', err);
+      // console.warn('[WS] send failed, queuing', err);
       this.outboundQueue.push(msg);
     }
   }
