@@ -4,6 +4,7 @@ import { Observable, Subject } from 'rxjs';
 import { AuthService, DbService } from './';
 import { IStorageAccount, Document, Tables, OAuthResponse, IQuotaData } from '../models';
 import { environment } from '../../environments/environment';
+import { AsyncCacheWithTTL } from '../core/cache';
 
 @Injectable({
   providedIn: 'root'
@@ -91,6 +92,7 @@ export class StorageAccountService {
     return this.http.delete(`${this.apiAccounts}/${id}`);
   }
 
+  @AsyncCacheWithTTL()
   getAccountsQuota(accountId: string): Observable<IQuotaData> {
     return this.http.get<IQuotaData>(`${this.apiStorage}/${accountId}/quota`);
   }
