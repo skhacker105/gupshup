@@ -86,6 +86,23 @@ ul {
   }
 }
 
+.storage-accounts {
+  margin-top: 1rem;
+
+  li {
+    justify-content: space-between;
+    padding: 0.8rem;
+    background: $background-color;
+    border: 1px solid $primary-border;
+    border-radius: 4px;
+
+    .account-date {
+      font-size: 0.75rem;
+      color: $secondary-color;
+    }
+  }
+}
+
 .actions {
   display: flex;
   gap: 0.5rem;
@@ -153,6 +170,12 @@ ul {
   ul li select {
     width: 100%;
     min-width: unset;
+  }
+
+  .storage-accounts li {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.3rem;
   }
 }
 

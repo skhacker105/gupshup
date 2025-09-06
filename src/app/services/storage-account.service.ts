@@ -11,6 +11,7 @@ import { environment } from '../../environments/environment';
 export class StorageAccountService {
   // private domainURL = `${window.location.protocol}//${window.location.hostname}`;
   private apiAccounts = environment.storageAccountService + 'accounts';
+  private apiStorage = environment.storageAccountService + 'storage';
   private popup: Window | null = null;
   private messageSubject = new Subject<OAuthResponse>();
   private checkPopupInterval: number | null = null;
@@ -89,6 +90,10 @@ export class StorageAccountService {
 
   deleteAccount(id: string): Observable<any> {
     return this.http.delete(`${this.apiAccounts}/${id}`);
+  }
+
+  getAccountsQuota(accountId: string) {
+    return this.http.get(`${this.apiStorage}/${accountId}/quota`);
   }
 
   async upload(doc: Document, accountId: string): Promise<any> {

@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
-import { AppService, AuthService, DbService, StorageAccountService } from '../../../../services';
+import { AppService, AuthService, StorageAccountService } from '../../../../services';
 import { ExpirationPeriod, SUPPORTED_LANGUAGES } from '../../../../models';
 import { take } from 'rxjs';
 
@@ -14,13 +14,13 @@ export class SettingsComponent implements OnInit {
   availableLanguages = SUPPORTED_LANGUAGES;
   periods = Object.entries(ExpirationPeriod).map(([text, key]) => ({ text, key }));
   typeExpirations: { [key: string]: string } = {};
+  storageAccounts: { id: string; provider: string; label: string; createdAt: Date; userId: string }[] = [];
   loading = false;
   errorMessage = '';
   successMessage = '';
 
   constructor(
     private fb: FormBuilder,
-    private dbService: DbService,
     public appService: AppService,
     private authService: AuthService,
     private storageService: StorageAccountService
@@ -38,6 +38,7 @@ export class SettingsComponent implements OnInit {
       if (!user) return;
 
       this.typeExpirations = user.expirationSettings?.typeExpirations || {};
+      this.storageAccounts = user.storageAccounts || [];
       this.settingsForm = this.fb.group({
         targetLanguage: [user.targetLanguage || 'en'],
         defaultPeriod: [user.expirationSettings?.defaultPeriod || '1week'],
@@ -78,7 +79,7 @@ export class SettingsComponent implements OnInit {
           user.expirationSettings.typeExpirations[type] = this.settingsForm.value[key];
         }
       });
-      await this.dbService.updateUser(user);
+      await this.authService.saveLoggedInUserInfo(user);
       this.successMessage = 'Settings saved successfully.';
       this.settingsForm.markAsPristine();
     } catch (err) {
@@ -102,7 +103,9 @@ export class SettingsComponent implements OnInit {
       .pipe(take(1))
       .subscribe(response => {
         console.log('addGoogleDriveAccount response = ', response);
-        this.authService.getLoggedInUserInfoFromBackend();
-      })
+        this.authService.getLoggedInUserInfoFromBackend().subscribe(user => {
+          this.storageAccounts = user?.storageAccounts || [];
+        });
+      });
   }
 }

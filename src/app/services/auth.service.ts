@@ -66,8 +66,8 @@ export class AuthService {
         return !!this.getToken();
     }
 
-    saveLoggedInUserInfo(userInfo: User): void {
-        this.dbService.updateUser(userInfo);
+    async saveLoggedInUserInfo(userInfo: User) {
+        await this.dbService.updateUser(userInfo);
         localStorage.setItem(this.userInfoKey, JSON.stringify(userInfo));
     }
 

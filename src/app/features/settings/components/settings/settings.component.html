@@ -32,7 +32,12 @@
         <button type="button" (click)="addGoogleDriveAccount()">
             Add Google
         </button>
-
+        <ul class="storage-accounts">
+            <li *ngFor="let account of storageAccounts" title="{{ account.label }} ({{ account.provider }})">
+                <span>{{ account.label }} ({{ account.provider }})</span>
+                <span class="account-date">Added: {{ account.createdAt | date:'shortDate' }}</span>
+            </li>
+        </ul>
         <h3>Media Type Expirations</h3>
         <p class="info">Set specific expiration periods for different media types (e.g., image, video).</p>
         <ul>
