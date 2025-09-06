@@ -51,6 +51,10 @@ export class ProfileComponent implements OnInit {
     this.router.navigateByUrl('/profile/change-password');
   }
 
+  gotoSettings() {
+    this.router.navigateByUrl('/settings');
+  }
+
   logout() {
     this.authService.logout();
     this.router.navigateByUrl('/auth/login');

@@ -34,7 +34,7 @@ export class AppComponent implements OnInit {
 
   onTabChange(index: number): void {
     this.selectedTabIndex = index;
-    const routes = ['/chat', '/docs', '/settings', '/profile'];
+    const routes = ['/chat', '/docs', '/profile'];
     this.router.navigate([routes[index]]);
   }
 
