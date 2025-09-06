@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
-import { AppService, AuthService, DbService } from '../../../../services';
+import { AppService, AuthService, DbService, StorageAccountService } from '../../../../services';
 import { ExpirationPeriod, SUPPORTED_LANGUAGES } from '../../../../models';
 
 @Component({
@@ -21,7 +21,8 @@ export class SettingsComponent implements OnInit {
     private fb: FormBuilder,
     private dbService: DbService,
     public appService: AppService,
-    private authService: AuthService
+    private authService: AuthService,
+    private storageService: StorageAccountService
   ) {
     this.settingsForm = this.fb.group({
       targetLanguage: ['en'],
@@ -92,5 +93,9 @@ export class SettingsComponent implements OnInit {
       this.settingsForm.addControl(`typeExpiration-${type}`, this.fb.control(this.typeExpirations[type]));
       this.settingsForm.markAsDirty();
     }
+  }
+
+  addGoogleDriveAccount() {
+    this.storageService.addGoogleAccount();
   }
 }

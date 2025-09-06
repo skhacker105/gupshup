@@ -7,8 +7,6 @@
 form {
   display: flex;
   flex-direction: column;
-  gap: 1rem;
-  max-width: 500px;
 }
 
 .form-group {
@@ -45,7 +43,8 @@ h3 {
 .info {
   font-size: 0.875rem;
   color: $secondary-color;
-  margin-bottom: 1rem;
+  margin-top: 0rem;
+  margin-bottom: 0rem;
 }
 
 .error {
