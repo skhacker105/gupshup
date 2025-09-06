@@ -4,7 +4,13 @@ export interface User {
     email?: string;
     password: string;
     targetLanguage: string;
-    storageAccounts: string[];
+    storageAccounts: {
+        id: string;
+        provider: string;
+        label: string;
+        createdAt: Date;
+        userId: string;
+    }[];
     profilePicture?: any;
     expirationSettings?: {
         defaultPeriod: string;

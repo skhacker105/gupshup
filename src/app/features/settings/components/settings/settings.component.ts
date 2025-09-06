@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { AppService, AuthService, DbService, StorageAccountService } from '../../../../services';
 import { ExpirationPeriod, SUPPORTED_LANGUAGES } from '../../../../models';
+import { take } from 'rxjs';
 
 @Component({
   selector: 'app-settings',
@@ -96,6 +97,12 @@ export class SettingsComponent implements OnInit {
   }
 
   addGoogleDriveAccount() {
-    this.storageService.addGoogleAccount();
+    const obs = this.storageService.addGoogleAccount();
+    obs
+      .pipe(take(1))
+      .subscribe(response => {
+        console.log('addGoogleDriveAccount response = ', response);
+        this.authService.getLoggedInUserInfoFromBackend();
+      })
   }
 }
