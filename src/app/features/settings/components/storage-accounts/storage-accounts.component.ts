@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { StorageAccount } from '../../../../models';
+import { IStorageAccount } from '../../../../models';
 import { StorageAccountService } from '../../../../services';
 
 @Component({
@@ -8,7 +8,7 @@ import { StorageAccountService } from '../../../../services';
   styleUrls: ['./storage-accounts.component.scss']
 })
 export class StorageAccountsComponent implements OnInit {
-  storageAccounts: StorageAccount[] = [];
+  storageAccounts: IStorageAccount[] = [];
 
   constructor(private storageService: StorageAccountService) { }
 

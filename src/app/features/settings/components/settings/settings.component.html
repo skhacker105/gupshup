@@ -27,15 +27,27 @@
                 <option *ngFor="let period of periods" [value]="period.key">{{ period.text }}</option>
             </select>
         </div>
-        <h3>Google Drive Accounts</h3>
-        <p class="info">Add storage accounts like Google Drive for your backups.</p>
+        <h3>Storage Accounts</h3>
+        <p class="info">Manage your storage accounts for backups (e.g., Google Drive).</p>
         <button type="button" (click)="addGoogleDriveAccount()">
             Add Google
         </button>
         <ul class="storage-accounts">
             <li *ngFor="let account of storageAccounts" title="{{ account.label }} ({{ account.provider }})">
-                <span>{{ account.label }} ({{ account.provider }})</span>
-                <span class="account-date">Added: {{ account.createdAt | date:'shortDate' }}</span>
+                <div class="account-info">
+                    <span class="account-label">{{ account.label }} ({{ account.provider }})</span>
+                    <span class="account-date">Added: {{ account.createdAt | date:'shortDate' }}</span>
+                </div>
+                <div class="account-quota">
+                    <div class="quota-bar">
+                        <div class="quota-used" [style.width]="(account.quota?.usagePercentage || 0) + '%'"></div>
+                    </div>
+                    <span class="quota-text">{{ account.quota?.usagePercentage || 0 }}% Used ({{ account.quota?.usedBytes | bytesToGB }} GB / {{ account.quota?.totalBytes | bytesToGB }} GB)</span>
+                </div>
+                <button type="button" class="btn-subtle delete-btn" (click)="deleteStorageAccount(account.id)" [disabled]="loading" title="Delete {{ account.label }}">
+                    <i class="fa fa-trash"></i>
+                    <span *ngIf="appService.isDesktop" class="delete-text">Delete</span>
+                </button>
             </li>
         </ul>
         <h3>Media Type Expirations</h3>

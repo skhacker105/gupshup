@@ -14,9 +14,10 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { ConfirmDialogComponent } from './components/confirm-dialog/confirm-dialog.component';
+import { BytesToGBPipe } from './pipes/bytes-to-gb.pipe';
 @NgModule({
     declarations: [
-        SwipeRightDirective, LongPressDirective,
+        SwipeRightDirective, LongPressDirective, BytesToGBPipe,
         SelectableRowComponent, LayoutComponent, DocumentFolderIconComponent, FileUploadComponent, BreadcrumbComponent, ConfirmDeleteDialogComponent, ConfirmDialogComponent
     ],
     imports: [
@@ -33,7 +34,7 @@ import { ConfirmDialogComponent } from './components/confirm-dialog/confirm-dial
         MatInputModule,
         MatSelectModule,
         MatTabsModule,
-        SwipeRightDirective, LongPressDirective,
+        SwipeRightDirective, LongPressDirective, BytesToGBPipe,
         SelectableRowComponent, LayoutComponent, DocumentFolderIconComponent, FileUploadComponent, BreadcrumbComponent, ConfirmDeleteDialogComponent, ConfirmDialogComponent
     ]
 })

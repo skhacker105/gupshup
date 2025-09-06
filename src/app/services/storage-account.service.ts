@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, Subject } from 'rxjs';
 import { AuthService, DbService } from './';
-import { StorageAccount, Document, Tables, OAuthResponse } from '../models';
+import { IStorageAccount, Document, Tables, OAuthResponse, IQuotaData } from '../models';
 import { environment } from '../../environments/environment';
 
 @Injectable({
@@ -84,16 +84,16 @@ export class StorageAccountService {
     console.log('Popup closed, message event listener removed.');
   }
 
-  getAccounts(): Observable<StorageAccount[]> {
-    return this.http.get<StorageAccount[]>(`${this.apiAccounts}`);
+  getAccounts(): Observable<IStorageAccount[]> {
+    return this.http.get<IStorageAccount[]>(`${this.apiAccounts}`);
   }
 
   deleteAccount(id: string): Observable<any> {
     return this.http.delete(`${this.apiAccounts}/${id}`);
   }
 
-  getAccountsQuota(accountId: string) {
-    return this.http.get(`${this.apiStorage}/${accountId}/quota`);
+  getAccountsQuota(accountId: string): Observable<IQuotaData> {
+    return this.http.get<IQuotaData>(`${this.apiStorage}/${accountId}/quota`);
   }
 
   async upload(doc: Document, accountId: string): Promise<any> {

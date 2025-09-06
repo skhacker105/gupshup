@@ -10,5 +10,6 @@ export * from './language.type';
 export * from './message.interface';
 export * from './oauth.response.interface';
 export * from './path.segment.interface';
+export * from './quota.data.interface';
 export * from './storage-account.interface';
 export * from './user.interface';
