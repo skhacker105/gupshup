@@ -13,6 +13,8 @@ import { MatTabsModule } from '@angular/material/tabs';
 import { MatButtonModule } from '@angular/material/button';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
+import { MatIconModule } from '@angular/material/icon';
+import { MatMenuModule } from '@angular/material/menu';
 import { ConfirmDialogComponent } from './components/confirm-dialog/confirm-dialog.component';
 import { BytesToGBPipe } from './pipes/bytes-to-gb.pipe';
 import { StorageAccountsComponent } from './components/storage-accounts/storage-accounts.component';
@@ -28,6 +30,8 @@ import { StorageAccountsComponent } from './components/storage-accounts/storage-
         MatInputModule,
         MatSelectModule,
         MatTabsModule,
+        MatIconModule,
+        MatMenuModule
     ],
     exports: [
         MatDialogModule,
@@ -35,6 +39,8 @@ import { StorageAccountsComponent } from './components/storage-accounts/storage-
         MatInputModule,
         MatSelectModule,
         MatTabsModule,
+        MatIconModule,
+        MatMenuModule,
         SwipeRightDirective, LongPressDirective, BytesToGBPipe,
         SelectableRowComponent, LayoutComponent, DocumentFolderIconComponent, FileUploadComponent, BreadcrumbComponent, ConfirmDeleteDialogComponent, ConfirmDialogComponent, StorageAccountsComponent
     ]

@@ -1,3 +1,4 @@
+@use '../../../../../variable' as *;
 
 :host ::ng-deep .generic-wrapper.mobile {
     h3 {
@@ -92,6 +93,55 @@
 
     .delete-btn {
       padding: 0.5rem 1rem;
+    }
+  }
+}
+
+.user-avatar-btn {
+  // color: $primary-color;
+
+  mat-icon {
+    display: block;
+    width: auto;
+    height: auto;
+  }
+}
+
+/* 📱 Mobile */
+:host ::ng-deep .generic-wrapper.mobile {
+  .user-avatar-btn mat-icon {
+    font-size: 28px;
+  }
+  ::ng-deep .mat-menu-item {
+    font-size: 0.85rem;
+    mat-icon {
+      font-size: 18px;
+    }
+  }
+}
+
+/* 💻 Desktop */
+:host ::ng-deep .generic-wrapper.desktop {
+  .user-avatar-btn mat-icon {
+    font-size: 40px;
+  }
+  ::ng-deep .mat-menu-item {
+    font-size: 1rem;
+    mat-icon {
+      font-size: 22px;
+    }
+  }
+}
+
+/* 📱 Tablet */
+:host ::ng-deep .generic-wrapper.tablet {
+  .user-avatar-btn mat-icon {
+    font-size: 34px;
+  }
+  ::ng-deep .mat-menu-item {
+    font-size: 0.95rem;
+    mat-icon {
+      font-size: 20px;
     }
   }
 }
