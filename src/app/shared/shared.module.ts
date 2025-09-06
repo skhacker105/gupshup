@@ -15,10 +15,11 @@ import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { ConfirmDialogComponent } from './components/confirm-dialog/confirm-dialog.component';
 import { BytesToGBPipe } from './pipes/bytes-to-gb.pipe';
+import { StorageAccountsComponent } from './components/storage-accounts/storage-accounts.component';
 @NgModule({
     declarations: [
         SwipeRightDirective, LongPressDirective, BytesToGBPipe,
-        SelectableRowComponent, LayoutComponent, DocumentFolderIconComponent, FileUploadComponent, BreadcrumbComponent, ConfirmDeleteDialogComponent, ConfirmDialogComponent
+        SelectableRowComponent, LayoutComponent, DocumentFolderIconComponent, FileUploadComponent, BreadcrumbComponent, ConfirmDeleteDialogComponent, ConfirmDialogComponent, StorageAccountsComponent
     ],
     imports: [
         FormsModule, CommonModule,
@@ -35,7 +36,7 @@ import { BytesToGBPipe } from './pipes/bytes-to-gb.pipe';
         MatSelectModule,
         MatTabsModule,
         SwipeRightDirective, LongPressDirective, BytesToGBPipe,
-        SelectableRowComponent, LayoutComponent, DocumentFolderIconComponent, FileUploadComponent, BreadcrumbComponent, ConfirmDeleteDialogComponent, ConfirmDialogComponent
+        SelectableRowComponent, LayoutComponent, DocumentFolderIconComponent, FileUploadComponent, BreadcrumbComponent, ConfirmDeleteDialogComponent, ConfirmDialogComponent, StorageAccountsComponent
     ]
 })
 export class SharedModule { }

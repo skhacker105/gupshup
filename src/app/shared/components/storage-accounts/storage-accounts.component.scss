@@ -1,0 +1,205 @@
+@use '../../../../variable' as *;
+
+:host {
+  display: block;
+}
+
+h3 {
+  font-size: 1.25rem;
+  margin: 1rem 0 0.5rem;
+  color: $primary-color;
+}
+
+.info {
+  font-size: 0.875rem;
+  color: $secondary-color;
+  margin-top: 0rem;
+  margin-bottom: 0rem;
+}
+
+.storage-accounts {
+  margin-top: 1rem;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+
+  li {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.8rem;
+    background: $background-color;
+    border: 1px solid $secondary-color;
+    border-radius: 4px;
+    margin-top: 0.5rem;
+    margin-bottom: 0.5rem;
+    gap: 1rem;
+
+    .account-info {
+      display: flex;
+      flex-direction: column;
+      gap: 0.3rem;
+
+      .account-label {
+        font-weight: 500;
+        color: $text-color;
+        text-overflow: ellipsis;
+        overflow: hidden;
+      }
+
+      .account-date {
+        font-size: 0.75rem;
+        color: $secondary-color;
+      }
+    }
+
+    .account-quota {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 0.3rem;
+
+      .quota-bar {
+        height: 8px;
+        background: lighten($secondary-color, 30%);
+        border-radius: 4px;
+        overflow: hidden;
+
+        .quota-used {
+          height: 100%;
+          background: linear-gradient(90deg, $accent-color, $primary-color);
+          transition: width 0.3s ease;
+        }
+      }
+
+      .quota-text {
+        font-size: 0.75rem;
+        color: $text-color;
+        display: flex;
+
+        .no-wrap {
+          white-space: nowrap;
+        }
+      }
+    }
+
+    .delete-btn {
+      display: flex;
+      align-items: center;
+      gap: 0.3rem;
+      padding: 0.3rem 0.6rem;
+      color: $secondary-color;
+
+      &:hover {
+        background: rgba($danger-color, 0.1);
+        color: darken($danger-color, 10%);
+      }
+
+      .fa-trash {
+        font-size: 1rem;
+      }
+
+      .delete-text {
+        font-size: 0.875rem;
+      }
+    }
+  }
+}
+
+:host ::ng-deep .generic-wrapper.mobile {
+  h3 {
+    font-size: 1rem;
+  }
+
+  .storage-accounts li {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+
+    .account-quota {
+      width: 100%;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 0.3rem;
+
+      .quota-bar {
+        height: 6px;
+        width: 100%;
+      }
+
+      .quota-text {
+        font-size: 0.7rem;
+        flex-direction: column;
+      }
+    }
+
+    .delete-btn {
+      align-self: flex-end;
+    }
+  }
+}
+
+:host ::ng-deep .generic-wrapper.tablet {
+  h3 {
+    font-size: 1.25rem;
+  }
+
+  .storage-accounts li {
+    flex-direction: row;
+    align-items: center;
+    gap: 1rem;
+
+    .account-quota {
+      flex: 2;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 0.3rem;
+
+      .quota-bar {
+        height: 8px;
+        width: 100%;
+      }
+
+      .quota-text {
+        font-size: 0.75rem;
+        display: flex;
+      }
+    }
+
+    .delete-btn {
+      padding: 0.4rem 0.8rem;
+    }
+  }
+}
+
+:host ::ng-deep .generic-wrapper.desktop {
+  h3 {
+    font-size: 1.5rem;
+  }
+
+  .storage-accounts li {
+    gap: 1.5rem;
+
+    .account-quota {
+      flex: 2;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 0.3rem;
+
+      .quota-bar {
+        height: 10px;
+        width: 100%;
+      }
+
+      .quota-text {
+        font-size: 0.8rem;
+        display: flex;
+      }
+    }
+
+    .delete-btn {
+      padding: 0.5rem 1rem;
+    }
+  }
+}
