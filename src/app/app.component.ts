@@ -26,7 +26,7 @@ export class AppComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    // this.router.navigate(['/chat']); // Default to Chat tab
+    this.router.navigate(['/chat']); // Default to Chat tab
     setTimeout(() => {
       if (this.authService.isLoggedIn()) this.authService.getLoggedInUserInfoFromBackend().pipe(take(1)).subscribe(res => {});
     }, 1000);
