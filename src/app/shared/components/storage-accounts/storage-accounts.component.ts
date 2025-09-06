@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, Output, OnChanges, ChangeDetectionStrategy, SimpleChanges } from '@angular/core';
+import { Component, EventEmitter, Input, Output, OnInit } from '@angular/core';
 import { AppService, AuthService, StorageAccountService } from '../../../services';
 import { IStorageAccount } from '../../../models';
 import { take } from 'rxjs';
@@ -6,10 +6,9 @@ import { take } from 'rxjs';
 @Component({
   selector: 'app-storage-accounts',
   templateUrl: './storage-accounts.component.html',
-  styleUrls: ['./storage-accounts.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush
+  styleUrls: ['./storage-accounts.component.scss']
 })
-export class StorageAccountsComponent implements OnChanges {
+export class StorageAccountsComponent implements OnInit {
   @Input() storageAccounts: IStorageAccount[] = [];
   @Input() loading = false;
   @Output() storageAccountsChange = new EventEmitter<IStorageAccount[]>();
@@ -22,9 +21,10 @@ export class StorageAccountsComponent implements OnChanges {
     private storageService: StorageAccountService
   ) { }
 
-  ngOnChanges(changes: SimpleChanges): void {
-    if (changes['storageAccounts'])
+  ngOnInit(): void {
+    setTimeout(() => {
       this.loadStorageQuotas();
+    }, 1000);
   }
 
   async loadStorageQuotas(): Promise<void> {
@@ -52,7 +52,7 @@ export class StorageAccountsComponent implements OnChanges {
     obs
       .pipe(take(1))
       .subscribe(response => {
-        this.authService.getLoggedInUserInfoFromBackend().subscribe(user => {
+        this.authService.getLoggedInUserInfoFromBackend().pipe(take(1)).subscribe(user => {
           this.storageAccounts = user?.storageAccounts || [];
           this.storageAccountsChange.emit(this.storageAccounts);
           this.loadStorageQuotas();
@@ -67,11 +67,12 @@ export class StorageAccountsComponent implements OnChanges {
 
     this.loading = true;
     try {
-      this.storageService.deleteAccount(storageAccount.id).subscribe(() => {
+      this.storageService.deleteAccount(storageAccount.id).pipe(take(1)).subscribe(() => {
         this.storageAccounts = this.storageAccounts.filter(account => account.id !== storageAccount.id);
         this.storageAccountsChange.emit(this.storageAccounts);
+        console.log('Storage account deleted successfully')
         this.successMessage.emit('Storage account deleted successfully.');
-        this.authService.getLoggedInUserInfoFromBackend();
+        this.authService.getLoggedInUserInfoFromBackend().pipe(take(1)).subscribe(res => { });
       });
     } catch (err) {
       this.errorMessage.emit('Failed to delete storage account.');

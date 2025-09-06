@@ -1,3 +1,12 @@
-<app-storage-accounts [storageAccounts]="storageAccounts" [loading]="loading"
-    (storageAccountsChange)="storageAccounts=$event">
-</app-storage-accounts>
+<app-layout title="Profile" [isMobile]="appService.isMobile" [isTablet]="appService.isTablet"
+    [isDesktop]="appService.isDesktop">
+
+    <ng-container action-always>
+        <button (click)="logout()">
+            Logout
+        </button>
+    </ng-container>
+
+    <app-storage-accounts [storageAccounts]="storageAccounts" [loading]="loading">
+    </app-storage-accounts>
+</app-layout>

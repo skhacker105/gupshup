@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { IStorageAccount } from '../../../../models';
-import { AuthService } from '../../../../services';
+import { AppService, AuthService } from '../../../../services';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-profile',
@@ -13,7 +14,11 @@ export class ProfileComponent implements OnInit {
   errorMessage = '';
   storageAccounts: IStorageAccount[] = [];
 
-  constructor(private authService: AuthService) {}
+  constructor(
+    public appService: AppService,
+    private authService: AuthService,
+    private router: Router
+  ) { }
 
   ngOnInit(): void {
     this.loadUserStorageAccounts();
@@ -30,5 +35,10 @@ export class ProfileComponent implements OnInit {
       this.errorMessage = 'Failed to load user storage accounts.';
     }
     this.loading = false;
+  }
+
+  logout() {
+    this.authService.logout();
+    this.router.navigateByUrl('/auth/login')
   }
 }

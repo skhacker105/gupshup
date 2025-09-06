@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { catchError, map, mergeMap, tap } from 'rxjs/operators';
+import { catchError, mergeMap, tap } from 'rxjs/operators';
 import { User } from '../models/';
 import { environment } from '../../environments/environment';
 import { DbService } from './';
@@ -15,7 +15,6 @@ export class AuthService {
     private userInfoKey = 'userInfoKey';
 
     constructor(private http: HttpClient, private dbService: DbService) {
-        if (this.isLoggedIn()) this.getLoggedInUserInfoFromBackend();
     }
 
     login(credentials: { email: string, password: string }): Observable<User> {

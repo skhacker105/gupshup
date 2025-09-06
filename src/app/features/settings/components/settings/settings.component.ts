@@ -117,34 +117,4 @@ export class SettingsComponent implements OnInit {
       this.settingsForm.markAsDirty();
     }
   }
-
-  addGoogleDriveAccount() {
-    const obs = this.storageService.addGoogleAccount();
-    obs
-      .pipe(take(1))
-      .subscribe(response => {
-        this.authService.getLoggedInUserInfoFromBackend().subscribe(user => {
-          this.storageAccounts = user?.storageAccounts || [];
-          this.loadStorageQuotas();
-        });
-      });
-  }
-
-  async deleteStorageAccount(storageAccount: IStorageAccount): Promise<void> {
-    const confirmDelete = await this.appService.confirmForDelete(`storage account ${storageAccount.label} provided by ${storageAccount.provider}`);
-    if (!confirmDelete) return;
-
-    this.loading = true;
-    try {
-      this.storageService.deleteAccount(storageAccount.id).subscribe(() => {
-        this.storageAccounts = this.storageAccounts.filter(account => account.id !== storageAccount.id);
-        this.successMessage = 'Storage account deleted successfully.';
-        this.authService.getLoggedInUserInfoFromBackend();
-      })
-
-    } catch (err) {
-      this.errorMessage = 'Failed to delete storage account.';
-    }
-    this.loading = false;
-  }
 }

@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 
 import { Router } from '@angular/router';
 import { AppService, AuthService, DbService } from './services';
+import { take } from 'rxjs';
 
 @Component({
   selector: 'app-root',
@@ -25,7 +26,10 @@ export class AppComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.router.navigate(['/chat']); // Default to Chat tab
+    // this.router.navigate(['/chat']); // Default to Chat tab
+    setTimeout(() => {
+      if (this.authService.isLoggedIn()) this.authService.getLoggedInUserInfoFromBackend().pipe(take(1)).subscribe(res => {});
+    }, 1000);
   }
 
   onTabChange(index: number): void {

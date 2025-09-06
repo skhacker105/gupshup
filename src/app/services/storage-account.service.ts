@@ -4,7 +4,7 @@ import { Observable, Subject } from 'rxjs';
 import { AuthService, DbService } from './';
 import { IStorageAccount, Document, Tables, OAuthResponse, IQuotaData } from '../models';
 import { environment } from '../../environments/environment';
-import { AsyncCacheWithTTL } from '../core/cache';
+import { CacheEvict, Cacheable } from '../core/cache';
 
 @Injectable({
   providedIn: 'root'
@@ -28,6 +28,7 @@ export class StorageAccountService {
    * @param expectedOrigin Optional origin to validate messages (e.g., 'http://localhost:3000')
    * @returns Observable<OAuthResponse>
    */
+  @CacheEvict(['getAccountsQuota'])
   addGoogleAccount(expectedOrigin?: string): Observable<OAuthResponse> {
     const token = this.authService.getToken();
     if (!token) {
@@ -64,7 +65,6 @@ export class StorageAccountService {
     this.checkPopupInterval = window.setInterval(() => {
       if (this.popup?.closed) {
         this.cleanup(handleMessage);
-        this.messageSubject.complete();
       }
     }, 500); // Check every 500ms for responsiveness
 
@@ -88,11 +88,12 @@ export class StorageAccountService {
     return this.http.get<IStorageAccount[]>(`${this.apiAccounts}`);
   }
 
+  @CacheEvict(['getAccountsQuota'])
   deleteAccount(id: string): Observable<any> {
     return this.http.delete(`${this.apiAccounts}/${id}`);
   }
 
-  @AsyncCacheWithTTL()
+  @Cacheable()
   getAccountsQuota(accountId: string): Observable<IQuotaData> {
     return this.http.get<IQuotaData>(`${this.apiStorage}/${accountId}/quota`);
   }

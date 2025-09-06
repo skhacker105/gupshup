@@ -1,4 +1,4 @@
-import { Observable, of, from } from 'rxjs';
+import { Observable, of } from 'rxjs';
 import { tap, shareReplay } from 'rxjs/operators';
 import { environment } from '../../../environments/environment';
 
@@ -8,13 +8,13 @@ interface CacheEntry {
 }
 
 const cacheStore = new Map<string, CacheEntry>();
+const methodCacheKeys = new Map<string, Set<string>>();
 
 /**
- * Decorator to cache results of async functions (Promise or Observable).
- * 
- * @param ttlMs - Cache time-to-live in milliseconds. Defaults to environment.cacheTTL.
+ * Cacheable decorator for async functions (Promise or Observable).
+ * Stores results with a TTL.
  */
-export function AsyncCacheWithTTL(ttlMs: number = environment.cacheTTL) {
+export function Cacheable(ttlMs: number = environment.cacheTTL) {
   return function (
     target: any,
     propertyKey: string,
@@ -25,6 +25,12 @@ export function AsyncCacheWithTTL(ttlMs: number = environment.cacheTTL) {
     descriptor.value = function (...args: any[]) {
       const cacheKey = `${propertyKey}_${JSON.stringify(args)}`;
       const now = Date.now();
+
+      // Register this key under the method name
+      if (!methodCacheKeys.has(propertyKey)) {
+        methodCacheKeys.set(propertyKey, new Set());
+      }
+      methodCacheKeys.get(propertyKey)!.add(cacheKey);
 
       // Check cache
       if (cacheStore.has(cacheKey)) {
@@ -38,7 +44,7 @@ export function AsyncCacheWithTTL(ttlMs: number = environment.cacheTTL) {
 
       const result = originalMethod.apply(this, args);
 
-      // Handle Promises
+      // Handle Promise
       if (result instanceof Promise) {
         const wrappedPromise = result.then((res: any) => {
           cacheStore.set(cacheKey, {
@@ -51,7 +57,7 @@ export function AsyncCacheWithTTL(ttlMs: number = environment.cacheTTL) {
         return wrappedPromise;
       }
 
-      // Handle Observables
+      // Handle Observable
       if (result instanceof Observable) {
         const shared$ = (result as Observable<any>).pipe(
           tap((res) => {
@@ -66,8 +72,37 @@ export function AsyncCacheWithTTL(ttlMs: number = environment.cacheTTL) {
         return shared$;
       }
 
-      // Fallback: just return the result (not cached)
-      return result;
+      return result; // fallback
+    };
+
+    return descriptor;
+  };
+}
+
+/**
+ * CacheEvict decorator for methods that should clear caches of related methods.
+ * 
+ * @param methods - Array of method names whose cache should be cleared
+ */
+export function CacheEvict(methods: string[]) {
+  return function (
+    target: any,
+    propertyKey: string,
+    descriptor: PropertyDescriptor
+  ) {
+    const originalMethod = descriptor.value;
+
+    descriptor.value = function (...args: any[]) {
+      // Invalidate caches of specified methods
+      methods.forEach((method) => {
+        const keys = methodCacheKeys.get(method);
+        if (keys) {
+          keys.forEach((key) => cacheStore.delete(key));
+          methodCacheKeys.delete(method);
+        }
+      });
+
+      return originalMethod.apply(this, args);
     };
 
     return descriptor;
