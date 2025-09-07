@@ -6,6 +6,8 @@ export interface Message {
   receiverId: string;
   text?: string;
   file?: Document;
+  status: string;
+  replyTo?: string;
   createdAt: Date;
   translatedText?: string;
 }

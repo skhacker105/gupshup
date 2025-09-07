@@ -42,6 +42,10 @@ export class ChatService {
         this.messageSubject.next(msg);
     }
 
+    deleteMessage(messageId: string) {
+        
+    }
+
     async getAllMessageByUser(receiverId: string): Promise<Message[]> {
         const query: ISearchQuery = { text: receiverId ?? '', fields: ['receiverId'] }
         return this.dbService.search(Tables.Messages, query);

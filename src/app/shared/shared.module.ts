@@ -1,5 +1,5 @@
 import { NgModule } from '@angular/core';
-import { LongPressDirective, SwipeRightDirective } from './directives';
+import { AutoResizeDirective, LongPressDirective, SwipeRightDirective } from './directives';
 import { SelectableRowComponent } from './components/selectable-row/selectable-row.component';
 import { LayoutComponent } from './components/layout/layout.component';
 import { FormsModule } from '@angular/forms';
@@ -18,10 +18,11 @@ import { MatMenuModule } from '@angular/material/menu';
 import { ConfirmDialogComponent } from './components/confirm-dialog/confirm-dialog.component';
 import { BytesToGBPipe } from './pipes/bytes-to-gb.pipe';
 import { StorageAccountsComponent } from './components/storage-accounts/storage-accounts.component';
+import { ChatMessageComponent } from './components/chat-message/chat-message.component';
 @NgModule({
     declarations: [
-        SwipeRightDirective, LongPressDirective, BytesToGBPipe,
-        SelectableRowComponent, LayoutComponent, DocumentFolderIconComponent, FileUploadComponent, BreadcrumbComponent, ConfirmDeleteDialogComponent, ConfirmDialogComponent, StorageAccountsComponent
+        SwipeRightDirective, LongPressDirective, BytesToGBPipe, AutoResizeDirective,
+        SelectableRowComponent, LayoutComponent, DocumentFolderIconComponent, FileUploadComponent, BreadcrumbComponent, ConfirmDeleteDialogComponent, ConfirmDialogComponent, StorageAccountsComponent, ChatMessageComponent
     ],
     imports: [
         FormsModule, CommonModule,
@@ -41,8 +42,8 @@ import { StorageAccountsComponent } from './components/storage-accounts/storage-
         MatTabsModule,
         MatIconModule,
         MatMenuModule,
-        SwipeRightDirective, LongPressDirective, BytesToGBPipe,
-        SelectableRowComponent, LayoutComponent, DocumentFolderIconComponent, FileUploadComponent, BreadcrumbComponent, ConfirmDeleteDialogComponent, ConfirmDialogComponent, StorageAccountsComponent
+        SwipeRightDirective, LongPressDirective, BytesToGBPipe, AutoResizeDirective,
+        SelectableRowComponent, LayoutComponent, DocumentFolderIconComponent, FileUploadComponent, BreadcrumbComponent, ConfirmDeleteDialogComponent, ConfirmDialogComponent, StorageAccountsComponent, ChatMessageComponent,
     ]
 })
 export class SharedModule { }
