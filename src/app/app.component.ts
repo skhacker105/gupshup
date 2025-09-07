@@ -22,7 +22,6 @@ export class AppComponent implements OnInit {
   tabs: Tab[] = [
     { label: 'Chat', icon: 'fa fa-comments', route: '/chat' },
     { label: 'Documents', icon: 'fa fa-file', route: '/docs' },
-    { label: 'Settings', icon: 'fa fa-cog', route: '/settings' },
     { label: 'Profile', icon: 'fa fa-user', route: '/profile' },
   ];
 

@@ -33,7 +33,7 @@ export class ChatService {
         // if (msg.text) {
         //     const user = await this.authService.getLoggedInUserInfo();
         //     if (!user) return;
-            
+
         //     const translated = await this.translationService.translate(msg.text, 'auto', user.targetLanguage);
         //     msg.translatedText = translated;
         // }
@@ -42,13 +42,18 @@ export class ChatService {
         this.messageSubject.next(msg);
     }
 
-    deleteMessage(messageId: string) {
-        
+    deleteMessage(messageId: string): Promise<void> {
+        return this.dbService.delete(Tables.Messages, messageId);
     }
 
-    async getAllMessageByUser(receiverId: string): Promise<Message[]> {
-        const query: ISearchQuery = { text: receiverId ?? '', fields: ['receiverId'] }
-        return this.dbService.search(Tables.Messages, query);
+    async getAllMessageByUser(userId: string): Promise<Message[]> {
+        const query1: ISearchQuery = { text: userId ?? '', fields: ['receiverId'] }
+        const messages1 = await this.dbService.search(Tables.Messages, query1);
+
+        const query2: ISearchQuery = { text: userId ?? '', fields: ['senderId'] }
+        const messages2 = await this.dbService.search(Tables.Messages, query2);
+
+        return [...messages1, ...messages2]
     }
 
     async syncContacts(): Promise<void> {

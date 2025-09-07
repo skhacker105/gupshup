@@ -1,5 +1,6 @@
 <app-layout [title]="receiverName" [isMobile]="appService.isMobile" [isTablet]="appService.isTablet"
-  [isDesktop]="appService.isDesktop" [selectionMode]="multiSelectMode" (cancelMultiSelect)="cancelMultiSelect()">
+  [isDesktop]="appService.isDesktop" [selectionMode]="multiSelectMode" (cancelMultiSelect)="cancelMultiSelect()"
+  (swipeRight)="enableMobileMultiSelect()">
 
   <!-- Always visible actions -->
   <ng-container action-always>
@@ -45,9 +46,10 @@
     <p *ngIf="errorMessage" class="error">{{ errorMessage }}</p>
 
     <div class="messages" #messagesContainer *ngIf="!loading; else loadingSpinner">
-      <app-chat-message *ngFor="let msg of messages; trackBy: trackByMessageId" [message]="msg"
+      <app-chat-message *ngFor="let msg of messages; trackBy: trackByMessageId" [message]="msg" [showSenderName]="false"
         [isSelected]="isSelected(msg)" [multiSelectMode]="multiSelectMode" [currentUserId]="currentUserId"
         [receiverId]="receiverId" [isSent]="msg.senderId === currentUserId"
+        [isMobile]="appService.isMobile" [isTablet]="appService.isTablet" [isDesktop]="appService.isDesktop"
         (toggleSelection)="toggleSelect(msg, $event)" (replyMessage)="replyToMessage(msg)"
         (forwardMessage)="forwardMessage(msg)" (deleteMessage)="deleteMessage(msg)"
         (translateMessage)="translateMessage(msg)"

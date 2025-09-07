@@ -63,7 +63,7 @@
   .message-content {
     padding: 0.6rem 0.8rem;
     border-radius: 18px;
-    box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+    box-shadow: 0 1px 2px rgba($text-color, 0.1);
     position: relative;
 
     .sender-name {
@@ -120,7 +120,7 @@
           left: 0;
           right: 0;
           bottom: 0;
-          background: rgba(0,0,0,0.5);
+          background: rgba($text-color, 0.5);
           display: flex;
           align-items: center;
           justify-content: center;
@@ -132,7 +132,7 @@
           }
 
           button {
-            background: rgba(255,255,255,0.9);
+            background: rgba($light-text-color, 0.9);
             border: none;
             border-radius: 50%;
             width: 40px;
@@ -145,7 +145,7 @@
             font-size: 0.8rem;
 
             &:hover {
-              background: white;
+              background: $light-text-color;
             }
           }
         }
@@ -172,7 +172,7 @@
 
         .btn-download {
           background: $primary-color;
-          color: white;
+          color: $light-text-color;
           border: none;
           padding: 0.3rem;
           border-radius: 4px;
@@ -191,7 +191,7 @@
 
         .btn-play {
           background: $accent-color;
-          color: white;
+          color: $light-text-color;
           border: none;
           padding: 0.5rem;
           border-radius: 50%;
@@ -219,32 +219,68 @@
   }
 
   .message-actions {
-    display: flex;
+    // display: flex;
     gap: 0.2rem;
     margin-top: 0.3rem;
-    opacity: 0;
+    // opacity: 0;
+    display: none;
     transition: opacity 0.2s;
-
-    .message-bubble:hover & {
-      opacity: 1;
-    }
 
     button {
       background: transparent;
       border: none;
-      color: rgba(0,0,0,0.5);
+      color: rgba($text-color, 0.5);
       padding: 0.3rem;
       border-radius: 4px;
       cursor: pointer;
       font-size: 0.8rem;
 
       &:hover {
-        background: rgba(0,0,0,0.1);
+        background: rgba($text-color, 0.1);
         color: $primary-color;
       }
 
       i {
         font-size: 0.9rem;
+      }
+    }
+  }
+    
+  &:hover {
+
+    .message-actions {
+      // opacity: 1;
+      display: flex;
+    }
+  }
+
+  &.tablet,
+  &.mobile {
+    .message-actions {
+      opacity: 1;
+      display: none;
+    }
+
+    &:hover {
+
+      .message-actions {
+        opacity: 1;
+        display: flex;
+      }
+    }
+  }
+
+  &.desktop {
+    .message-actions {
+      opacity: 0;
+      display: flex;
+    }
+
+    &:hover {
+
+      .message-actions {
+        opacity: 1;
+        display: flex;
       }
     }
   }

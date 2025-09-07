@@ -2,8 +2,8 @@ import { Component, OnInit, OnDestroy, ViewChild, ElementRef, TrackByFunction } 
 import { Router, ActivatedRoute } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { v4 as uuidv4 } from 'uuid';
-import { Message, Document, Contact, Tables } from '../../../../models';
-import { AppService, ChatService, DocumentService, TranslationService, DbService } from '../../../../services';
+import { Message, Document, Contact, Tables, User } from '../../../../models';
+import { AppService, ChatService, DocumentService, TranslationService, AuthService, ContactService } from '../../../../services';
 import { MatDialog } from '@angular/material/dialog';
 import { MediaEditorComponent } from '../media-editor/media-editor.component';
 
@@ -18,7 +18,7 @@ export class ChatWindowComponent implements OnInit, OnDestroy {
   newMessage: Message = { id: '', senderId: '', receiverId: '', createdAt: new Date(), status: 'sent' };
   selectedMessages: Message[] = [];
   multiSelectMode = false;
-  currentUserId = 'current-user-id';
+  currentUser: User | undefined;
   receiverId = 'dummy-receiver-id';
   receiverName = 'Dummy Contact';
   selectedFile?: File;
@@ -29,24 +29,32 @@ export class ChatWindowComponent implements OnInit, OnDestroy {
   private mediaRecorder?: MediaRecorder;
   private recordedChunks: Blob[] = [];
 
+  get currentUserId(): string {
+    return this.currentUser?.id ?? '';
+  }
+
   constructor(
     public appService: AppService,
+    public authService: AuthService,
     private router: Router,
     private route: ActivatedRoute,
     private chatService: ChatService,
     private documentService: DocumentService,
     private translationService: TranslationService,
-    private dbService: DbService,
+    private contactService: ContactService,
     private dialog: MatDialog
-  ) {}
+  ) { }
 
   trackByMessageId: TrackByFunction<Message> = (index: number, msg: Message) => msg.id;
 
-  ngOnInit(): void {
+  async ngOnInit() {
     this.loading = true;
+    this.currentUser = await this.authService.getLoggedInUserInfo();
     this.receiverId = this.route.snapshot.paramMap.get('id') || 'dummy-receiver-id';
     this.newMessage.senderId = this.currentUserId;
     this.newMessage.receiverId = this.receiverId;
+    // this.newMessage.senderId = this.receiverId // currentUserId;
+    // this.newMessage.receiverId = this.currentUserId // receiverId;
     // Load messages and contact name
     this.loadMessagesAndContact().then(() => {
       this.loading = false;
@@ -75,9 +83,8 @@ export class ChatWindowComponent implements OnInit, OnDestroy {
       const messages = await this.chatService.getAllMessageByUser(this.receiverId);
       this.messages = messages
         .filter((m: Message) => m.receiverId === this.receiverId || m.senderId === this.receiverId)
-        .sort((a: Message, b: Message) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
-      const contacts = await this.dbService.getAll('contacts');
-      const contact = contacts.find((c: Contact) => c.id === this.receiverId);
+        .sort((a: Message, b: Message) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime());
+      const contact = await this.contactService.getContactById(this.receiverId)
       this.receiverName = contact?.name || this.receiverId;
     } catch (err) {
       this.errorMessage = 'Failed to load messages or contact.';
@@ -278,20 +285,20 @@ export class ChatWindowComponent implements OnInit, OnDestroy {
       this.errorMessage = 'Invalid document.';
       return;
     }
-    this.dbService.get(Tables.Documents, id).then((doc: Document) => {
-      if (doc) {
-        const url = URL.createObjectURL(doc.data);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = name;
-        a.click();
-        URL.revokeObjectURL(url);
-      } else {
-        this.errorMessage = 'Document not found.';
-      }
-    }).catch(err => {
-      this.errorMessage = 'Error downloading document.';
-    });
+    // this.dbService.get(Tables.Documents, id).then((doc: Document) => {
+    //   if (doc) {
+    //     const url = URL.createObjectURL(doc.data);
+    //     const a = document.createElement('a');
+    //     a.href = url;
+    //     a.download = name;
+    //     a.click();
+    //     URL.revokeObjectURL(url);
+    //   } else {
+    //     this.errorMessage = 'Document not found.';
+    //   }
+    // }).catch(err => {
+    //   this.errorMessage = 'Error downloading document.';
+    // });
   }
 
   showInfo(): void {
@@ -320,18 +327,28 @@ export class ChatWindowComponent implements OnInit, OnDestroy {
     return !!this.newMessage.text?.trim() || !!this.selectedFile;
   }
 
+  enableMobileMultiSelect(): void {
+    this.multiSelectMode = true;
+  }
+
   cancelMultiSelect(): void {
     this.selectedMessages = [];
     this.multiSelectMode = false;
   }
 
   async deleteMessage(msg: Message): Promise<void> {
+    const confirmToDelete = await this.appService.confirmForDelete((msg.text ? msg.text : 'message'));
+    if (!confirmToDelete) return;
+
     try {
+      this.loading = true;
       await this.chatService.deleteMessage(msg.id);
       this.messages = this.messages.filter(m => m.id !== msg.id);
       this.selectedMessages = this.selectedMessages.filter(m => m.id !== msg.id);
       this.multiSelectMode = this.selectedMessages.length > 0;
+      this.loading = false;
     } catch (err) {
+      this.loading = false;
       this.errorMessage = 'Failed to delete message.';
     }
   }
@@ -375,13 +392,14 @@ export class ChatWindowComponent implements OnInit, OnDestroy {
   }
 
   private resetInput(): void {
-    this.newMessage = { id: '', senderId: this.currentUserId, receiverId: this.receiverId, createdAt: new Date(), status: 'sent' };
+    this.newMessage = {
+      id: '',
+      senderId: this.currentUserId,
+      receiverId: this.receiverId,
+      createdAt: new Date(), status: 'sent'
+    };
     this.selectedFile = undefined;
     this.replyingTo = null;
-    const textarea = document.querySelector('textarea[name="messageText"]') as HTMLTextAreaElement;
-    if (textarea) {
-      textarea.style.height = '2rem'; // Reset to 1 row
-    }
   }
 
   private scrollToBottom(): void {

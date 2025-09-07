@@ -1,6 +1,6 @@
 <!-- src/app/components/document-folder-icon/document-folder-icon.component.html -->
 <div class="icon-container" (click)="onClick.emit($event)" [ngClass]="classes">
-    <div class="icon-wrapper" [appLongPress]="isDesktop" (modeSwitched)="longPress.emit()">
+    <div class="icon-wrapper" [appLongPress]="true" (modeSwitched)="longPress.emit()">
         <ng-container *ngIf="selectionMode">
             <input type="radio" [checked]="selected" (click)="onRadioClick($event)" class="radio-btn"
                 [ngClass]="{

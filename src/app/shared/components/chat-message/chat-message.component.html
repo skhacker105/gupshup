@@ -1,5 +1,13 @@
-<div class="message-bubble"
-    [ngClass]="{'sent': isSent, 'received': !isSent, 'selected': isSelected, 'multi-select': multiSelectMode}"
+<div class="message-bubble" [appLongPress]="true" (modeSwitched)="longPress.emit()"
+    [ngClass]="{
+        'sent': isSent,
+        'received': !isSent,
+        'selected': isSelected,
+        'multi-select': multiSelectMode,
+        'mobile': isMobile,
+        'tablet': isTablet,
+        'desktop': isDesktop
+        }"
     (click)="onMessageClick($event)">
 
     <!-- Checkbox for multi-select -->

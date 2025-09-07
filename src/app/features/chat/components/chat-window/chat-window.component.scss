@@ -56,7 +56,6 @@
   .input-form {
     display: flex;
     padding-top: 0.4rem;
-    padding-bottom: 0.4rem;
     border-top: 1px solid $secondary-color;
     background: $background-color;
     align-items: center;
@@ -124,12 +123,12 @@
 
       .send-button {
         position: absolute;
-        right: 0rem;
-        bottom: 0.1rem;
+        right: 0.2rem;
+        bottom: 0.15rem;
         background: $primary-color;
         color: $light-text-color;
-        width: 32px;
-        height: 32px;
+        width: 30px;
+        height: 29px;
         border-radius: 50%;
         border: none;
         display: flex;

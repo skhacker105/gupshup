@@ -17,6 +17,7 @@ export class LongPressDirective {
     // Unified for mouse + touch + pen
     @HostListener('pointerdown', ['$event'])
     onPointerDown(event: PointerEvent) {
+        console.log('onPointerDown')
         if (!this.appLongPress) return;
 
         this.longPressTriggered = false;

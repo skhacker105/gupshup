@@ -14,7 +14,11 @@ export class ChatMessageComponent {
   @Input() receiverId!: string;
   @Input() isSent = false;
   @Input() showSenderName = true; // For grouping or first message
+  @Input() isMobile = false;
+  @Input() isTablet = false;
+  @Input() isDesktop = false;
 
+  @Output() longPress = new EventEmitter<void>();
   @Output() toggleSelection = new EventEmitter<MouseEvent>();
   @Output() replyMessage = new EventEmitter<Message>();
   @Output() forwardMessage = new EventEmitter<Message>();
