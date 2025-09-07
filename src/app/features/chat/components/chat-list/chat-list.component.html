@@ -46,13 +46,13 @@
       </select>
     </div>
 
-    <app-selectable-row *ngFor="let item of mergedList" [title]="item.name" [description]="item.phoneNumber"
+    <app-selectable-row *ngFor="let item of mergedList" [title]="item.name" [description]="getItemDescription(item)"
       [isSelectable]="true" [selectionMode]="multiSelectMode" [selected]="isSelected(item)"
       [isDesktop]="appService.isDesktop" [isTablet]="appService.isTablet" [isMobile]="appService.isMobile"
       (selectionChange)="toggleSelect(item, $event)" (rowClick)="rowClick(item, $event)">
 
       <!-- Projected icon -->
-      <i row-icon class="fa" [ngClass]="item.type === 'contact' ? 'fa-user' : 'fa-users'"></i>
+      <i row-icon class="fa" [ngClass]="isContact(item) ? 'fa-user' : 'fa-users'"></i>
 
       <!-- Row-level actions -->
       <button action-singular class="btn-subtle" (click)="deleteItem(item, $event)" title="Delete">
