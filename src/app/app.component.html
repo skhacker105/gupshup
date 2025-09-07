@@ -1,63 +1,34 @@
-<div class="app-wrapper" [ngClass]="{'mobile': appService.isMobile, 'tablet': appService.isTablet, 'desktop': appService.isDesktop}">
-    <mat-tab-group
-        *ngIf="isLoggedIn"
-        class="top-tabs" 
-        [ngClass]="{'mobile': appService.isMobile, 'tablet': appService.isTablet, 'desktop': appService.isDesktop}"
-        animationDuration="200ms" 
-        [selectedIndex]="selectedTabIndex"
-        (selectedTabChange)="onTabChange($event.index)">
-        <mat-tab>
-            <ng-template mat-tab-label>
-                <i class="fa fa-comments" title="Chat"></i>
-                <span class="tab-header-text" *ngIf="!appService.isMobile">Chat</span>
-            </ng-template>
-        </mat-tab>
-        <mat-tab>
-            <ng-template mat-tab-label>
-                <i class="fa fa-file" title="Documents"></i>
-                <span class="tab-header-text" *ngIf="!appService.isMobile">Documents</span>
-            </ng-template>
-        </mat-tab>
-        <mat-tab>
-            <ng-template mat-tab-label>
-                <i class="fa fa-cog" title="Settings"></i>
-                <span class="tab-header-text" *ngIf="!appService.isMobile">Settings</span>
-            </ng-template>
-        </mat-tab>
-        <mat-tab>
-            <ng-template mat-tab-label>
-                <i class="fa fa-user" title="Profile"></i>
-                <span class="tab-header-text" *ngIf="!appService.isMobile">Profile</span>
-            </ng-template>
-        </mat-tab>
-    </mat-tab-group>
+<div class="app-wrapper" 
+     [ngClass]="{'mobile': appService.isMobile, 'tablet': appService.isTablet, 'desktop': appService.isDesktop}">
+    
+    <!-- Top Tabs -->
+    <div *ngIf="isLoggedIn" class="top-tabs" 
+         [ngClass]="{'mobile': appService.isMobile, 'tablet': appService.isTablet, 'desktop': appService.isDesktop}">
+        <div 
+          *ngFor="let tab of tabs; let i = index"
+          class="tab"
+          [class.active]="selectedTabIndex === i"
+          (click)="onTabClick(i)">
+          <i [class]="tab.icon" [title]="tab.label"></i>
+          <span class="tab-header-text" *ngIf="!appService.isMobile">{{ tab.label }}</span>
+        </div>
+    </div>
+
+    <!-- Page Content -->
     <main>
         <router-outlet></router-outlet>
     </main>
-    <mat-tab-group
-        *ngIf="isLoggedIn"
-        class="bottom-tabs" 
-        [ngClass]="{'mobile': appService.isMobile, 'tablet': appService.isTablet, 'desktop': appService.isDesktop}"
-        animationDuration="200ms" 
-        [selectedIndex]="selectedTabIndex"
-        (selectedTabChange)="onTabChange($event.index)">
-        <mat-tab>
-            <ng-template mat-tab-label>
-                <i class="fa fa-comments" title="Chat"></i>
-                <span class="tab-header-text" *ngIf="!appService.isMobile">Chat</span>
-            </ng-template>
-        </mat-tab>
-        <mat-tab>
-            <ng-template mat-tab-label>
-                <i class="fa fa-file" title="Documents"></i>
-                <span class="tab-header-text" *ngIf="!appService.isMobile">Documents</span>
-            </ng-template>
-        </mat-tab>
-        <mat-tab>
-            <ng-template mat-tab-label>
-                <i class="fa fa-user" title="Profile"></i>
-                <span class="tab-header-text" *ngIf="!appService.isMobile">Profile</span>
-            </ng-template>
-        </mat-tab>
-    </mat-tab-group>
+
+    <!-- Bottom Tabs (mobile only) -->
+    <div *ngIf="isLoggedIn" class="bottom-tabs"
+         [ngClass]="{'mobile': appService.isMobile, 'tablet': appService.isTablet, 'desktop': appService.isDesktop}">
+        <div 
+          *ngFor="let tab of tabs; let i = index"
+          class="tab"
+          [class.active]="selectedTabIndex === i"
+          (click)="onTabClick(i)">
+          <i [class]="tab.icon" [title]="tab.label"></i>
+          <span class="tab-header-text" *ngIf="!appService.isMobile">{{ tab.label }}</span>
+        </div>
+    </div>
 </div>
