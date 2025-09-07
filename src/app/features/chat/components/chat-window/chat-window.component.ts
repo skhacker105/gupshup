@@ -75,7 +75,7 @@ export class ChatWindowComponent implements OnInit, OnDestroy {
       const messages = await this.chatService.getAllMessageByUser(this.receiverId);
       this.messages = messages
         .filter((m: Message) => m.receiverId === this.receiverId || m.senderId === this.receiverId)
-        .sort((a: Message, b: Message) => b.createdAt.getTime() - a.createdAt.getTime());
+        .sort((a: Message, b: Message) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
       const contacts = await this.dbService.getAll('contacts');
       const contact = contacts.find((c: Contact) => c.id === this.receiverId);
       this.receiverName = contact?.name || this.receiverId;
@@ -125,7 +125,7 @@ export class ChatWindowComponent implements OnInit, OnDestroy {
         });
       } else {
         await this.chatService.sendMessage(this.newMessage);
-        this.messages.push({ ...this.newMessage });
+        // this.messages.push({ ...this.newMessage });
         this.resetInput();
         this.scrollToBottom();
       }

@@ -10,4 +10,6 @@ export interface Message {
   replyTo?: string;
   createdAt: Date;
   translatedText?: string;
+  isDeleted?: string;
+  isRead?: boolean;
 }

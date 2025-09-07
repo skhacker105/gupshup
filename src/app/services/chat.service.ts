@@ -30,15 +30,15 @@ export class ChatService {
     }
 
     async sendMessage(msg: Message): Promise<void> {
-        if (msg.text) {
-            const user = await this.authService.getLoggedInUserInfo();
-            if (!user) return;
+        // if (msg.text) {
+        //     const user = await this.authService.getLoggedInUserInfo();
+        //     if (!user) return;
             
-            const translated = await this.translationService.translate(msg.text, 'auto', user.targetLanguage);
-            msg.translatedText = translated;
-        }
+        //     const translated = await this.translationService.translate(msg.text, 'auto', user.targetLanguage);
+        //     msg.translatedText = translated;
+        // }
         await this.dbService.put(Tables.Messages, msg);
-        this.wsService.send({ type: 'message', data: msg });
+        // this.wsService.send({ type: 'message', data: msg });
         this.messageSubject.next(msg);
     }
 

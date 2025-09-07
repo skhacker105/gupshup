@@ -76,16 +76,11 @@ export class DbService {
                     { "name": "status", "keyPath": "status" }
                 ],
                 "secureIndex": [
-                    "receiverId",
                     "senderId",
-                    "content",
-                    "attachments",
-                    "createdAt",
-                    "updatedAt",
+                    "receiverId",
+                    "text",
                     "status",
-                    "messageType",
-                    "isRead",
-                    "isDeleted"
+                    "replyTo"
                 ]
             },
             "documents": {
