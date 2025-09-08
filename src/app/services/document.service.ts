@@ -79,6 +79,10 @@ export class DocumentService {
     return await this.dbService.put(Tables.Documents, doc);
   }
 
+  getDocument(documentId: string): Promise<Document> {
+    return this.dbService.get(Tables.Documents, documentId);
+  }
+
   async getDocuments(parentFolderId?: string): Promise<Document[]> {
     const query: ISearchQuery = { text: parentFolderId ?? '', fields: ['parentFolderId'] };
     return this.dbService.search(Tables.Documents, query);
@@ -186,7 +190,7 @@ export class DocumentService {
   async calculateExpiryDate(fileType: string): Promise<Date | undefined> {
     const user = await this.authService.getLoggedInUserInfo();
     if (!user) return;
-    
+
     const settings = user.expirationSettings || { defaultPeriod: '1week', typeExpirations: {} };
     const period = settings.typeExpirations[fileType.split('/')[0]] || settings.defaultPeriod;
     const now = new Date();

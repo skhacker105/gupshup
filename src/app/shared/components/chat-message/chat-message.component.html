@@ -33,9 +33,9 @@
         </div>
 
         <!-- Attachments -->
-        <div *ngIf="message.file" class="attachment">
+        <div *ngIf="documentFile" class="attachment">
             <div *ngIf="isImage" class="image-attachment">
-                <img [src]="fileURL" [alt]="message.file.name" (click)="onImageClick()">
+                <img [src]="fileURL" [alt]="documentFile.name" (click)="onImageClick()">
                 <div class="attachment-overlay">
                     <button (click)="onDownload($event)" class="btn-download"><i class="fa fa-download"></i></button>
                     <button (click)="onForward($event)" class="btn-forward"><i class="fa fa-share"></i></button>
@@ -49,7 +49,7 @@
             </div>
             <div *ngIf="isDocument" class="document-attachment">
                 <i [ngClass]="getDocumentIcon()"></i>
-                <span>{{ message.file.name }}</span>
+                <span>{{ documentFile.name }}</span>
                 <button (click)="onDownload($event)" class="btn-download"><i class="fa fa-download"></i></button>
             </div>
             <div *ngIf="isAudio" class="audio-attachment">

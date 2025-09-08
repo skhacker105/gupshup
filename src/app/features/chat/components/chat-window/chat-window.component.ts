@@ -125,7 +125,7 @@ export class ChatWindowComponent implements OnInit, OnDestroy {
               createdDate: new Date(),
             };
             await this.documentService.saveNewDocuments(doc);
-            this.newMessage.file = doc;
+            this.newMessage.documentId = doc.id;
           }
           await this.chatService.sendMessage(this.newMessage);
           this.resetInput();
@@ -281,11 +281,11 @@ export class ChatWindowComponent implements OnInit, OnDestroy {
     return this.receiverName;
   }
 
-  downloadAttachment(id?: string, name?: string): void {
-    if (!id || !name) {
-      this.errorMessage = 'Invalid document.';
-      return;
-    }
+  downloadAttachment(documentId?: string): void {
+    // if (!id || !name) {
+    //   this.errorMessage = 'Invalid document.';
+    //   return;
+    // }
     // this.dbService.get(Tables.Documents, id).then((doc: Document) => {
     //   if (doc) {
     //     const url = URL.createObjectURL(doc.data);

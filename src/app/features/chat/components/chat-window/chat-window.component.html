@@ -53,7 +53,7 @@
         (toggleSelection)="toggleSelect(msg, $event)" (replyMessage)="replyToMessage(msg)"
         (forwardMessage)="forwardMessage(msg)" (deleteMessage)="deleteMessage(msg)"
         (translateMessage)="translateMessage(msg)"
-        (downloadAttachment)="downloadAttachment(msg.file?.id, msg.file?.name)"></app-chat-message>
+        (downloadAttachment)="downloadAttachment(msg.documentId)"></app-chat-message>
     </div>
 
     <!-- Reply bar -->

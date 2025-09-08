@@ -1,6 +1,7 @@
 import { Component, Input, Output, EventEmitter, OnInit } from '@angular/core';
 import { Document, Message } from '../../../models';
 import { stringToFile } from '../../../core/indexeddb-handler/utils/file';
+import { DocumentService } from '../../../services';
 
 @Component({
   selector: 'app-chat-message',
@@ -25,9 +26,10 @@ export class ChatMessageComponent implements OnInit {
   @Output() forwardMessage = new EventEmitter<Message>();
   @Output() deleteMessage = new EventEmitter<Message>();
   @Output() translateMessage = new EventEmitter<Message>();
-  @Output() downloadAttachment = new EventEmitter<{id: string, name: string}>();
+  @Output() downloadAttachment = new EventEmitter<{ id: string, name: string }>();
 
   fileURL = '';
+  documentFile: Document | undefined;
 
   get senderName(): string {
     return this.message.senderId === this.receiverId ? 'Them' : 'You'; // Simplified; use actual names if passed
@@ -39,35 +41,40 @@ export class ChatMessageComponent implements OnInit {
   }
 
   get isImage(): boolean {
-    return this.message.file?.type?.startsWith('image/') || false;
+    return this.documentFile?.type?.startsWith('image/') || false;
   }
 
   get isVideo(): boolean {
-    return this.message.file?.type?.startsWith('video/') || false;
+    return this.documentFile?.type?.startsWith('video/') || false;
   }
 
   get isAudio(): boolean {
-    return this.message.file?.type?.startsWith('audio/') || false;
+    return this.documentFile?.type?.startsWith('audio/') || false;
   }
 
   get isDocument(): boolean {
-    return !!this.message.file && !this.isImage && !this.isVideo && !this.isAudio;
+    return !!this.documentFile && !this.isImage && !this.isVideo && !this.isAudio;
   }
 
+  constructor(private documentService: DocumentService) { }
+
   async ngOnInit() {
+    this.documentFile = await this.getDocument();
     this.fileURL = await this.getFileUrl();
   }
 
   async getFileUrl(): Promise<string> {
-    const file = this.message.file as Document;
-    const data = file.data ? await stringToFile(file.data, file.type) : undefined;
+    const data = this.documentFile?.data
+      ? await stringToFile(this.documentFile.data, this.documentFile.type)
+      : undefined;
+      
     if (!data) return '';
-    
+
     return URL.createObjectURL(data);
   }
 
   getDocumentIcon(): string {
-    const ext = this.message.file?.name.split('.').pop()?.toLowerCase();
+    const ext = this.documentFile?.name.split('.').pop()?.toLowerCase();
     switch (ext) {
       case 'pdf': return 'fa fa-file-pdf-o';
       case 'doc':
@@ -78,6 +85,12 @@ export class ChatMessageComponent implements OnInit {
       case 'pptx': return 'fa fa-file-powerpoint-o';
       default: return 'fa fa-file-o';
     }
+  }
+
+  async getDocument(): Promise<Document | undefined> {
+    if (this.message.documentId)
+      return await this.documentService.getDocument(this.message.documentId)
+    return;
   }
 
   onMessageClick(event: MouseEvent): void {

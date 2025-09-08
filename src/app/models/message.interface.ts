@@ -5,7 +5,7 @@ export interface Message {
   senderId: string;
   receiverId: string;
   text?: string;
-  file?: Document;
+  documentId?: string;
   status: string;
   replyTo?: string;
   createdAt: Date;
