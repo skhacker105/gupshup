@@ -415,7 +415,7 @@ export class ChatWindowComponent implements OnInit, OnDestroy {
   private scrollToBottom(): void {
     setTimeout(() => {
       this.messagesContainer.nativeElement.scrollTop = this.messagesContainer.nativeElement.scrollHeight;
-    }, 0);
+    }, 100);
   }
 
   private focusInput(): void {
