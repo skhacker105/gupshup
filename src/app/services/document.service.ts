@@ -5,6 +5,10 @@ import { Document } from '../models/document.interface';
 import { Folder } from '../models/folder.interface';
 import { IconSize, Tables } from '../models';
 import { ISearchQuery } from '../core/indexeddb-handler';
+import { Browser } from '@capacitor/browser'; // For mobile app PDF viewing
+import { Platform } from '@angular/cdk/platform'; // To detect platform
+import { stringToFile } from '../core/indexeddb-handler/utils/file';
+import { SupportedFileTypes } from '../constants';
 
 @Injectable({
   providedIn: 'root'
@@ -70,7 +74,8 @@ export class DocumentService {
   constructor(
     private dbService: DbService,
     private authService: AuthService,
-    private storageService: StorageAccountService
+    private storageService: StorageAccountService,
+    private platform: Platform
   ) { }
 
   async saveNewDocuments(doc: Document, parentFolder?: Folder) {
@@ -150,6 +155,40 @@ export class DocumentService {
       // await this.storageService.deleteBackup(doc.id, doc.backupAccountId);
     // }
     await this.dbService.delete(Tables.Documents, id);
+  }
+
+  async openDocument(doc: Document): Promise<void> {
+    // Extract file extension (case-insensitive)
+    const extension = doc.name.split('.').pop()?.toLowerCase();
+
+    // Check if the file type is supported
+    if (!extension || !SupportedFileTypes[extension]) {
+       throw new Error(`Unsupported file type: ${extension || 'unknown'}.`);
+    }
+
+    try {
+      // Fetch document data (assumes documentService.getDocumentData returns a Blob)
+      const blob = await stringToFile(doc.data, doc.type)
+
+      // Ensure the Blob has the correct MIME type
+      const mimeType = SupportedFileTypes[extension];
+      const fileBlob = new Blob([blob], { type: mimeType });
+
+      if (this.platform.ANDROID || this.platform.IOS) {
+        // Mobile: Use Capacitor Browser to open the file in a native viewer/app
+        const blobUrl = URL.createObjectURL(fileBlob);
+        await Browser.open({ url: blobUrl });
+        // Note: The URL will be revoked automatically after use in mobile context
+      } else {
+        // Browser: Open file in a new tab
+        const blobUrl = URL.createObjectURL(fileBlob);
+        window.open(blobUrl, '_blank');
+        // Revoke the URL after a short delay to ensure the browser has loaded it
+        setTimeout(() => URL.revokeObjectURL(blobUrl), 1000);
+      }
+    } catch (err) {
+      throw new Error(`Failed to open document: ${doc.name}`);
+    }
   }
 
   async deleteFolder(id: string): Promise<void> {

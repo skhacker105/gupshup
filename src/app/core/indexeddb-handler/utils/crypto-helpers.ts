@@ -1,8 +1,34 @@
 export function utf8(str: string) { return new TextEncoder().encode(str); }
 
-export function toB64(bytes: Uint8Array): string {
-    return btoa(String.fromCharCode(...bytes));
-}
+const BASE64_CHARS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/';
+export function toB64(uint8: Uint8Array): string {
+    let output = '';
+    const len = uint8.length;
+    for (let i = 0; i < len; i += 3) {
+      const byte1 = uint8[i];
+      const byte2 = uint8[i + 1] || 0;
+      const byte3 = uint8[i + 2] || 0;
+  
+      // Encode first 6 bits of byte1
+      output += BASE64_CHARS.charAt(byte1 >> 2);
+      // Encode last 2 bits of byte1 + first 4 bits of byte2
+      output += BASE64_CHARS.charAt(((byte1 & 0x3) << 4) | (byte2 >> 4));
+      // Encode last 4 bits of byte2 + first 2 bits of byte3
+      output += BASE64_CHARS.charAt(((byte2 & 0xF) << 2) | (byte3 >> 6));
+      // Encode last 6 bits of byte3
+      output += BASE64_CHARS.charAt(byte3 & 0x3F);
+    }
+  
+    // Handle padding (remove extra chars and add =)
+    const mod = len % 3;
+    if (mod === 1) {
+      output = output.substring(0, output.length - 2) + '==';
+    } else if (mod === 2) {
+      output = output.substring(0, output.length - 1) + '=';
+    }
+  
+    return output;
+  }
 
 export function fromB64(s: string): Uint8Array {
     return new Uint8Array([...atob(s)].map(c => c.charCodeAt(0)));

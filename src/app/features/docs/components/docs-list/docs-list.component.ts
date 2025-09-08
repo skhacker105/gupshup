@@ -92,6 +92,7 @@ export class DocsListComponent implements OnInit {
         this.router.navigate(['/docs', item.id]);
       } else {
         // Open document
+        this.documentService.openDocument(item);
       }
     }
   }
