@@ -1,7 +1,7 @@
 import { Component, Input, Output, EventEmitter, OnInit } from '@angular/core';
 import { Document, Message } from '../../../models';
 import { stringToFile } from '../../../core/indexeddb-handler/utils/file';
-import { DocumentService } from '../../../services';
+import { AppService, DocumentService } from '../../../services';
 
 @Component({
   selector: 'app-chat-message',
@@ -56,7 +56,7 @@ export class ChatMessageComponent implements OnInit {
     return !!this.documentFile && !this.isImage && !this.isVideo && !this.isAudio;
   }
 
-  constructor(private documentService: DocumentService) { }
+  constructor(public documentService: DocumentService, public appService: AppService) { }
 
   async ngOnInit() {
     this.documentFile = await this.getDocument();
@@ -97,6 +97,11 @@ export class ChatMessageComponent implements OnInit {
     if (this.multiSelectMode) {
       this.onSelectionChange(event);
     }
+  }
+
+  onDocumentClick(item: Document, event: MouseEvent): void {
+    event.stopPropagation();
+    this.documentService.openDocument(item);
   }
 
   onSelectionChange(event: any): void {

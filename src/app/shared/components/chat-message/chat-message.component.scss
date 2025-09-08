@@ -153,11 +153,13 @@
 
       .document-attachment {
         display: flex;
+        flex-direction: column;
         align-items: center;
         gap: 0.5rem;
         padding: 0.5rem;
         background: lighten($background-color, 5%);
         border-radius: 8px;
+        color: $text-color;
 
         i {
           font-size: 2rem;
