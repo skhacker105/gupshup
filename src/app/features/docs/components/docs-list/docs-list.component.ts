@@ -295,7 +295,7 @@ export class DocsListComponent implements OnInit {
     event?.stopPropagation();
     this.loading = true;
     try {
-      await this.documentService.deleteDocument(id, false);
+      await this.documentService.deleteDocument(id);
       await this.loadItems();
     } catch {
       this.errorMessage = 'Failed to delete document.';
@@ -337,7 +337,7 @@ export class DocsListComponent implements OnInit {
       const deletePromise = subItems.map(sitem => {
         return this.isFolder(sitem)
           ? this.documentService.deleteFolder(sitem.id)
-          : this.documentService.deleteDocument(sitem.id, true)
+          : this.documentService.deleteDocument(sitem.id)
       }).concat([this.documentService.deleteFolder(folder.id)]);
       if (deletePromise.length > 0)
         await Promise.all(deletePromise);

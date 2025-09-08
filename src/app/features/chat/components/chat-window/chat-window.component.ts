@@ -341,9 +341,18 @@ export class ChatWindowComponent implements OnInit, OnDestroy {
     const confirmToDelete = await this.appService.confirmForDelete((msg.text ? msg.text : 'message'));
     if (!confirmToDelete) return;
 
+    let deleteDocument = false;
+    if (msg.documentId) {
+      // ask if to delete document
+      deleteDocument = await this.appService.confirmForDelete(('document attached with the message'));
+    }
+
     try {
       this.loading = true;
       await this.chatService.deleteMessage(msg.id);
+      if (deleteDocument && msg.documentId) {
+        await this.documentService.deleteDocument(msg.documentId);
+      }
       this.messages = this.messages.filter(m => m.id !== msg.id);
       this.selectedMessages = this.selectedMessages.filter(m => m.id !== msg.id);
       this.multiSelectMode = this.selectedMessages.length > 0;

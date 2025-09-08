@@ -143,12 +143,12 @@ export class DocumentService {
     await this.dbService.put(Tables.Documents, doc);
   }
 
-  async deleteDocument(id: string, permanent: boolean): Promise<void> {
+  async deleteDocument(id: string): Promise<void> {
     const doc = await this.dbService.get(Tables.Documents, id) as Document;
-    if (permanent && doc.backupAccountId) {
+    // if (permanent && doc.backupAccountId) {
       // Requires backend route
       // await this.storageService.deleteBackup(doc.id, doc.backupAccountId);
-    }
+    // }
     await this.dbService.delete(Tables.Documents, id);
   }
 
