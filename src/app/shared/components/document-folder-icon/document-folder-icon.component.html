@@ -9,7 +9,7 @@
         </ng-container>
         <div class="icon-and-backup">
             <i class="fa" [ngClass]="iconClass"></i>
-            <ng-container *ngIf="isDocument && !documentItem.backupAccountId && !selectionMode">
+            <ng-container *ngIf="!hideBackupAction && isDocument && !documentItem.backupAccountId && !selectionMode">
                 <button class="backup-btn" (click)="markForBackup($event)" title="Mark for Backup">
                     <i class="fa fa-cloud-upload-alt"></i>
                 </button>

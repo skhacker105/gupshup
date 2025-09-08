@@ -15,7 +15,7 @@
     </div>
 
     <!-- Page Content -->
-    <main>
+    <main [ngClass]="{'mobile': appService.isMobile, 'tablet': appService.isTablet, 'desktop': appService.isDesktop}">
         <router-outlet></router-outlet>
     </main>
 

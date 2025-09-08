@@ -14,8 +14,14 @@ $tab-padding-desktop: 1rem;
 
   main {
     flex: 1;
-    padding: 1rem;
+    // padding: 1rem;
     overflow-y: auto;
+  }
+
+  &.mobile {
+    main {
+      margin-bottom: 2.5rem;
+    }
   }
 
   /* Shared styles for both top + bottom tab containers */

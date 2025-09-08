@@ -10,6 +10,7 @@ import { Folder, Document } from '../../../models';
 export class DocumentFolderIconComponent {
   @Input() item!: Document | Folder;
   @Input() size: 'small' | 'medium' | 'large' = 'medium';
+  @Input() hideBackupAction = false;
 
   @Input() isDesktop = false;
   @Input() isTablet = false;
