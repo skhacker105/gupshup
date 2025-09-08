@@ -95,17 +95,14 @@ export class DbService {
                 ],
                 "secureIndex": [
                     "type",
-                    "title",
-                    "content",
-                    "fileSize",
-                    "filePath",
-                    "mimeType",
+                    "name",
                     "senderId",
                     "receiverId",
                     "createdDate",
-                    "updatedDate",
-                    "tags",
-                    "status",
+                    "expiryDate",
+                    "folderId",
+                    "backupAccountId",
+                    "relativePath",
                     "parentFolderId"
                 ]
             },

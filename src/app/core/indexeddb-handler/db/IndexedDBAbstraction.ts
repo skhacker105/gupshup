@@ -318,7 +318,7 @@ export class IndexedDBAbstraction {
       const withMeta = this._augmentDoc(value);
 
       const def = this.schema?.stores?.[store];
-      const withMetaCopy: any = JSON.parse(JSON.stringify(withMeta));
+      const withMetaCopy: any = structuredClone(withMeta);
       if (def?.secureIndex?.length) {
         for (const field of def.secureIndex) {
           const val = (withMeta?.[field] ?? '') + '';
@@ -354,7 +354,7 @@ export class IndexedDBAbstraction {
       const enc = await this.crypto.encryptJson(withMeta);
       const idKey = withMeta?.id ?? uid('key');
 
-      const withMetaCopy: any = JSON.parse(JSON.stringify(withMeta));
+      const withMetaCopy: any = structuredClone(withMeta);
       if (def?.secureIndex?.length) {
         for (const f of def.secureIndex) {
           const t = await this.crypto.blindTokens(String(withMeta?.[f] ?? ''), 3);
@@ -516,7 +516,7 @@ export class IndexedDBAbstraction {
         const doc = await this.crypto.decryptJson(change.value);
         const withMeta = { ...doc };
         const def = this.schema?.stores?.[store];
-        const withMetaCopy: any = JSON.parse(JSON.stringify(withMeta));
+        const withMetaCopy: any = structuredClone(withMeta);
         if (def?.secureIndex?.length) {
           for (const f of def.secureIndex) {
             const t = await this.crypto.blindTokens(String(withMeta?.[f] ?? ''), 3);

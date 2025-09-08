@@ -2,7 +2,7 @@ export interface Document {
     id: string;
     name: string;
     type: string;
-    data: Blob;
+    data: string;
     senderId: string;
     receiverId: string;
     createdDate: Date;

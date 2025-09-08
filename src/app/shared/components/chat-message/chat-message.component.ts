@@ -1,12 +1,13 @@
-import { Component, Input, Output, EventEmitter } from '@angular/core';
+import { Component, Input, Output, EventEmitter, OnInit } from '@angular/core';
 import { Document, Message } from '../../../models';
+import { stringToFile } from '../../../core/indexeddb-handler/utils/file';
 
 @Component({
   selector: 'app-chat-message',
   templateUrl: './chat-message.component.html',
   styleUrls: ['./chat-message.component.scss']
 })
-export class ChatMessageComponent {
+export class ChatMessageComponent implements OnInit {
   @Input() message!: Message;
   @Input() isSelected = false;
   @Input() multiSelectMode = false;
@@ -25,6 +26,8 @@ export class ChatMessageComponent {
   @Output() deleteMessage = new EventEmitter<Message>();
   @Output() translateMessage = new EventEmitter<Message>();
   @Output() downloadAttachment = new EventEmitter<{id: string, name: string}>();
+
+  fileURL = '';
 
   get senderName(): string {
     return this.message.senderId === this.receiverId ? 'Them' : 'You'; // Simplified; use actual names if passed
@@ -51,8 +54,16 @@ export class ChatMessageComponent {
     return !!this.message.file && !this.isImage && !this.isVideo && !this.isAudio;
   }
 
-  getFileUrl(): string {
-    return URL.createObjectURL((this.message.file as Document)?.data || new Blob());
+  async ngOnInit() {
+    this.fileURL = await this.getFileUrl();
+  }
+
+  async getFileUrl(): Promise<string> {
+    const file = this.message.file as Document;
+    const data = file.data ? await stringToFile(file.data, file.type) : undefined;
+    if (!data) return '';
+    
+    return URL.createObjectURL(data);
   }
 
   getDocumentIcon(): string {
@@ -107,9 +118,9 @@ export class ChatMessageComponent {
     }
   }
 
-  onImageClick(): void {
+  async onImageClick() {
     // Open full-screen image viewer (placeholder)
-    window.open(this.getFileUrl(), '_blank');
+    window.open(await this.getFileUrl(), '_blank');
   }
 
   onVideoClick(): void {

@@ -5,6 +5,7 @@ import { AuthService, DbService } from './';
 import { IStorageAccount, Document, Tables, OAuthResponse, IQuotaData } from '../models';
 import { environment } from '../../environments/environment';
 import { CacheEvict, Cacheable } from '../core/cache';
+import { stringToFile } from '../core/indexeddb-handler/utils/file';
 
 @Injectable({
   providedIn: 'root'
@@ -100,7 +101,9 @@ export class StorageAccountService {
 
   async upload(doc: Document, accountId: string): Promise<any> {
     const formData = new FormData();
-    formData.append('file', doc.data, doc.name);
+    const data = await stringToFile(doc.data, doc.type);
+    
+    formData.append('file', data, doc.name);
     formData.append('accountId', accountId);
     formData.append('documentId', doc.id);
     return this.http.post(`${this.apiAccounts}/upload`, formData).toPromise();

@@ -6,6 +6,7 @@ import { Message, Document, Contact, Tables, User } from '../../../../models';
 import { AppService, ChatService, DocumentService, TranslationService, AuthService, ContactService } from '../../../../services';
 import { MatDialog } from '@angular/material/dialog';
 import { MediaEditorComponent } from '../media-editor/media-editor.component';
+import { fileToString } from '../../../../core/indexeddb-handler/utils/file';
 
 @Component({
   selector: 'app-chat-window',
@@ -113,11 +114,12 @@ export class ChatWindowComponent implements OnInit, OnDestroy {
         });
         dialogRef.afterClosed().subscribe(async (editedFile: File | undefined) => {
           if (editedFile) {
+            const editedFileStr = await fileToString(editedFile);
             const doc: Document = {
               id: uuidv4(),
               name: editedFile.name,
               type: editedFile.type,
-              data: editedFile as Blob,
+              data: editedFileStr,
               senderId: this.currentUserId,
               receiverId: this.receiverId,
               createdDate: new Date(),
@@ -126,7 +128,6 @@ export class ChatWindowComponent implements OnInit, OnDestroy {
             this.newMessage.file = doc;
           }
           await this.chatService.sendMessage(this.newMessage);
-          this.messages.push({ ...this.newMessage });
           this.resetInput();
           this.scrollToBottom();
         });

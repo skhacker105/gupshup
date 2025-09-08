@@ -2,6 +2,7 @@ import { Component, Inject } from '@angular/core';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { v4 as uuidv4 } from 'uuid';
 import { Document } from '../../../models';
+import { fileToString } from '../../../core/indexeddb-handler/utils/file';
 
 @Component({
   selector: 'app-file-upload',
@@ -17,7 +18,7 @@ export class FileUploadComponent {
   constructor(
     private dialogRef: MatDialogRef<FileUploadComponent>,
     @Inject(MAT_DIALOG_DATA) public data: { parentFolderId?: string, isDesktop: boolean, isTablet: boolean, isMobile: boolean }
-  ) {}
+  ) { }
 
   onFileSelected(event: Event): void {
     const input = event.target as HTMLInputElement;
@@ -52,16 +53,22 @@ export class FileUploadComponent {
     this.loading = true;
     this.errorMessage = '';
     try {
-      const documents: Document[] = this.selectedFiles.map((file, index) => ({
-        id: uuidv4(),
-        name: this.selectedFiles.length === 1 ? this.name : `${file.name}`,
-        type: file.type,
-        data: file,
-        senderId: '',
-        receiverId: '',
-        createdDate: new Date(),
-        parentFolderId: this.data.parentFolderId,
-      }));
+      const documents: Document[] = [];
+      for (let i = 0; i < this.selectedFiles.length; i++) {
+        const file = this.selectedFiles[i];
+        const data = await fileToString(file);
+        documents.push({
+          id: uuidv4(),
+          name: this.selectedFiles.length === 1 ? this.name : `${file.name}`,
+          type: file.type,
+          data,
+          senderId: '',
+          receiverId: '',
+          createdDate: new Date(),
+          parentFolderId: this.data.parentFolderId
+        });
+      }
+
       this.dialogRef.close(documents);
     } catch (err) {
       this.errorMessage = 'Failed to upload files.';

@@ -35,14 +35,14 @@
         <!-- Attachments -->
         <div *ngIf="message.file" class="attachment">
             <div *ngIf="isImage" class="image-attachment">
-                <img [src]="getFileUrl()" [alt]="message.file.name" (click)="onImageClick()">
+                <img [src]="fileURL" [alt]="message.file.name" (click)="onImageClick()">
                 <div class="attachment-overlay">
                     <button (click)="onDownload($event)" class="btn-download"><i class="fa fa-download"></i></button>
                     <button (click)="onForward($event)" class="btn-forward"><i class="fa fa-share"></i></button>
                 </div>
             </div>
             <div *ngIf="isVideo" class="video-attachment">
-                <video [src]="getFileUrl()" controls (click)="onVideoClick()"></video>
+                <video [src]="fileURL" controls (click)="onVideoClick()"></video>
                 <div class="attachment-overlay">
                     <button (click)="onDownload($event)" class="btn-download"><i class="fa fa-download"></i></button>
                 </div>
@@ -53,7 +53,7 @@
                 <button (click)="onDownload($event)" class="btn-download"><i class="fa fa-download"></i></button>
             </div>
             <div *ngIf="isAudio" class="audio-attachment">
-                <audio [src]="getFileUrl()" controls></audio>
+                <audio [src]="fileURL" controls></audio>
                 <button (click)="onPlay($event)" class="btn-play"><i class="fa fa-play"></i></button>
             </div>
         </div>
