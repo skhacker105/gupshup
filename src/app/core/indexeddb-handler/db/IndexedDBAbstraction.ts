@@ -174,7 +174,7 @@ export class IndexedDBAbstraction {
     this._policies = await this._loadPolicies();
   }
 
-  private _tx(storeNames: string[], mode: IDBTransactionMode = 'readonly'): TxWithDone {
+  private _tx(storeNames: string | string[], mode: IDBTransactionMode = 'readonly'): TxWithDone {
     if (!this._db) throw new Error('DB not initialized');
     const tx = this._db.transaction(storeNames, mode) as TxWithDone;
     tx.done = new Promise((resolve, reject) => {
@@ -312,29 +312,34 @@ export class IndexedDBAbstraction {
   }
 
   async put(store: string, value: any, key?: string) {
-    await this._assertPermission('WRITE');
-    if (!this.crypto) throw new Error('CryptoManager not attached');
-    const withMeta = this._augmentDoc(value);
+    try {
+      await this._assertPermission('WRITE');
+      if (!this.crypto) throw new Error('CryptoManager not attached');
+      const withMeta = this._augmentDoc(value);
 
-    const def = this.schema?.stores?.[store];
-    const withMetaCopy: any = JSON.parse(JSON.stringify(withMeta));
-    if (def?.secureIndex?.length) {
-      for (const field of def.secureIndex) {
-        const val = (withMeta?.[field] ?? '') + '';
-        const t = await this.crypto.blindTokens(val, 3);
-        withMetaCopy[field] = t;
+      const def = this.schema?.stores?.[store];
+      const withMetaCopy: any = structuredClone(withMeta);
+      if (def?.secureIndex?.length) {
+        for (const field of def.secureIndex) {
+          const val = (withMeta?.[field] ?? '') + '';
+          const t = await this.crypto.blindTokens(val, 3);
+          withMetaCopy[field] = t;
+        }
       }
+
+      const enc = await this.crypto.encryptJson(withMeta);
+      const idKey = key ?? withMeta?.id ?? uid('key');
+
+      const tx = this._tx([store], 'readwrite');
+      await toPromise(tx.objectStore(store).put({ id: idKey, _enc: enc, ...withMetaCopy }));
+      await tx.done;
+
+      await this._recordChange({ type: 'upsert', store, key: idKey, value: enc, enc: true });
+      return idKey;
+    } catch (err) {
+      console.log('--search PUT Error: ', err);
+      throw err;
     }
-
-    const enc = await this.crypto.encryptJson(withMeta);
-    const idKey = key ?? withMeta?.id ?? uid('key');
-
-    const tx = this._tx([store], 'readwrite');
-    await toPromise(tx.objectStore(store).put({ id: idKey, _enc: enc, ...withMetaCopy }));
-    await tx.done;
-
-    await this._recordChange({ type: 'upsert', store, key: idKey, value: enc, enc: true });
-    return idKey;
   }
 
   async bulkPut(store: string, values: any[]) {
@@ -349,7 +354,7 @@ export class IndexedDBAbstraction {
       const enc = await this.crypto.encryptJson(withMeta);
       const idKey = withMeta?.id ?? uid('key');
 
-      const withMetaCopy: any = JSON.parse(JSON.stringify(withMeta));
+      const withMetaCopy: any = structuredClone(withMeta);
       if (def?.secureIndex?.length) {
         for (const f of def.secureIndex) {
           const t = await this.crypto.blindTokens(String(withMeta?.[f] ?? ''), 3);
@@ -383,72 +388,82 @@ export class IndexedDBAbstraction {
 
   // Encrypted partial search over blind index
   async search(store: string, { text, fields, minMatch = 'ALL' }: ISearchQuery) {
-    await this._assertPermission('READ');
-    if (!this.crypto) throw new Error('CryptoManager not attached');
-    const def = this.schema?.stores?.[store];
-    if (!def?.secureIndex?.length) throw new Error('No secure index configured for store');
+    try {
+      await this._assertPermission('READ');
+      if (!this.crypto) throw new Error('CryptoManager not attached');
+      const def = this.schema?.stores?.[store];
+      if (!def?.secureIndex?.length) throw new Error('No secure index configured for store');
 
-    const activeFields = (fields && fields.length) ? fields : def.secureIndex;
-    const queryTokens = await this.crypto.blindTokens(String(text ?? ''), 3);
+      const activeFields = (fields && fields.length) ? fields : def.secureIndex;
+      const queryTokens = await this.crypto.blindTokens(String(text ?? ''), 3);
 
-    const tx = this._tx([store]);
-    const os = tx.objectStore(store);
+      const tx = this._tx(store);
+      const os = tx.objectStore(store);
 
-    // Special case: queryTokens empty → search for undefined/blank fields
-    if (!queryTokens.length) {
-      const allRows = await toPromise(os.getAll());
-      const out: any[] = [];
-      for (const row of allRows) {
-        let match = false;
-        for (const f of activeFields) {
-          const val = row[f];
-          // For undefined/null, val is missing or not an array
-          if (val === undefined || val === null ||
-            (Array.isArray(val) && val.length === 0)) {
-            match = true;
-            if (minMatch === 'ANY') break;
-          } else if (minMatch === 'ALL') {
-            match = false;
-            break;
+      // Special case: queryTokens empty → search for undefined/blank fields
+      if (!queryTokens.length) {
+        const allRows = await toPromise(os.getAll());
+        const out: any[] = [];
+        for (const row of allRows) {
+          let match = false;
+          for (const f of activeFields) {
+            const val = row[f];
+            // For undefined/null, val is missing or not an array
+            if (val === undefined || val === null ||
+              (Array.isArray(val) && val.length === 0)) {
+              match = true;
+              if (minMatch === 'ANY') break;
+            } else if (minMatch === 'ALL') {
+              match = false;
+              break;
+            }
+          }
+          if (match) out.push(await this.crypto.decryptJson(row._enc));
+        }
+        await tx.done;
+        return out;
+      }
+
+      // --- normal flow when tokens are non-empty ---
+      const candidateCounts = new Map<string, number>();
+      for (const field of activeFields) {
+        const idxName = `sidx_${field}`;
+        if (!os.indexNames.contains(idxName)) continue;
+        const idx = os.index(idxName);
+
+        for (const tok of queryTokens) {
+          const rows = await toPromise(idx.getAll(IDBKeyRange.only(tok)));
+          for (const r of rows) {
+            const count = candidateCounts.get(r.id) || 0;
+            candidateCounts.set(r.id, count + 1);
           }
         }
-        if (match) out.push(await this.crypto.decryptJson(row._enc));
       }
+
+      const needAll = (minMatch === 'ALL');
+      const requiredCount = needAll ? queryTokens.length * activeFields.length : 1;
+
+      const finalIds: string[] = [];
+      for (const [id, cnt] of candidateCounts.entries()) {
+        if (cnt >= requiredCount) finalIds.push(id);
+      }
+
+      const out: any[] = [];
+      const promises = finalIds.map(id => toPromise(os.get(id)));
+      const rows = await Promise.all(promises);
+      for (const row of rows) {
+        if (row) out.push(await this.crypto.decryptJson(row._enc));
+      }
+      // for (const id of finalIds) {
+      //   const row = await toPromise(os.get(id));
+      //   if (row) out.push(await this.crypto.decryptJson(row._enc));
+      // }
       await tx.done;
       return out;
+    } catch (err) {
+      console.log('SEARCH Error: ', err);
+      throw err;
     }
-
-    // --- normal flow when tokens are non-empty ---
-    const candidateCounts = new Map<string, number>();
-    for (const field of activeFields) {
-      const idxName = `sidx_${field}`;
-      if (!os.indexNames.contains(idxName)) continue;
-      const idx = os.index(idxName);
-
-      for (const tok of queryTokens) {
-        const rows = await toPromise(idx.getAll(IDBKeyRange.only(tok)));
-        for (const r of rows) {
-          const count = candidateCounts.get(r.id) || 0;
-          candidateCounts.set(r.id, count + 1);
-        }
-      }
-    }
-
-    const needAll = (minMatch === 'ALL');
-    const requiredCount = needAll ? queryTokens.length * activeFields.length : 1;
-
-    const finalIds: string[] = [];
-    for (const [id, cnt] of candidateCounts.entries()) {
-      if (cnt >= requiredCount) finalIds.push(id);
-    }
-
-    const out: any[] = [];
-    for (const id of finalIds) {
-      const row = await toPromise(os.get(id));
-      if (row) out.push(await this.crypto.decryptJson(row._enc));
-    }
-    await tx.done;
-    return out;
   }
 
 
@@ -501,7 +516,7 @@ export class IndexedDBAbstraction {
         const doc = await this.crypto.decryptJson(change.value);
         const withMeta = { ...doc };
         const def = this.schema?.stores?.[store];
-        const withMetaCopy: any = JSON.parse(JSON.stringify(withMeta));
+        const withMetaCopy: any = structuredClone(withMeta);
         if (def?.secureIndex?.length) {
           for (const f of def.secureIndex) {
             const t = await this.crypto.blindTokens(String(withMeta?.[f] ?? ''), 3);

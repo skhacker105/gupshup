@@ -1,10 +1,14 @@
 import { Injectable } from '@angular/core';
 import { v4 as uuidv4 } from 'uuid';
-import { DbService, StorageAccountService } from './';
+import { AuthService, DbService, StorageAccountService } from './';
 import { Document } from '../models/document.interface';
 import { Folder } from '../models/folder.interface';
 import { IconSize, Tables } from '../models';
 import { ISearchQuery } from '../core/indexeddb-handler';
+import { Browser } from '@capacitor/browser'; // For mobile app PDF viewing
+import { Platform } from '@angular/cdk/platform'; // To detect platform
+import { stringToFile } from '../core/indexeddb-handler/utils/file';
+import { SupportedFileTypes } from '../constants';
 
 @Injectable({
   providedIn: 'root'
@@ -69,13 +73,19 @@ export class DocumentService {
 
   constructor(
     private dbService: DbService,
-    private storageService: StorageAccountService
+    private authService: AuthService,
+    private storageService: StorageAccountService,
+    private platform: Platform
   ) { }
 
   async saveNewDocuments(doc: Document, parentFolder?: Folder) {
-    doc.relativePath = await this.buildRelativePath(parentFolder, doc.name, doc.id);
+    doc.relativePath = this.buildRelativePath(parentFolder, doc.name, doc.id);
     doc.expiryDate = await this.calculateExpiryDate(doc.type)
     return await this.dbService.put(Tables.Documents, doc);
+  }
+
+  getDocument(documentId: string): Promise<Document> {
+    return this.dbService.get(Tables.Documents, documentId);
   }
 
   async getDocuments(parentFolderId?: string): Promise<Document[]> {
@@ -138,13 +148,47 @@ export class DocumentService {
     await this.dbService.put(Tables.Documents, doc);
   }
 
-  async deleteDocument(id: string, permanent: boolean): Promise<void> {
-    const doc = await this.dbService.get('documents', id) as Document;
-    if (permanent && doc.backupAccountId) {
+  async deleteDocument(id: string): Promise<void> {
+    const doc = await this.dbService.get(Tables.Documents, id) as Document;
+    // if (permanent && doc.backupAccountId) {
       // Requires backend route
       // await this.storageService.deleteBackup(doc.id, doc.backupAccountId);
+    // }
+    await this.dbService.delete(Tables.Documents, id);
+  }
+
+  async openDocument(doc: Document): Promise<void> {
+    // Extract file extension (case-insensitive)
+    const extension = doc.name.split('.').pop()?.toLowerCase();
+
+    // Check if the file type is supported
+    if (!extension || !SupportedFileTypes[extension]) {
+       throw new Error(`Unsupported file type: ${extension || 'unknown'}.`);
     }
-    await this.dbService.delete('documents', id);
+
+    try {
+      // Fetch document data (assumes documentService.getDocumentData returns a Blob)
+      const blob = await stringToFile(doc.data, doc.type)
+
+      // Ensure the Blob has the correct MIME type
+      const mimeType = SupportedFileTypes[extension];
+      const fileBlob = new Blob([blob], { type: mimeType });
+
+      if (this.platform.ANDROID || this.platform.IOS) {
+        // Mobile: Use Capacitor Browser to open the file in a native viewer/app
+        const blobUrl = URL.createObjectURL(fileBlob);
+        await Browser.open({ url: blobUrl });
+        // Note: The URL will be revoked automatically after use in mobile context
+      } else {
+        // Browser: Open file in a new tab
+        const blobUrl = URL.createObjectURL(fileBlob);
+        window.open(blobUrl, '_blank');
+        // Revoke the URL after a short delay to ensure the browser has loaded it
+        setTimeout(() => URL.revokeObjectURL(blobUrl), 1000);
+      }
+    } catch (err) {
+      throw new Error(`Failed to open document: ${doc.name}`);
+    }
   }
 
   async deleteFolder(id: string): Promise<void> {
@@ -173,7 +217,7 @@ export class DocumentService {
     return await this.dbService.put(Tables.Folders, folder);
   }
 
-  async buildRelativePath(parentFolder: Folder | undefined, name: string, id: string): Promise<string> {
+  buildRelativePath(parentFolder: Folder | undefined, name: string, id: string): string {
     const pathSegment = { name, id };
     if (!parentFolder) {
       return JSON.stringify([pathSegment]);
@@ -183,7 +227,9 @@ export class DocumentService {
   }
 
   async calculateExpiryDate(fileType: string): Promise<Date | undefined> {
-    const user = await this.dbService.getUser();
+    const user = await this.authService.getLoggedInUserInfo();
+    if (!user) return;
+
     const settings = user.expirationSettings || { defaultPeriod: '1week', typeExpirations: {} };
     const period = settings.typeExpirations[fileType.split('/')[0]] || settings.defaultPeriod;
     const now = new Date();

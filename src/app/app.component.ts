@@ -1,7 +1,13 @@
 import { Component, OnInit } from '@angular/core';
-
 import { Router } from '@angular/router';
 import { AppService, AuthService, DbService } from './services';
+import { take } from 'rxjs';
+
+interface Tab {
+  label: string;
+  icon: string;
+  route: string;
+}
 
 @Component({
   selector: 'app-root',
@@ -12,6 +18,13 @@ export class AppComponent implements OnInit {
 
   selectedTabIndex = 0;
 
+  // Define tabs in one place
+  tabs: Tab[] = [
+    { label: 'Chat', icon: 'fa fa-comments', route: '/chat' },
+    { label: 'Documents', icon: 'fa fa-file', route: '/docs' },
+    { label: 'Profile', icon: 'fa fa-user', route: '/profile' },
+  ];
+
   get isLoggedIn(): boolean {
     return this.authService.isLoggedIn();
   }
@@ -21,17 +34,22 @@ export class AppComponent implements OnInit {
     private authService: AuthService,
     private dbService: DbService,
     public appService: AppService
-  ) {
-  }
+  ) {}
 
   ngOnInit(): void {
-    this.router.navigate(['/chat']); // Default to Chat tab
+    this.router.navigate(['/chat']); // Default tab
+    setTimeout(() => {
+      if (this.authService.isLoggedIn()) {
+        this.authService.getLoggedInUserInfoFromBackend()
+          .pipe(take(1))
+          .subscribe(() => {});
+      }
+    }, 1000);
   }
 
-  onTabChange(index: number): void {
+  onTabClick(index: number): void {
     this.selectedTabIndex = index;
-    const routes = ['/chat', '/docs', '/settings', '/profile'];
-    this.router.navigate([routes[index]]);
+    this.router.navigate([this.tabs[index].route]);
   }
 
   async logout(): Promise<void> {

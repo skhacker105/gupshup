@@ -1,3 +1,4 @@
+export * from './confirmation.data.interface';
 export * from './contact-group.interface';
 export * from './contact.interface';
 export * from './db.enum';
@@ -7,6 +8,8 @@ export * from './folder.interface';
 export * from './icon.size.enum';
 export * from './language.type';
 export * from './message.interface';
+export * from './oauth.response.interface';
 export * from './path.segment.interface';
+export * from './quota.data.interface';
 export * from './storage-account.interface';
 export * from './user.interface';

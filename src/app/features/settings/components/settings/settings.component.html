@@ -1,45 +1,51 @@
-<!-- src/app/features/settings/settings.component.html -->
-<div class="settings-wrapper" [ngClass]="{'mobile': appService.isMobile, 'tablet': appService.isTablet, 'desktop': appService.isDesktop}">
-    <header>
-        <h2>Settings</h2>
-    </header>
+<app-layout title="Settings" [isMobile]="appService.isMobile" [isTablet]="appService.isTablet"
+    [isDesktop]="appService.isDesktop">
+
+    <ng-container action-always>
+    </ng-container>
+
+    <ng-container action-singular>
+    </ng-container>
+
+    <ng-container action-multiselect>
+    </ng-container>
+
     <p class="info">Customize your app experience, including translation language and document expiration settings.</p>
     <p *ngIf="errorMessage" class="error">{{ errorMessage }}</p>
     <p *ngIf="successMessage" class="success">{{ successMessage }}</p>
-    <form (ngSubmit)="saveSettings()" *ngIf="!loading; else loadingSpinner">
+    <form [formGroup]="settingsForm" (ngSubmit)="saveSettings()" *ngIf="!loading; else loadingSpinner">
         <div class="form-group">
             <label for="targetLanguage" title="Select language for translations">Translation Language</label>
-            <mat-select id="targetLanguage" [(ngModel)]="targetLanguage" name="targetLanguage"
-                title="Affects message translations">
-                <mat-option *ngFor="let lang of availableLanguages" [value]="lang">{{ lang }}</mat-option>
-            </mat-select>
+            <select id="targetLanguage" formControlName="targetLanguage" title="Affects message translations">
+                <option *ngFor="let lang of availableLanguages" [value]="lang.code">{{ lang.name }}</option>
+            </select>
         </div>
         <div class="form-group">
             <label for="defaultPeriod" title="Default expiration for documents">Default Expiration Period</label>
-            <mat-select id="defaultPeriod" [(ngModel)]="defaultPeriod" name="defaultPeriod"
+            <select id="defaultPeriod" formControlName="defaultPeriod"
                 title="Applied to documents without specific settings">
-                <mat-option *ngFor="let period of periods" [value]="period">{{ period }}</mat-option>
-            </mat-select>
+                <option *ngFor="let period of periods" [value]="period.key">{{ period.text }}</option>
+            </select>
         </div>
+        
         <h3>Media Type Expirations</h3>
         <p class="info">Set specific expiration periods for different media types (e.g., image, video).</p>
         <ul>
             <li *ngFor="let type of typeExpirations | keyvalue" title="Expiration for {{ type.key }} files">
                 {{ type.key }}:
-                <mat-select [(ngModel)]="typeExpirations[type.key]" [name]="'typeExpiration-' + type.key"
-                    title="Select expiration for {{ type.key }}">
-                    <mat-option *ngFor="let period of periods" [value]="period">{{ period }}</mat-option>
-                </mat-select>
+                <select [formControlName]="'typeExpiration-' + type.key" title="Select expiration for {{ type.key }}">
+                    <option *ngFor="let period of periods" [value]="period.key">{{ period.text }}</option>
+                </select>
             </li>
         </ul>
         <div class="actions">
-            <button type="button" (click)="addTypeExpiration()" title="Add a new media type expiration">Add Media
-                Type</button>
-            <button type="submit" [disabled]="loading" title="Save all settings">{{ loading ? 'Saving...' : 'Save
-                Settings' }}</button>
+            <button type="button" (click)="addTypeExpiration()" class="" title="Add a new media type expiration">Add
+                Media Type</button>
+            <button type="submit" [disabled]="loading || settingsForm.pristine" class="" title="Save all settings">{{
+                loading ? 'Saving...' : 'Save Settings' }}</button>
         </div>
     </form>
     <ng-template #loadingSpinner>
         <div class="spinner"><i class="fa fa-spinner fa-spin"></i> Loading settings...</div>
     </ng-template>
-</div>
+</app-layout>

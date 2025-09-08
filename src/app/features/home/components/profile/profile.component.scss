@@ -1,0 +1,147 @@
+@use '../../../../../variable' as *;
+
+:host ::ng-deep .generic-wrapper.mobile {
+    h3 {
+      font-size: 1rem;
+    }
+  
+    .storage-accounts li {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 0.5rem;
+  
+      .account-quota {
+        width: 100%;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.3rem;
+  
+        .quota-bar {
+          height: 6px;
+          width: 100%;
+        }
+  
+        .quota-text {
+          font-size: 0.7rem;
+          flex-direction: column;
+        }
+      }
+  
+      .delete-btn {
+        align-self: flex-end;
+      }
+    }
+}
+
+:host ::ng-deep .generic-wrapper.tablet {
+  h3 {
+    font-size: 1.25rem;
+  }
+
+  .storage-accounts li {
+    flex-direction: row;
+    align-items: center;
+    gap: 1rem;
+
+    .account-quota {
+      flex: 2;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 0.3rem;
+
+      .quota-bar {
+        height: 8px;
+        width: 100%;
+      }
+
+      .quota-text {
+        font-size: 0.75rem;
+        display: flex;
+      }
+    }
+
+    .delete-btn {
+      padding: 0.4rem 0.8rem;
+    }
+  }
+}
+
+:host ::ng-deep .generic-wrapper.desktop {
+  h3 {
+    font-size: 1.5rem;
+  }
+
+  .storage-accounts li {
+    gap: 1.5rem;
+
+    .account-quota {
+      flex: 2;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 0.3rem;
+
+      .quota-bar {
+        height: 10px;
+        width: 100%;
+      }
+
+      .quota-text {
+        font-size: 0.8rem;
+        display: flex;
+      }
+    }
+
+    .delete-btn {
+      padding: 0.5rem 1rem;
+    }
+  }
+}
+
+.user-avatar-btn {
+  // color: $primary-color;
+
+  mat-icon {
+    display: block;
+    width: auto;
+    height: auto;
+  }
+}
+
+/* 📱 Mobile */
+:host ::ng-deep .generic-wrapper.mobile {
+  .user-avatar-btn mat-icon {
+    font-size: 28px;
+  }
+  ::ng-deep .mat-menu-item {
+    font-size: 0.85rem;
+    mat-icon {
+      font-size: 18px;
+    }
+  }
+}
+
+/* 💻 Desktop */
+:host ::ng-deep .generic-wrapper.desktop {
+  .user-avatar-btn mat-icon {
+    font-size: 40px;
+  }
+  ::ng-deep .mat-menu-item {
+    font-size: 1rem;
+    mat-icon {
+      font-size: 22px;
+    }
+  }
+}
+
+/* 📱 Tablet */
+:host ::ng-deep .generic-wrapper.tablet {
+  .user-avatar-btn mat-icon {
+    font-size: 34px;
+  }
+  ::ng-deep .mat-menu-item {
+    font-size: 0.95rem;
+    mat-icon {
+      font-size: 20px;
+    }
+  }
+}

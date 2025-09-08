@@ -1,194 +1,170 @@
-// src/app/app.component.scss
 @use '../variable' as *;
+
+/* small layout tokens */
+$tab-padding-mobile: 0.5rem;
+$tab-padding-tablet: 0.75rem;
+$tab-padding-desktop: 1rem;
 
 .app-wrapper {
   display: flex;
   flex-direction: column;
   min-height: 100vh;
+  background-color: $background-color;  /* page background from variables */
+  color: $text-color;
 
   main {
     flex: 1;
-    padding: 1rem;
+    // padding: 1rem;
     overflow-y: auto;
   }
 
-  .top-tabs {
-    background-color: $primary-color;
-    color: $light-text-color;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    z-index: 1000;
-    width: 100%;
-    overflow-x: hidden;
+  &.mobile {
+    main {
+      margin-bottom: 2.5rem;
+    }
+  }
 
-    &.desktop, &.tablet {
+  /* Shared styles for both top + bottom tab containers */
+  .top-tabs,
+  .bottom-tabs {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    z-index: 1000;
+    background-color: $primary-color;      /* primary bar color */
+    color: $light-text-color;              /* text/icon color on the bar */
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
+
+    .tab {
+      flex: 1;
+      min-width: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      padding: $tab-padding-tablet;
+      cursor: pointer;
+      opacity: 0.80;
+      transition: background-color .18s ease, opacity .18s ease, color .15s ease;
+      color: $light-text-color; /* ensure text/icons inherit */
+
+      i {
+        font-size: 1.25rem;
+        margin-right: 0.5rem;
+        display: inline-block;
+        color: inherit; /* icons follow text color by default */
+        line-height: 1;
+      }
+
+      span.tab-header-text {
+        font-size: 0.95rem;
+        white-space: nowrap;
+      }
+
+      &:hover {
+        opacity: 1;
+        background-color: $hover-color;    /* hover from variables */
+        color: $light-text-color;
+      }
+
+      /* active or programmatically selected */
+      &.active,
+      &[aria-selected="true"] {
+        opacity: 1;
+        background-color: $hover-color;
+        color: $light-text-color;
+        /* subtle inset highlight (uses primary-border variable) */
+        box-shadow: inset 0 -2px 0 0 $primary-border;
+      }
+
+      &:focus {
+        outline: 2px solid $primary-border;
+        outline-offset: -2px;
+      }
+    }
+  }
+
+  /* Top tabs: visible on desktop/tablet, sticky at top */
+  .top-tabs {
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
+
+    &.desktop,
+    &.tablet {
       position: sticky;
       top: 0;
-      display: block;
+      display: flex;
     }
 
     &.mobile {
       display: none;
     }
 
-    ::ng-deep {
-      .mat-tab-labels {
-        display: flex;
-        justify-content: space-around;
-        width: 100%;
-      }
+    /* larger padding on desktop */
+    &.desktop .tab {
+      padding: $tab-padding-desktop;
+      i { font-size: 1.25rem; margin-right: 0.5rem; }
+      span.tab-header-text { font-size: 1rem; }
     }
 
-    &.tablet {
-      ::ng-deep {
-        .mat-tab-label, .mat-mdc-tab, .mdc-tab, [role="tab"] {
-          flex: 1;
-          padding: 0.75rem;
-          display: flex;
-          justify-content: center;
-          align-items: center;
-          i { font-size: 1.25rem; margin-right: 0.5rem; }
-          span.tab-header-text { font-size: 0.875rem; }
-        }
-      }
-    }
-
-    &.desktop {
-      ::ng-deep {
-        .mat-tab-label, .mat-mdc-tab, .mdc-tab, [role="tab"] {
-          flex: 1;
-          padding: 1rem;
-          display: flex;
-          justify-content: center;
-          align-items: center;
-          i { font-size: 1.25rem; margin-right: 0.5rem; }
-          span.tab-header-text { font-size: 1rem; }
-        }
-      }
+    &.tablet .tab {
+      padding: $tab-padding-tablet;
+      i { font-size: 1.125rem; margin-right: 0.5rem; }
+      span.tab-header-text { font-size: 0.9rem; }
     }
   }
 
+  /* Bottom tabs: mobile-only, fixed to bottom */
   .bottom-tabs {
-    background-color: $primary-color;
-    color: $light-text-color;
-    box-shadow: 0 -2px 4px rgba(0, 0, 0, 0.1);
-    z-index: 1000;
-    width: 100%;
-    overflow-x: hidden;
+    box-shadow: 0 -2px 4px rgba(0, 0, 0, 0.08);
 
     &.mobile {
       position: fixed;
       bottom: 0;
       left: 0;
       right: 0;
-      display: block;
+      display: flex;
     }
 
-    &.desktop, &.tablet {
+    &.desktop,
+    &.tablet {
       display: none;
     }
 
-    ::ng-deep {
-      .mat-tab-labels {
-        display: flex;
-        justify-content: space-around;
-        width: 100%;
-      }
-    }
-
-    &.mobile {
-      ::ng-deep {
-        .mat-tab-label, .mat-mdc-tab, .mdc-tab, [role="tab"] {
-          flex: 1;
-          padding: 0.5rem;
-          min-width: 0;
-          display: flex;
-          justify-content: center;
-          align-items: center;
-          i { font-size: 1.5rem; display: block; }
-          span.tab-header-text { display: none; }
-        }
-      }
+    /* compact mobile visuals */
+    &.mobile .tab {
+      padding: $tab-padding-mobile;
+      i { font-size: 1.5rem; margin-right: 0; }
+      span.tab-header-text { display: none; } /* hide text on mobile tab bar */
     }
   }
 
-  .top-tabs, .bottom-tabs {
-    ::ng-deep {
-      .mat-tab-label, .mat-mdc-tab, .mdc-tab, [role="tab"] {
-        color: $light-text-color;
-        opacity: 0.7;
-        transition: opacity 0.2s;
-
-        &.mat-tab-label-active,
-        &.mdc-tab--active,
-        &[aria-selected="true"] {
-          opacity: 1;
-          background-color: $hover-color;
-        }
-
-        &:hover {
-          opacity: 1;
-          background-color: $hover-color;
-        }
-      }
-    }
-
-    .mat-ink-bar {
-      background-color: $light-text-color;
-    }
-
-    .mat-tab-header {
-      width: 100%;
-      overflow: hidden;
-    }
-
-    .mat-tab-label-container {
-      width: 100%;
-    }
+  /* icon + text inheritance safety: force icons and spans to inherit color */
+  .tab i,
+  .tab span {
+    color: inherit;
   }
-}
 
-.app-wrapper {
-  ::ng-deep {
-    /* baseline for various material tab label implementations */
-    .mat-tab-label,
-    .mat-mdc-tab,
-    .mdc-tab,
-    [role="tab"] {
-      color: $light-text-color;
-      opacity: 0.7;
-      transition: color .15s, opacity .15s, background-color .15s;
-    }
+  /* Optional: utility classes for file/icon colors (based on your variables) */
+  .icon-folder      { color: $fa-folder-color !important; }
+  .icon-file-pdf    { color: $fa-file-pdf-color !important; }
+  .icon-file-archive{ color: $fa-file-archive-color !important; }
+  .icon-file-image  { color: $fa-file-image-color !important; }
+  .icon-file-excel  { color: $fa-file-excel-color !important; }
+  .icon-file-ppt    { color: $fa-file-powerpoint-color !important; }
+  .icon-file-audio  { color: $fa-file-audio-color !important; }
+  .icon-file-video  { color: $fa-file-video-color !important; }
+  .icon-file-csv    { color: $fa-file-csv-color !important; }
+  .icon-file-generic{ color: $fa-file-color !important; }
 
-    /* selected / active tab — make text + icon white */
-    .mat-tab-label.mat-tab-label-active,
-    .mat-mdc-tab[aria-selected="true"],
-    .mdc-tab.mdc-tab--active,
-    [role="tab"][aria-selected="true"] {
-      color: #fff !important;
-      opacity: 1;
-      background-color: $hover-color;
-    }
-
-    /* make icons/spans inherit the color, and force white on active */
-    .mat-tab-label i,
-    .mat-mdc-tab i,
-    .mdc-tab i,
-    [role="tab"] i,
-    .mat-tab-label span,
-    .mat-mdc-tab span,
-    .mdc-tab span,
-    [role="tab"] span.tab-header-text {
-      color: inherit;
-    }
-
-    .mat-tab-label.mat-tab-label-active i,
-    .mat-mdc-tab[aria-selected="true"] i,
-    .mdc-tab.mdc-tab--active i,
-    .mat-tab-label span,
-    .mat-mdc-tab span,
-    .mdc-tab span,
-    [role="tab"][aria-selected="true"] i {
-      color: #fff !important;
-    }
+  /* word-file style helper (white icon on blue background) */
+  .icon-file-word {
+    color: $fa-file-word-color !important;
+    background: $fa-file-word-background;
+    border: 1px solid $fa-file-word-border;
+    padding: 0.125rem 0.25rem;
+    border-radius: 0.2rem;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
   }
 }

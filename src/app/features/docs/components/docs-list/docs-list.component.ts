@@ -33,6 +33,10 @@ export class DocsListComponent implements OnInit {
   currentPath: string = '[]'; // Current relative path (JSON string)
   pathSegments: IPathSegmenmat[] = [{ name: 'Root', id: undefined }]; // For breadcrumb
   iconSizes = Object.values(IconSize);
+  
+  get isMarkForBackupDisabled(): boolean {
+    return this.selectedItems.length === 0 || this.selectedItems.every(item => this.isFolder(item) || (item as Document).backupAccountId);
+  }
 
   constructor(
     public documentService: DocumentService,
@@ -88,6 +92,7 @@ export class DocsListComponent implements OnInit {
         this.router.navigate(['/docs', item.id]);
       } else {
         // Open document
+        this.documentService.openDocument(item);
       }
     }
   }
@@ -153,6 +158,49 @@ export class DocsListComponent implements OnInit {
     }
     this.cancelMultiSelect();
     await this.loadItems();
+  }
+
+  async markSelectedForBackup(): Promise<void> {
+    if (!this.selectedItems.length) return;
+
+    // Filter only documents (skip folders)
+    const selectedDocuments = this.selectedItems.filter(item => !this.isFolder(item)) as Document[];
+
+    if (!selectedDocuments.length) {
+      this.errorMessage = 'No documents selected for backup.';
+      return;
+    }
+
+    const confirmationMessage = `Mark the following documents for backup: ${selectedDocuments.map(doc => doc.name).join(', ')}?`;
+    const subInfo = 'Only selected documents not having backup will be sent for backup.';
+    const confirmToBackup = await this.appService.confirmForBackup(confirmationMessage, subInfo);
+    if (!confirmToBackup) return;
+
+    this.loading = true;
+    try {
+      for (const doc of selectedDocuments) {
+        if (!doc.backupAccountId) {
+          // Placeholder for marking backup - call service if available
+          console.log('Marking for backup:', doc.id);
+          // TODO: Implement actual backup marking, e.g., this.documentService.markForBackup(doc.id);
+          // For demo, simulate marking
+          doc.backupAccountId = 'simulated-backup-id'; // Update locally for UI refresh
+        }
+      }
+      this.cancelMultiSelect();
+      await this.loadItems(); // Refresh to reflect changes
+    } catch (err) {
+      this.errorMessage = 'Failed to mark documents for backup.';
+    }
+    this.loading = false;
+  }
+
+  async markForBackup(item: Item) {
+    if (this.isFolder(item)) return;
+
+    const confirmationMessage = `Mark the following documents for backup: ${item.name}?`;
+    const confirmToBackup = await this.appService.confirmForBackup(confirmationMessage);
+    if (!confirmToBackup) return;
   }
 
   async loadItems() {
@@ -225,15 +273,22 @@ export class DocsListComponent implements OnInit {
         isMobile: this.appService.isMobile
       }
     });
-    dialogRef.afterClosed().subscribe(async (doc: Document | undefined) => {
-      if (doc) {
+    dialogRef.afterClosed().subscribe(async (docs: Document[] | undefined) => {
+      this.loading = true;
+      if (docs) {
         try {
-          await this.documentService.saveNewDocuments(doc, this.currentFolder);
+          for (let i=0; i < docs.length; i++) {
+            await this.documentService.saveNewDocuments(docs[i], this.currentFolder)
+          }
+          // await docs.map(async (d) => await this.documentService.saveNewDocuments(d, this.currentFolder));
+          // await this.documentService.saveNewDocuments(doc, this.currentFolder);
           await this.loadItems();
         } catch {
           this.errorMessage = 'Failed to add file.';
+          this.loading = false;
         }
       }
+      this.loading = false;
     });
   }
 
@@ -241,7 +296,7 @@ export class DocsListComponent implements OnInit {
     event?.stopPropagation();
     this.loading = true;
     try {
-      await this.documentService.deleteDocument(id, false);
+      await this.documentService.deleteDocument(id);
       await this.loadItems();
     } catch {
       this.errorMessage = 'Failed to delete document.';
@@ -283,7 +338,7 @@ export class DocsListComponent implements OnInit {
       const deletePromise = subItems.map(sitem => {
         return this.isFolder(sitem)
           ? this.documentService.deleteFolder(sitem.id)
-          : this.documentService.deleteDocument(sitem.id, true)
+          : this.documentService.deleteDocument(sitem.id)
       }).concat([this.documentService.deleteFolder(folder.id)]);
       if (deletePromise.length > 0)
         await Promise.all(deletePromise);

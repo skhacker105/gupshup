@@ -1,51 +1,106 @@
-<!-- src/app/features/chat/components/chat-window/chat-window.component.html -->
-<div class="chat-window-wrapper" [ngClass]="{'mobile': appService.isMobile, 'tablet': appService.isTablet, 'desktop': appService.isDesktop}">
-    <header>
-        <button (click)="router.navigate(['/chat'])" title="Return to chat list"><i class="fa fa-arrow-left"></i>
-            Back</button>
-        <h3><i class="fa fa-user"></i> Chat with {{ receiverName }}</h3>
-        <button (click)="showInfo()" title="View chat details"><i class="fa fa-info-circle"></i> Info</button>
-    </header>
-    <p class="info">Send messages, share files, or translate conversations. Files are saved with expiration settings.
-    </p>
+<app-layout [title]="receiverName" [isMobile]="appService.isMobile" [isTablet]="appService.isTablet"
+  [isDesktop]="appService.isDesktop" [selectionMode]="multiSelectMode" (cancelMultiSelect)="cancelMultiSelect()"
+  (swipeRight)="enableMobileMultiSelect()">
+
+  <!-- Always visible actions -->
+  <ng-container action-always>
+    <button (click)="goBack()" title="Return to chat list">
+      <i class="fa fa-arrow-left"></i>
+      <span class="no-wrap" *ngIf="!appService.isMobile">Back</span>
+    </button>
+  </ng-container>
+
+  <!-- Actions visible only in singular (normal) mode -->
+  <ng-container action-singular>
+    <button (click)="startAudioCall()" title="Audio call">
+      <i class="fa fa-phone"></i>
+      <span class="no-wrap" *ngIf="!appService.isMobile">Call</span>
+    </button>
+    <button (click)="startVideoCall()" title="Video call">
+      <i class="fa fa-video-camera"></i>
+      <span class="no-wrap" *ngIf="!appService.isMobile">Video</span>
+    </button>
+    <button (click)="showInfo()" title="View chat details">
+      <i class="fa fa-info-circle"></i>
+      <span class="no-wrap" *ngIf="!appService.isMobile">Info</span>
+    </button>
+  </ng-container>
+
+  <!-- Actions visible only in multi-select mode -->
+  <ng-container action-multiselect>
+    <button (click)="deleteSelectedMessages()" [disabled]="selectedMessages.length === 0"
+      title="Delete selected messages">
+      <i class="fa fa-trash"></i>
+      <span class="no-wrap" *ngIf="!appService.isMobile">Delete</span>
+    </button>
+    <button (click)="forwardSelectedMessages()" [disabled]="selectedMessages.length === 0"
+      title="Forward selected messages">
+      <i class="fa fa-share"></i>
+      <span class="no-wrap" *ngIf="!appService.isMobile">Forward</span>
+    </button>
+  </ng-container>
+
+  <!-- Body section -->
+  <div class="chat-window-wrapper"
+    [ngClass]="{'mobile': appService.isMobile, 'tablet': appService.isTablet, 'desktop': appService.isDesktop}">
     <p *ngIf="errorMessage" class="error">{{ errorMessage }}</p>
+
     <div class="messages" #messagesContainer *ngIf="!loading; else loadingSpinner">
-        <div *ngFor="let msg of messages" [class]="msg.senderId === currentUserId ? 'sent' : 'received'">
-            <strong>{{ getContactNameForMessage(msg) | async }}</strong>
-            <p>
-                <span class="timestamp">{{ msg.createdAt | date:'shortTime' }}</span>
-                {{ msg.text || '(Attachment)' }}
-                <span *ngIf="msg.translatedText" class="translated">(Translated: {{ msg.translatedText }})</span>
-                <button *ngIf="msg.text && !msg.translatedText" (click)="translateMessage(msg)"
-                    title="Translate this message">
-                    <i class="fa fa-language"></i> Translate
-                </button>
-            </p>
-            <div *ngIf="msg.file && msg.file.type?.startsWith('image/')">
-                <img [src]="getFileUrl(msg.file)" alt="{{ msg.file.name }}" title="Image attachment">
-            </div>
-            <div *ngIf="msg.file && msg.file.type?.startsWith('video/')">
-                <video [src]="getFileUrl(msg.file)" controls title="Video attachment"></video>
-            </div>
-            <div *ngIf="msg.file && !msg.file.type?.startsWith('image/') && !msg.file.type?.startsWith('video/')">
-                <a href="javascript:void(0)" (click)="downloadAttachment(msg.file.id, msg.file.name)"
-                    title="Download {{ msg.file.name }}">
-                    <i class="fa fa-download"></i> {{ msg.file.name }}
-                </a>
-            </div>
-        </div>
+      <app-chat-message *ngFor="let msg of messages; trackBy: trackByMessageId" [message]="msg" [showSenderName]="false"
+        [isSelected]="isSelected(msg)" [multiSelectMode]="multiSelectMode" [currentUserId]="currentUserId"
+        [receiverId]="receiverId" [isSent]="msg.senderId === currentUserId"
+        [isMobile]="appService.isMobile" [isTablet]="appService.isTablet" [isDesktop]="appService.isDesktop"
+        (toggleSelection)="toggleSelect(msg, $event)" (replyMessage)="replyToMessage(msg)"
+        (forwardMessage)="forwardMessage(msg)" (deleteMessage)="deleteMessage(msg)"
+        (translateMessage)="translateMessage(msg)"
+        (downloadAttachment)="downloadAttachment(msg.documentId)"></app-chat-message>
     </div>
+
+    <!-- Reply bar -->
+    <div *ngIf="replyingTo" class="reply-bar">
+      <i class="fa fa-reply"></i>
+      <span>Replying to <strong>{{ replyingTo.text || '(Media)' }}</strong> by {{ getSenderName(replyingTo) }}</span>
+      <button (click)="cancelReply()" class="btn-cancel-reply">Cancel</button>
+    </div>
+
     <form (ngSubmit)="sendMessage()" class="input-form">
-        <p class="info">Type a message or attach a file (images/videos can be edited).</p>
-        <input type="text" [(ngModel)]="newMessage.text" name="messageText" placeholder="Type a message"
-            title="Enter your message here" (keyup.enter)="sendMessage()" />
-        <input type="file" (change)="onFileSelect($event)" id="fileInput" hidden>
-        <label for="fileInput" title="Attach an image, video, or file"><i class="fa fa-paperclip"></i></label>
-        <button type="submit" [disabled]="loading" title="Send message or file">
-            <i class="fa fa-send"></i> {{ loading ? 'Sending...' : 'Send' }}
+      <button type="button" [matMenuTriggerFor]="attachmentMenu" title="Add attachment">
+        <i class="fa fa-plus"></i>
+      </button>
+      <mat-menu #attachmentMenu="matMenu">
+        <button mat-menu-item (click)="selectDocumentFromDevice()" title="Document from Device">
+          <i class="fa fa-file-upload"></i> Document from Device
         </button>
+        <button mat-menu-item (click)="selectDocumentFromApp()" title="Document from App">
+          <i class="fa fa-folder-open"></i> Document from App
+        </button>
+        <button mat-menu-item (click)="selectImage()" title="Photo or Video">
+          <i class="fa fa-camera"></i> Photo or Video
+        </button>
+        <button mat-menu-item (click)="sendLocation()" title="Location">
+          <i class="fa fa-map-marker"></i> Location
+        </button>
+        <button mat-menu-item (click)="shareContact()" title="Contact">
+          <i class="fa fa-user"></i> Contact
+        </button>
+        <button mat-menu-item (click)="openCamera()" title="Camera">
+          <i class="fa fa-camera-retro"></i> Camera
+        </button>
+      </mat-menu>
+      <div class="message-input-wrapper">
+        <textarea autoResize [(ngModel)]="newMessage.text" name="messageText" placeholder="Type a message"
+          title="Enter your message here" rows="1" (keyup.enter)="sendMessage()"></textarea>
+        <button type="submit" [disabled]="!isInputValid()" title="Send message" class="send-button">
+          <i class="fa fa-paper-plane"></i>
+        </button>
+      </div>
+      <button type="button" (click)="startVoiceMessage()" title="Voice message">
+        <i class="fa fa-microphone"></i>
+      </button>
     </form>
+
     <ng-template #loadingSpinner>
-        <div class="spinner"><i class="fa fa-spinner fa-spin"></i> Loading messages...</div>
+      <div class="spinner"><i class="fa fa-spinner fa-spin"></i> Loading messages...</div>
     </ng-template>
-</div>
+  </div>
+</app-layout>

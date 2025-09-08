@@ -1,53 +1,14 @@
 @use '../../../../../variable' as *;
 
 .chat-window-wrapper {
-  height: calc(100vh - 4rem);
   display: flex;
   flex-direction: column;
+  height: 100%;
   background-color: $background-color;
 
   &.mobile {
-    height: calc(100vh - 3rem);
-    h3 { font-size: 1rem; }
-    .info { font-size: 0.75rem; }
-    .messages div { max-width: 80%; }
-  }
-
-  &.tablet {
-    h3 { font-size: 1.25rem; }
-    .info { font-size: 0.875rem; }
-    .messages div { max-width: 70%; }
-  }
-
-  &.desktop {
-    h3 { font-size: 1.5rem; }
-    .info { font-size: 1rem; }
-    .messages div { max-width: 60%; }
-  }
-
-  header {
-    padding: 1rem;
-    background: $primary-color;
-    color: $light-text-color;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    border-bottom: 1px solid $secondary-color;
-
-    button {
-      background: none;
-      border: none;
-      color: $light-text-color;
-      font-size: 1rem;
-      cursor: pointer;
-      &:hover { color: $accent-color; }
-    }
-  }
-
-  .info {
-    font-size: 0.875rem;
-    color: $secondary-color;
-    margin: 0.5rem 1rem;
+    flex: 1 auto;
+    max-height: 100vh;
   }
 
   .error {
@@ -58,72 +19,136 @@
   }
 
   .messages {
-    flex: 1;
+    flex: 1 auto;
     overflow-y: auto;
-    padding: 1rem;
+    padding: 0.6rem;
 
-    .sent {
-      text-align: right;
-      background: $accent-color;
-      color: $light-text-color;
-      padding: 0.5rem;
-      border-radius: 10px;
-      margin: 0.5rem;
+    app-chat-message {
+      display: block;
+      margin: 0.3rem 0;
+    }
+  }
+
+  .reply-bar {
+    background: $secondary-color;
+    padding: 0.5rem;
+    border-bottom: 1px solid $primary-border;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.8rem;
+    color: $text-color;
+
+    .btn-cancel-reply {
       margin-left: auto;
-    }
+      background: transparent;
+      border: none;
+      color: $danger-color;
+      cursor: pointer;
+      font-size: 0.8rem;
 
-    .received {
-      text-align: left;
-      background: $secondary-color;
-      color: $light-text-color;
-      padding: 0.5rem;
-      border-radius: 10px;
-      margin: 0.5rem;
-    }
-
-    .timestamp {
-      font-size: 0.75rem;
-      color: $light-text-color;
-      opacity: 0.7;
-    }
-
-    .translated {
-      font-style: italic;
-      font-size: 0.875rem;
-    }
-
-    img, video {
-      max-width: 100%;
-      max-height: 200px;
-      margin: 0.5rem 0;
-    }
-
-    a {
-      color: $light-text-color;
-      text-decoration: none;
-      &:hover { text-decoration: underline; }
+      &:hover {
+        text-decoration: underline;
+      }
     }
   }
 
   .input-form {
     display: flex;
-    padding: 1rem;
+    padding-top: 0.4rem;
     border-top: 1px solid $secondary-color;
+    background: $background-color;
+    align-items: center;
+    gap: 0.3rem;
 
-    input[type="text"] {
-      flex: 1;
-      margin-right: 0.5rem;
-    }
-
-    label {
+    button:not(.send-button) {
+      width: 36px;
+      height: 36px;
+      line-height: 36px;
+      border-radius: 50%;
+      border: none;
+      display: flex;
+      align-items: center;
+      justify-content: center;
       cursor: pointer;
-      margin-right: 0.5rem;
-      font-size: 1.25rem;
-      color: $primary-color;
+
+      &:hover:not(:disabled) {
+        background: lighten($secondary-color, 5%);
+      }
+
+      &:disabled {
+        background: lighten($secondary-color, 20%);
+        color: lighten($primary-color, 20%);
+        cursor: not-allowed;
+      }
+
+      i {
+        font-size: 1.1rem;
+      }
     }
 
-    button {
-      min-width: 80px;
+    .message-input-wrapper {
+      flex: 1;
+      position: relative;
+      display: flex;
+      align-items: center;
+
+      textarea {
+        flex: 1;
+        min-height: 2rem; /* Compact initial height */
+        // max-height: 6rem; /* Max 5 rows at ~1.2rem per row */
+        padding: 0.5rem 2.5rem 0.5rem 1rem; /* Space for send button */
+        border: 1px solid $secondary-color;
+        border-radius: 20px;
+        font-size: 0.9rem;
+        background: lighten($background-color, 5%);
+        color: $text-color;
+        resize: none; /* Prevent manual resize */
+        overflow-y: auto;
+
+        &:focus {
+          outline: none;
+          border-color: $primary-color;
+        }
+
+        &::-webkit-scrollbar {
+          width: 4px;
+        }
+
+        &::-webkit-scrollbar-thumb {
+          background: $secondary-color;
+          border-radius: 2px;
+        }
+      }
+
+      .send-button {
+        position: absolute;
+        right: 0.2rem;
+        bottom: 0.15rem;
+        background: $primary-color;
+        color: $light-text-color;
+        width: 30px;
+        height: 29px;
+        border-radius: 50%;
+        border: none;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+
+        &:hover:not(:disabled) {
+          background: darken($primary-color, 10%);
+        }
+
+        &:disabled {
+          background: lighten($secondary-color, 20%);
+          cursor: not-allowed;
+        }
+
+        i {
+          font-size: 1rem;
+        }
+      }
     }
   }
 
@@ -132,5 +157,47 @@
     padding: 1rem;
     font-size: 1rem;
     color: $secondary-color;
+  }
+}
+
+/* Mobile overrides */
+:host ::ng-deep app-layout.mobile .generic-wrapper header .actions {
+  gap: 0.35rem;
+
+  button {
+    padding: 0.3rem;
+    font-size: 0.9rem;
+
+    i {
+      font-size: 1rem;
+    }
+
+    span {
+      display: none;
+    }
+  }
+}
+
+/* Menu styling for attachment popup */
+:host ::ng-deep .mat-mdc-menu-panel {
+  border-radius: 8px;
+  background: $background-color;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+
+  .mat-mdc-menu-item {
+    font-size: 0.9rem;
+    color: $text-color;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+
+    i {
+      font-size: 1rem;
+      color: $primary-color;
+    }
+
+    &:hover {
+      background: lighten($secondary-color, 10%);
+    }
   }
 }

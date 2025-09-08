@@ -34,6 +34,10 @@
             <i class="fa fa-trash"></i>
             <span class="no-wrap" *ngIf="!appService.isMobile">Delete</span>
         </button>
+        <button (click)="markSelectedForBackup()" [disabled]="isMarkForBackupDisabled" title="Mark for Backup">
+            <i class="fa fa-cloud-upload-alt"></i>
+            <span class="no-wrap" *ngIf="!appService.isMobile">Mark for Backup</span>
+        </button>
     </ng-container>
 
     <!-- Error -->
@@ -84,7 +88,8 @@
             <!-- Enable Disable Selection -->
             <div class="filter-action" *ngIf="!appService.isMobile">
                 Selection:
-                <input [checked]="multiSelectMode" type="radio" (click)="multiSelectMode ? cancelMultiSelect() : enableMobileMultiSelect()">
+                <input [checked]="multiSelectMode" type="radio"
+                    (click)="multiSelectMode ? cancelMultiSelect() : enableMobileMultiSelect()">
             </div>
         </div>
 
@@ -97,7 +102,8 @@
             <app-document-folder-icon *ngFor="let item of items" [item]="item" [size]="documentService.selectedIconSize"
                 [selectionMode]="multiSelectMode" [selected]="isSelected(item)" (onClick)="rowClick(item, $event)"
                 (longPress)="enableMobileMultiSelect()" [isDesktop]="appService.isDesktop"
-                [isTablet]="appService.isTablet" [isMobile]="appService.isMobile">
+                (onMarkForBackup)="markForBackup(item)" [isTablet]="appService.isTablet"
+                [isMobile]="appService.isMobile">
             </app-document-folder-icon>
         </div>
 
@@ -117,7 +123,8 @@
                         [size]="documentService.selectedIconSize" [selectionMode]="multiSelectMode"
                         [selected]="isSelected(doc)" (onClick)="rowClick(doc, $event)"
                         (longPress)="enableMobileMultiSelect()" [isDesktop]="appService.isDesktop"
-                        [isTablet]="appService.isTablet" [isMobile]="appService.isMobile">
+                        (onMarkForBackup)="markForBackup(doc)" [isTablet]="appService.isTablet"
+                        [isMobile]="appService.isMobile">
                     </app-document-folder-icon>
                 </div>
             </div>

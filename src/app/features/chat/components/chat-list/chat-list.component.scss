@@ -146,3 +146,33 @@
     cursor: not-allowed;
   }
 }
+
+.filter-header {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+
+  .filter-action {
+    padding-left: 0.5rem;
+    display: flex;
+    align-items: center;
+  }
+}
+
+::ng-deep .generic-wrapper.mobile {
+  .filter-header {
+    border-bottom: solid 1px $background-color-dark;
+  }
+}
+
+/* Mobile dropdown style */
+:host ::ng-deep .orderby-select.mobile {
+  appearance: none;
+  border: none;
+  background: transparent;
+  font-size: 1rem;
+  font-weight: 500;
+  color: $primary-color;
+  cursor: pointer;
+  width: auto;
+}

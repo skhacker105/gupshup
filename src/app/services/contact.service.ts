@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { DbService } from './db.service';
 import { WebSocketService } from './websocket.service';
-import { Contact, ContactGroup } from '../models';
+import { Contact, ContactGroup, Tables } from '../models';
 import { Subscription } from 'rxjs';
 
 @Injectable({
@@ -22,7 +22,11 @@ export class ContactService {
     }
 
     async getContacts(): Promise<Contact[]> {
-        return this.dbService.getAll('contacts');
+        return this.dbService.getAll(Tables.Contacts);
+    }
+
+    async getContactById(id: string): Promise<Contact> {
+        return this.dbService.get(Tables.Contacts, id);
     }
 
     async getAll(collection: string): Promise<any[]> {
@@ -34,18 +38,18 @@ export class ContactService {
     }
 
     async updateOnlineStatus(contactId: string, online: boolean): Promise<void> {
-        const contact = await this.dbService.get('contacts', contactId) as Contact;
+        const contact = await this.dbService.get(Tables.Contacts, contactId) as Contact;
         if (contact) {
             contact.online = online;
-            await this.dbService.put('contacts', contact);
+            await this.dbService.put(Tables.Contacts, contact);
         }
     }
 
     async storeContact(contact: Contact): Promise<void> {
-        await this.dbService.put('contacts', contact);
+        await this.dbService.put(Tables.Contacts, contact);
     }
 
     storeContacts(contacts: Contact[]): Promise<void>[] {
-        return contacts.map(c => this.dbService.put('contacts', c))
+        return contacts.map(c => this.dbService.put(Tables.Contacts, c))
     }
 }

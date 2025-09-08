@@ -3,6 +3,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { Document } from '../models/document.interface';
 import { User } from '../models/user.interface';
 import { ISearchQuery, MultiDBManager } from '../core/indexeddb-handler';
+import { Tables } from '../models';
 
 @Injectable({
     providedIn: 'root'
@@ -29,7 +30,8 @@ export class DbService {
                     "profilePicture",
                     "status",
                     "createdAt",
-                    "updatedAt"
+                    "updatedAt",
+                    "password"
                 ]
             },
             "contacts": {
@@ -74,16 +76,11 @@ export class DbService {
                     { "name": "status", "keyPath": "status" }
                 ],
                 "secureIndex": [
-                    "receiverId",
                     "senderId",
-                    "content",
-                    "attachments",
-                    "createdAt",
-                    "updatedAt",
+                    "receiverId",
+                    "text",
                     "status",
-                    "messageType",
-                    "isRead",
-                    "isDeleted"
+                    "replyTo"
                 ]
             },
             "documents": {
@@ -98,17 +95,14 @@ export class DbService {
                 ],
                 "secureIndex": [
                     "type",
-                    "title",
-                    "content",
-                    "fileSize",
-                    "filePath",
-                    "mimeType",
+                    "name",
                     "senderId",
                     "receiverId",
                     "createdDate",
-                    "updatedDate",
-                    "tags",
-                    "status",
+                    "expiryDate",
+                    "folderId",
+                    "backupAccountId",
+                    "relativePath",
                     "parentFolderId"
                 ]
             },
@@ -153,11 +147,11 @@ export class DbService {
     }
 
     async put(store: string, data: any): Promise<void> {
-        await this.manager.put(this.dbId, store, data);
+        return await this.manager.put(this.dbId, store, data);
     }
 
     async delete(store: string, id: string): Promise<void> {
-        await this.manager.delete(this.dbId, store, id);
+        return await this.manager.delete(this.dbId, store, id);
     }
 
     getDeviceId(): string {
@@ -165,21 +159,26 @@ export class DbService {
         return 'device-id-stub-' + Date.now(); // Stub for testing
     }
 
-    async getUser(): Promise<User> {
-        const user = await this.get('users', this.manager.getDeviceId()!);
-        return user || { id: this.manager.getDeviceId()!, phoneNumber: '', password: '', targetLanguage: 'en-US', storageAccounts: [] };
+    async getUser(userId: string): Promise<User | undefined> {
+        const user = await this.get('users', userId);
+        return user; // || { id: this.manager.getDeviceId()!, phoneNumber: '', password: '', targetLanguage: 'en-US', storageAccounts: [] };
     }
 
+    // async getUser(): Promise<User | undefined> {
+    //     const user = await this.get('users', this.manager.getDeviceId()!);
+    //     return user || { id: this.manager.getDeviceId()!, phoneNumber: '', password: '', targetLanguage: 'en-US', storageAccounts: [] };
+    // }
+
     async updateUser(user: Partial<User>): Promise<void> {
-        await this.put('users', user);
+        return await this.put('users', user);
     }
 
     checkExpirations(): void {
         setInterval(async () => {
-            const documents: Document[] = await this.getAll('documents');
+            const documents: Document[] = await this.getAll(Tables.Documents);
             const expired = documents.filter(doc => doc.expiryDate && doc.expiryDate < new Date());
             for (const doc of expired) {
-                await this.delete('documents', doc.id);
+                await this.delete(Tables.Documents, doc.id);
             }
         }, 3600000); // Run hourly
     }

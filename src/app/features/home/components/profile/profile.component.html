@@ -1,0 +1,37 @@
+<app-layout title="Profile" [isMobile]="appService.isMobile" [isTablet]="appService.isTablet"
+    [isDesktop]="appService.isDesktop">
+
+    <ng-container action-always>
+        <!-- Avatar Icon that opens Menu -->
+        <button [matMenuTriggerFor]="userMenu" class="user-avatar-btn">
+            <mat-icon>account_circle</mat-icon>
+        </button>
+
+        <!-- Material Menu -->
+        <mat-menu #userMenu="matMenu" xPosition="before">
+            <button mat-menu-item (click)="changePicture()" [disabled]="true">
+                <mat-icon>photo_camera</mat-icon>
+                <span>Change Picture</span>
+            </button>
+            <button mat-menu-item (click)="updateInfo()" [disabled]="true">
+                <mat-icon>badge</mat-icon>
+                <span>Update Personal Info</span>
+            </button>
+            <button mat-menu-item (click)="changePassword()" [disabled]="true">
+                <mat-icon>vpn_key</mat-icon>
+                <span>Change Password</span>
+            </button>
+            <button mat-menu-item (click)="gotoSettings()">
+                <mat-icon>rule_settings</mat-icon>
+                <span>Settings</span>
+            </button>
+            <button mat-menu-item (click)="logout()">
+                <mat-icon>logout</mat-icon>
+                <span>Logout</span>
+            </button>
+        </mat-menu>
+    </ng-container>
+
+    <app-storage-accounts [storageAccounts]="storageAccounts" [loading]="loading">
+    </app-storage-accounts>
+</app-layout>

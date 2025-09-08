@@ -1,18 +1,23 @@
+<!-- src/app/components/document-folder-icon/document-folder-icon.component.html -->
 <div class="icon-container" (click)="onClick.emit($event)" [ngClass]="classes">
-    <div class="icon-wrapper" [appLongPress]="isDesktop" (modeSwitched)="longPress.emit()">
+    <div class="icon-wrapper" [appLongPress]="true" (modeSwitched)="longPress.emit()">
         <ng-container *ngIf="selectionMode">
             <input type="radio" [checked]="selected" (click)="onRadioClick($event)" class="radio-btn"
                 [ngClass]="{
                     'big-icon': isTablet || isDesktop
                 }">
         </ng-container>
-        <i class="fa" [ngClass]="iconClass"></i>
+        <div class="icon-and-backup">
+            <i class="fa" [ngClass]="iconClass"></i>
+            <ng-container *ngIf="!hideBackupAction && isDocument && !documentItem.backupAccountId && !selectionMode">
+                <button class="backup-btn" (click)="markForBackup($event)" title="Mark for Backup">
+                    <i class="fa fa-cloud-upload-alt"></i>
+                </button>
+            </ng-container>
+        </div>
     </div>
     <span class="name" title="{{item.name}}">{{item.name}}</span>
     <ng-container *ngIf="isDocument && documentItem.expiryDate">
         <span class="expiry">Exp: {{documentItem.expiryDate | date: 'shortDate'}}</span>
     </ng-container>
-    <!-- <ng-container *ngIf="isDocument && documentItem.expiryDate && !documentItem.backupAccountId">
-        <button class="backup-btn" (click)="markForBackup($event)">Mark for Backup</button>
-    </ng-container> -->
 </div>

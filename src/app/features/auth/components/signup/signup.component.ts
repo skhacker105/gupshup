@@ -11,7 +11,7 @@ import { AppService, AuthService } from '../../../../services';
   styleUrls: ['./signup.component.scss']
 })
 export class SignupComponent {
-  user: User = { id: '', phoneNumber: '', password: '', targetLanguage: 'en-US', storageAccounts: [] };
+  user: User = { id: '', phoneNumber: '', password: '', targetLanguage: 'en', storageAccounts: [] };
   confirmPassword = '';
   errorMessage = '';
   loading = false;

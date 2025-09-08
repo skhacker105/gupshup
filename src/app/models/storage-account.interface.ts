@@ -1,7 +1,10 @@
-export interface StorageAccount {
+import { IQuotaData } from "./";
+
+export interface IStorageAccount {
     id: string;
     provider: 'google'; // For now
     label: string;
-    status: 'pending' | 'connected';
     createdAt: Date;
+    quota?: IQuotaData;
+    userId: string;
 }

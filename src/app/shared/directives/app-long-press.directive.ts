@@ -12,20 +12,18 @@ export class LongPressDirective {
     private longPressTriggered = false;
 
     constructor() {
-        // console.log('appLongPress directive initialized');
     }
 
     // Unified for mouse + touch + pen
     @HostListener('pointerdown', ['$event'])
     onPointerDown(event: PointerEvent) {
+        console.log('onPointerDown')
         if (!this.appLongPress) return;
 
         this.longPressTriggered = false;
-        console.log('Long press started', event.type);
 
         this.pressTimeout = setTimeout(() => {
             this.longPressTriggered = true;
-            // console.log('Long press recognized');
             this.modeSwitched.emit();
 
             // prevent click from firing after long press
@@ -39,7 +37,6 @@ export class LongPressDirective {
     onPointerUpOrLeave(event: PointerEvent) {
         if (!this.appLongPress) return;
 
-        // console.log('Long press ended', event.type);
         clearTimeout(this.pressTimeout);
     }
 
@@ -47,7 +44,6 @@ export class LongPressDirective {
     @HostListener('click', ['$event'])
     onClick(event: MouseEvent) {
         if (this.longPressTriggered) {
-            // console.log('Click suppressed after long press');
             event.preventDefault();
             event.stopImmediatePropagation();
         }

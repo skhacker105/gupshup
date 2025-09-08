@@ -4,6 +4,9 @@ import { MatDialog } from '@angular/material/dialog';
 import { AddContactDialogComponent } from '../add-contact-dialog/add-contact-dialog.component';
 import { Contact, ContactGroup } from '../../../../models';
 import { AppService, ContactService } from '../../../../services';
+import { Router } from '@angular/router';
+
+type ContactItem = Contact | ContactGroup;
 
 @Component({
   selector: 'app-chat-list',
@@ -16,8 +19,8 @@ export class ChatListComponent implements OnInit {
   loading = false;
   errorMessage = '';
 
-  mergedList: any[] = [];
-  selectedItems: any[] = [];
+  mergedList: ContactItem[] = [];
+  selectedItems: ContactItem[] = [];
   multiSelectMode = false;
   orderBy: 'name' | 'lastMessageDate' = 'name';
 
@@ -25,7 +28,8 @@ export class ChatListComponent implements OnInit {
   constructor(
     private contactService: ContactService,
     private dialog: MatDialog,
-    public appService: AppService
+    public appService: AppService,
+    private router: Router
   ) {
 
   }
@@ -53,7 +57,7 @@ export class ChatListComponent implements OnInit {
     this.multiSelectMode = true;
   }
 
-  rowClick(item: any, event: MouseEvent): void {
+  rowClick(item: ContactItem, event: MouseEvent): void {
     if (this.multiSelectMode) {
       this.toggleSelect(item, event);
     } else {
@@ -61,9 +65,20 @@ export class ChatListComponent implements OnInit {
     }
   }
 
-  showCheckbox(item: any): boolean {
+  showCheckbox(item: ContactItem): boolean {
     if (this.appService.isDesktop || this.appService.isTablet) return true;
     return this.multiSelectMode; // only after swipe for mobile
+  }
+
+  isContact(item: ContactItem): item is Contact {
+    return 'members' in item ? false : true;
+  }
+
+  getItemDescription(item: ContactItem): string {
+    if (this.isContact(item))
+      return item.phoneNumber;
+    else
+      return item.lastMessageTimestamp?.toString() ?? 'Group';
   }
 
   // existing mergeLists updated
@@ -89,7 +104,7 @@ export class ChatListComponent implements OnInit {
     this.cancelMultiSelect();
   }
 
-  toggleSelect(item: any, event: MouseEvent): void {
+  toggleSelect(item: ContactItem, event: MouseEvent): void {
     event.stopPropagation();
     if (this.isSelected(item)) {
       this.selectedItems = this.selectedItems.filter(i => i !== item);
@@ -99,7 +114,7 @@ export class ChatListComponent implements OnInit {
     this.multiSelectMode = this.selectedItems.length > 0;
   }
 
-  isSelected(item: any): boolean {
+  isSelected(item: ContactItem): boolean {
     return this.selectedItems.includes(item);
   }
 
@@ -108,12 +123,12 @@ export class ChatListComponent implements OnInit {
     this.multiSelectMode = false;
   }
 
-  openChat(item: any, event: MouseEvent): void {
+  openChat(item: ContactItem, event: MouseEvent): void {
     event.stopPropagation();
-    // navigate to chat
+    this.router.navigate(['/chat', item.id]);
   }
 
-  deleteItem(item: any, event: MouseEvent): void {
+  deleteItem(item: ContactItem, event: MouseEvent): void {
     event.stopPropagation();
     // delete single contact/group
   }
