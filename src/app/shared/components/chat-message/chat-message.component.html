@@ -59,6 +59,9 @@
                 <button (click)="onPlay($event)" class="btn-play"><i class="fa fa-play"></i></button>
             </div>
         </div>
+        <div *ngIf="message.documentId && !documentFile" class="attachment deleted">
+            File deleted
+        </div>
 
         <!-- Timestamp -->
         <div class="message-time">

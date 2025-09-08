@@ -22,7 +22,7 @@ export class StorageAccountService {
     private http: HttpClient,
     private dbService: DbService,
     private authService: AuthService
-  ) {}
+  ) { }
 
   /**
    * Opens a popup for Google OAuth and returns an Observable for the response
@@ -99,14 +99,23 @@ export class StorageAccountService {
     return this.http.get<IQuotaData>(`${this.apiStorage}/${accountId}/quota`);
   }
 
-  async upload(doc: Document, accountId: string): Promise<any> {
+  async upload(doc: Document, accountId: string): Promise<Observable<Object> | undefined> {
+
     const formData = new FormData();
-    const data = await stringToFile(doc.data, doc.type);
-    
+    const data: Blob = await stringToFile(doc.data, doc.type);
+
     formData.append('file', data, doc.name);
     formData.append('accountId', accountId);
     formData.append('documentId', doc.id);
-    return this.http.post(`${this.apiAccounts}/upload`, formData).toPromise();
+    return this.http.post(`${this.apiStorage}/${accountId}/files`, formData);
+  }
+
+  async chooseStorageAccount(): Promise<IStorageAccount | undefined> {
+    const user = await this.authService.getLoggedInUserInfo();
+    if (!user || !user.storageAccounts.length) return;
+
+    const r = Math.floor(Math.random() * user.storageAccounts.length);
+    return user.storageAccounts[r];
   }
 
   async getBackupCount(accountId: string): Promise<number> {

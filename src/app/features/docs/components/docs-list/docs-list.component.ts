@@ -201,6 +201,9 @@ export class DocsListComponent implements OnInit {
     const confirmationMessage = `Mark the following documents for backup: ${item.name}?`;
     const confirmToBackup = await this.appService.confirmForBackup(confirmationMessage);
     if (!confirmToBackup) return;
+
+    const uploadResult = await this.documentService.backupDocument(item)
+    item.backupAccountId = uploadResult.accountId;
   }
 
   async loadItems() {

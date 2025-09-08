@@ -9,6 +9,7 @@ import { Browser } from '@capacitor/browser'; // For mobile app PDF viewing
 import { Platform } from '@angular/cdk/platform'; // To detect platform
 import { stringToFile } from '../core/indexeddb-handler/utils/file';
 import { SupportedFileTypes } from '../constants';
+import { take } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
@@ -139,20 +140,29 @@ export class DocumentService {
     return Object.entries(grouped).map(([groupKey, documents]) => ({ groupKey, documents }));
   }
 
-  async backupDocument(doc: Document, accountId: string): Promise<void> {
-    if (!accountId) {
-      throw new Error('No storage account selected');
-    }
-    await this.storageService.upload(doc, accountId);
-    doc.backupAccountId = accountId;
-    await this.dbService.put(Tables.Documents, doc);
+  backupDocument(doc: Document): Promise<any> {
+    return new Promise(async (resolve) => {
+      const account = await this.storageService.chooseStorageAccount();
+      if (!account) {
+        resolve(undefined);
+        return;
+      }
+
+      const obs = await this.storageService.upload(doc, account.id)
+      obs?.pipe(take(1)).subscribe(async (res) => {
+        doc.backupAccountId = account.id;
+        
+        await this.dbService.put(Tables.Documents, doc);
+        resolve({...res, accountId: account.id})
+      })
+    })
   }
 
   async deleteDocument(id: string): Promise<void> {
     const doc = await this.dbService.get(Tables.Documents, id) as Document;
     // if (permanent && doc.backupAccountId) {
-      // Requires backend route
-      // await this.storageService.deleteBackup(doc.id, doc.backupAccountId);
+    // Requires backend route
+    // await this.storageService.deleteBackup(doc.id, doc.backupAccountId);
     // }
     await this.dbService.delete(Tables.Documents, id);
   }
@@ -163,7 +173,7 @@ export class DocumentService {
 
     // Check if the file type is supported
     if (!extension || !SupportedFileTypes[extension]) {
-       throw new Error(`Unsupported file type: ${extension || 'unknown'}.`);
+      throw new Error(`Unsupported file type: ${extension || 'unknown'}.`);
     }
 
     try {

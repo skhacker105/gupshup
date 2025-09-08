@@ -200,6 +200,13 @@
           cursor: pointer;
         }
       }
+
+      &.deleted {
+        color: $secondary-color;
+        border-radius: 8px;
+        padding: 0.5rem;
+        background: lighten($background-color-dark, 5%);
+      }
     }
 
     .message-time {
