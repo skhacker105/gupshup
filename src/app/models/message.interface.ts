@@ -14,4 +14,4 @@ export interface IMessage {
   isRead?: boolean;
 }
 
-export interface 
+// export interface
