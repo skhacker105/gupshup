@@ -18,12 +18,11 @@ import { MatMenuModule } from '@angular/material/menu';
 import { ConfirmDialogComponent } from './components/confirm-dialog/confirm-dialog.component';
 import { BytesToGBPipe } from './pipes/bytes-to-gb.pipe';
 import { StorageAccountsComponent } from './components/storage-accounts/storage-accounts.component';
-import { ChatMessageComponent } from './components/chat-message/chat-message.component';
 import { ExpiryCountdownPipe } from './pipes/expiry-countdown.pipe';
 @NgModule({
     declarations: [
         SwipeRightDirective, LongPressDirective, BytesToGBPipe, AutoResizeDirective, ExpiryCountdownPipe,
-        SelectableRowComponent, LayoutComponent, DocumentFolderIconComponent, FileUploadComponent, BreadcrumbComponent, ConfirmDeleteDialogComponent, ConfirmDialogComponent, StorageAccountsComponent, ChatMessageComponent
+        SelectableRowComponent, LayoutComponent, DocumentFolderIconComponent, FileUploadComponent, BreadcrumbComponent, ConfirmDeleteDialogComponent, ConfirmDialogComponent, StorageAccountsComponent
     ],
     imports: [
         FormsModule, CommonModule,
@@ -44,7 +43,7 @@ import { ExpiryCountdownPipe } from './pipes/expiry-countdown.pipe';
         MatIconModule,
         MatMenuModule,
         SwipeRightDirective, LongPressDirective, BytesToGBPipe, AutoResizeDirective, ExpiryCountdownPipe,
-        SelectableRowComponent, LayoutComponent, DocumentFolderIconComponent, FileUploadComponent, BreadcrumbComponent, ConfirmDeleteDialogComponent, ConfirmDialogComponent, StorageAccountsComponent, ChatMessageComponent,
+        SelectableRowComponent, LayoutComponent, DocumentFolderIconComponent, FileUploadComponent, BreadcrumbComponent, ConfirmDeleteDialogComponent, ConfirmDialogComponent, StorageAccountsComponent,
     ],
     providers: [DatePipe]
 })

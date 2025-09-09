@@ -1,8 +1,8 @@
 import { Component, Input, Output, EventEmitter, OnInit } from '@angular/core';
-import { IDocument, IMessage } from '../../../models';
-import { stringToFile } from '../../../core/indexeddb-handler/utils/file';
-import { AppService, DocumentService } from '../../../services';
-import { EMPTY_FILE } from '../../../constants';
+import { IDocument, IMessage } from '../../../../models';
+import { AppService, DocumentService } from '../../../../services';
+import { EMPTY_FILE } from '../../../../constants';
+import { stringToFile } from '../../../../core/indexeddb-handler/utils/file';
 
 @Component({
   selector: 'app-chat-message',

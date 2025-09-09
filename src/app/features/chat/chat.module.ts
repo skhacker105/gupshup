@@ -9,6 +9,7 @@ import { GroupCreateComponent } from './components/group-create/group-create.com
 import { MediaEditorComponent } from './components/media-editor/media-editor.component';
 import { AddContactDialogComponent } from './components/add-contact-dialog/add-contact-dialog.component';
 import { SharedModule } from '../../shared/shared.module';
+import { ChatMessageComponent } from './components/chat-message/chat-message.component';
 
 
 @NgModule({
@@ -17,7 +18,8 @@ import { SharedModule } from '../../shared/shared.module';
     ChatWindowComponent,
     GroupCreateComponent,
     MediaEditorComponent,
-    AddContactDialogComponent
+    AddContactDialogComponent,
+    ChatMessageComponent
   ],
   imports: [
     CommonModule,
