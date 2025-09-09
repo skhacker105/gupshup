@@ -298,13 +298,27 @@ export class DocumentService {
   }
 
   async downloadBackup(doc: IDocument): Promise<IDocument> {
-    const file = await this.storageService.download(doc);
-    if (!file) {
-      throw new Error('No backup found');
-    }
+    return new Promise((resolve, reject) => {
 
-    doc.data = file;
-    await this.updateDocument(doc);
-    return doc;
+      this.storageService.downloadFileAsFile(doc).pipe(take(1))
+      .subscribe({
+        next: async (docFile) => {
+          const file = await fileToString(docFile);
+          doc.data = file;
+          await this.updateDocument(doc);
+          resolve(doc);
+        },
+        error: err => reject(err)
+      });
+    });
+
+    // const file = await this.storageService.download(doc);
+    // if (!file) {
+    //   throw new Error('No backup found');
+    // }
+
+    // doc.data = file;
+    // await this.updateDocument(doc);
+    // return doc;
   }
 }

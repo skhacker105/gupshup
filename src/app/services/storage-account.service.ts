@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable, Subject, switchMap, take } from 'rxjs';
+import { Observable, Subject, map, mergeMap, switchMap, take } from 'rxjs';
 import { AuthService, DbService } from './';
 import { IStorageAccount, IDocument, Tables, OAuthResponse, IQuotaData } from '../models';
 import { environment } from '../../environments/environment';
@@ -111,21 +111,27 @@ export class StorageAccountService {
     return this.http.post(`${this.apiStorage}/${accountId}/files`, formData);
   }
 
-  async download(doc: IDocument): Promise<string> {
 
-    return new Promise<string>((resolve, reject) => {
-      if (!doc.backupAccountStorage) {
-        reject('No backup info found');
-        return;
-      }
+  downloadFileAsFile(doc: IDocument): Observable<File> {
+    if (!doc.backupAccountStorage) throw new Error('No backup info found');
 
-      this.http.get(`${this.apiStorage}/${doc.backupAccountStorage.accountId}/files/${doc.backupAccountStorage.fileId}`, { responseType: 'blob' })
-      .pipe(take(1), switchMap((blob: Blob) => this.blobToBase64(blob)))
-      .subscribe({
-        next: file => resolve(file),
-        error: err => reject(err)
-      })
-    });
+    return this.http.get(`${this.apiStorage}/${doc.backupAccountStorage.accountId}/files/${doc.backupAccountStorage.fileId}?alt=media`, {
+      responseType: 'blob' // Expect binary data
+    }).pipe(
+      map(blob => {
+        if (!doc.backupAccountStorage) throw new Error('No backup info found');
+        
+        // Fetch metadata to get the filename and MIME type
+        // Alternatively, you can pass the filename from the component if known
+        return this.http.get(`${this.apiStorage}/${doc.backupAccountStorage.accountId}/files/${doc.backupAccountStorage.fileId}`).pipe(
+          map((meta: any) => {
+            return new File([blob], meta.name, { type: meta.mimeType });
+          })
+        );
+      }),
+      // Flatten the nested Observable
+      mergeMap(fileObservable => fileObservable)
+    );
   }
 
   private blobToBase64(blob: Blob): Observable<string> {
