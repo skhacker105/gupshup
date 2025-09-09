@@ -51,14 +51,4 @@ export class AppComponent implements OnInit {
     this.selectedTabIndex = index;
     this.router.navigate([this.tabs[index].route]);
   }
-
-  async logout(): Promise<void> {
-    try {
-      await this.dbService.updateUser({ id: this.dbService.getDeviceId(), phoneNumber: '' });
-      await this.router.navigate(['/login']);
-    } catch (err) {
-      console.error('Logout failed:', err);
-      alert('Failed to log out. Please try again.');
-    }
-  }
 }

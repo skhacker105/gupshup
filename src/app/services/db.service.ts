@@ -173,12 +173,19 @@ export class DbService {
     }
 
     checkExpirations(): void {
-        setInterval(async () => {
-            const documents: IDocument[] = await this.getAll(Tables.Documents);
-            const expired = documents.filter(doc => doc.expiryDate && doc.expiryDate < new Date());
-            for (const doc of expired) {
+        setInterval(() => this.deleteExpiredDocuments(), 3600000); // Run hourly
+    }
+
+    async deleteExpiredDocuments() {
+        const documents: IDocument[] = await this.getAll(Tables.Documents);
+        const expired = documents.filter(doc => doc.expiryDate && new Date(doc.expiryDate) < new Date());
+        for (const doc of expired) {
+            if (doc.backupAccountStorage) {
+                doc.data = undefined;
+                await this.put(Tables.Documents, doc);
+            } else {
                 await this.delete(Tables.Documents, doc.id);
             }
-        }, 3600000); // Run hourly
+        }
     }
 }

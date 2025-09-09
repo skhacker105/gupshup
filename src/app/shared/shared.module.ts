@@ -3,7 +3,7 @@ import { AutoResizeDirective, LongPressDirective, SwipeRightDirective } from './
 import { SelectableRowComponent } from './components/selectable-row/selectable-row.component';
 import { LayoutComponent } from './components/layout/layout.component';
 import { FormsModule } from '@angular/forms';
-import { CommonModule } from '@angular/common';
+import { CommonModule, DatePipe } from '@angular/common';
 import { DocumentFolderIconComponent } from './components/document-folder-icon/document-folder-icon.component';
 import { FileUploadComponent } from './components/file-upload/file-upload.component';
 import { BreadcrumbComponent } from './components/breadcrumb/breadcrumb.component';
@@ -19,9 +19,10 @@ import { ConfirmDialogComponent } from './components/confirm-dialog/confirm-dial
 import { BytesToGBPipe } from './pipes/bytes-to-gb.pipe';
 import { StorageAccountsComponent } from './components/storage-accounts/storage-accounts.component';
 import { ChatMessageComponent } from './components/chat-message/chat-message.component';
+import { ExpiryCountdownPipe } from './pipes/expiry-countdown.pipe';
 @NgModule({
     declarations: [
-        SwipeRightDirective, LongPressDirective, BytesToGBPipe, AutoResizeDirective,
+        SwipeRightDirective, LongPressDirective, BytesToGBPipe, AutoResizeDirective, ExpiryCountdownPipe,
         SelectableRowComponent, LayoutComponent, DocumentFolderIconComponent, FileUploadComponent, BreadcrumbComponent, ConfirmDeleteDialogComponent, ConfirmDialogComponent, StorageAccountsComponent, ChatMessageComponent
     ],
     imports: [
@@ -42,8 +43,9 @@ import { ChatMessageComponent } from './components/chat-message/chat-message.com
         MatTabsModule,
         MatIconModule,
         MatMenuModule,
-        SwipeRightDirective, LongPressDirective, BytesToGBPipe, AutoResizeDirective,
+        SwipeRightDirective, LongPressDirective, BytesToGBPipe, AutoResizeDirective, ExpiryCountdownPipe,
         SelectableRowComponent, LayoutComponent, DocumentFolderIconComponent, FileUploadComponent, BreadcrumbComponent, ConfirmDeleteDialogComponent, ConfirmDialogComponent, StorageAccountsComponent, ChatMessageComponent,
-    ]
+    ],
+    providers: [DatePipe]
 })
 export class SharedModule { }

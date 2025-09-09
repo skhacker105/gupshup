@@ -2,7 +2,7 @@ export interface IDocument {
     id: string;
     name: string;
     type: string;
-    data: string;
+    data?: string;
     senderId: string;
     receiverId: string;
     createdDate: Date;

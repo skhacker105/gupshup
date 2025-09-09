@@ -3,7 +3,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { AuthService, DbService, StorageAccountService } from './';
 import { IDocument } from '../models/document.interface';
 import { Folder } from '../models/folder.interface';
-import { IconSize, Tables } from '../models';
+import { ExpirationPeriod, IconSize, Tables } from '../models';
 import { ISearchQuery } from '../core/indexeddb-handler';
 import { Browser } from '@capacitor/browser'; // For mobile app PDF viewing
 import { Platform } from '@angular/cdk/platform'; // To detect platform
@@ -80,21 +80,29 @@ export class DocumentService {
   ) { }
 
   async saveNewDocuments(doc: IDocument, parentFolder?: Folder) {
+    await this.dbService.deleteExpiredDocuments();
+
     doc.relativePath = this.buildRelativePath(parentFolder, doc.name, doc.id);
-    doc.expiryDate = await this.calculateExpiryDate(doc.type)
+    doc.expiryDate = await this.calculateExpiryDate(doc.type);
     return await this.dbService.put(Tables.Documents, doc);
   }
 
-  getDocument(documentId: string): Promise<IDocument> {
+  async getDocument(documentId: string): Promise<IDocument> {
+    await this.dbService.deleteExpiredDocuments();
+
     return this.dbService.get(Tables.Documents, documentId);
   }
 
   async getDocuments(parentFolderId?: string): Promise<IDocument[]> {
+    await this.dbService.deleteExpiredDocuments();
+
     const query: ISearchQuery = { text: parentFolderId ?? '', fields: ['parentFolderId'] };
     return this.dbService.search(Tables.Documents, query);
   }
 
   async getGroupedDocuments(groupBy: string, orderBy: string): Promise<{ groupKey: string, documents: IDocument[] }[]> {
+    await this.dbService.deleteExpiredDocuments();
+    
     let documents = await this.dbService.getAll(Tables.Documents);
     const sortFn = (a: IDocument, b: IDocument) => {
       switch (orderBy) {
@@ -140,7 +148,9 @@ export class DocumentService {
     return Object.entries(grouped).map(([groupKey, documents]) => ({ groupKey, documents }));
   }
 
-  backupDocument(doc: IDocument): Promise<any> {
+  async backupDocument(doc: IDocument): Promise<any> {
+    await this.dbService.deleteExpiredDocuments();
+
     return new Promise(async (resolve) => {
       const account = await this.storageService.chooseStorageAccount();
       if (!account) {
@@ -162,6 +172,8 @@ export class DocumentService {
   }
 
   async deleteDocument(id: string): Promise<void> {
+    await this.dbService.deleteExpiredDocuments();
+
     // const doc = await this.dbService.get(Tables.Documents, id) as IDocument;
     // if (permanent && doc.backupAccountId) {
     // Requires backend route
@@ -171,6 +183,10 @@ export class DocumentService {
   }
 
   async openDocument(doc: IDocument): Promise<void> {
+    await this.dbService.deleteExpiredDocuments();
+    
+    if (!doc.data) return;
+    
     // Extract file extension (case-insensitive)
     const extension = doc.name.split('.').pop()?.toLowerCase();
 
@@ -205,19 +221,27 @@ export class DocumentService {
   }
 
   async deleteFolder(id: string): Promise<void> {
+    await this.dbService.deleteExpiredDocuments();
+
     return await this.dbService.delete(Tables.Folders, id);
   }
 
   async getFolder(folderId: string): Promise<Folder | undefined> {
+    await this.dbService.deleteExpiredDocuments();
+
     return this.dbService.get(Tables.Folders, folderId);
   }
 
   async getFolders(parentFolderId?: string): Promise<Folder[]> {
+    await this.dbService.deleteExpiredDocuments();
+
     const query: ISearchQuery = { text: parentFolderId ?? '', fields: ['parentFolderId'] };
     return this.dbService.search(Tables.Folders, query);
   }
 
   async createFolder(name: string, parentFolder?: Folder): Promise<void> {
+    await this.dbService.deleteExpiredDocuments();
+
     const id = uuidv4();
     const folder: Folder = {
       id,
@@ -243,14 +267,26 @@ export class DocumentService {
     const user = await this.authService.getLoggedInUserInfo();
     if (!user) return;
 
-    const settings = user.expirationSettings || { defaultPeriod: '1week', typeExpirations: {} };
+    const settings = user.expirationSettings || { defaultPeriod: ExpirationPeriod.OneWeek, typeExpirations: {} };
     const period = settings.typeExpirations[fileType.split('/')[0]] || settings.defaultPeriod;
     const now = new Date();
     switch (period) {
-      case '1week': return new Date(now.setDate(now.getDate() + 7));
-      case '1month': return new Date(now.setMonth(now.getMonth() + 1));
-      case 'immediate': return new Date(now.getTime() + 60000);
-      default: return undefined;
+      case ExpirationPeriod.OneMinute:
+        return new Date(now.getTime() + 60 * 1000); // +1 minute
+      case ExpirationPeriod.OneHour:
+        return new Date(now.getTime() + 60 * 60 * 1000); // +1 hour
+      case ExpirationPeriod.OneDay:
+        return new Date(now.setDate(now.getDate() + 1)); // +1 day
+      case ExpirationPeriod.OneWeek:
+        return new Date(now.setDate(now.getDate() + 7)); // +1 week
+      case ExpirationPeriod.OneMonth:
+        return new Date(now.setMonth(now.getMonth() + 1)); // +1 month
+      case ExpirationPeriod.OneYear:
+        return new Date(now.setFullYear(now.getFullYear() + 1)); // +1 year
+      case ExpirationPeriod.Immediate:
+        return new Date(now.getTime() + 300 * 1000); // ~immediate, 30 sec grace
+      default:
+        return undefined;
     }
   }
 }

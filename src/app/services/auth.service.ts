@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';
-import { catchError, mergeMap, tap } from 'rxjs/operators';
+import { Observable, of } from 'rxjs';
+import { catchError, mergeMap, take, tap } from 'rxjs/operators';
 import { User } from '../models/';
 import { environment } from '../../environments/environment';
 import { DbService } from './';
@@ -42,7 +42,7 @@ export class AuthService {
             tap((userInfo: any) => {
                 if (!userInfo) throw new Error('Login successfull but no user information found.');
 
-                this.saveLoggedInUserInfo(userInfo);
+                this.saveLoggedInUserInfo(userInfo, true);
             })
         );
     }
@@ -68,9 +68,21 @@ export class AuthService {
         return !!this.getToken();
     }
 
-    async saveLoggedInUserInfo(userInfo: User) {
-        await this.dbService.updateUser(userInfo);
-        localStorage.setItem(this.userInfoKey, JSON.stringify(userInfo));
+    async saveLoggedInUserInfo(userInfo: User, fromDB = false) {
+        let savedUser = userInfo;
+        if (!fromDB) {
+            savedUser = await new Promise((resolve, reject) => {
+                this.http.put<User>(`${this.apiUsers}/update`, userInfo)
+                .pipe(take(1), catchError((err) => {
+                    reject(err);
+                    return of(undefined);
+                }))
+                .subscribe(resUser => resUser ? resolve(resUser) : undefined)
+            });
+        }
+
+        await this.dbService.updateUser(savedUser);
+        localStorage.setItem(this.userInfoKey, JSON.stringify(savedUser));
     }
 
     async getLoggedInUserInfo(): Promise<User | undefined> {

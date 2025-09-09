@@ -1,8 +1,11 @@
 export enum ExpirationPeriod {
     Immediate = 'immediate',
+    OneMinute = '1Minute',
+    OneHour = '1Hour',
+    OneDay = '1Day',
     OneWeek = '1week',
     OneMonth = '1month',
-    Custom = 'custom',
+    OneYear = '1Year',
 }
 
 export enum ExpirationType {

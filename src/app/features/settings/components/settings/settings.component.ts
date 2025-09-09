@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
-import { AppService, AuthService, DbService, StorageAccountService } from '../../../../services';
+import { AppService, AuthService, StorageAccountService } from '../../../../services';
 import { ExpirationPeriod, IStorageAccount, SUPPORTED_LANGUAGES } from '../../../../models';
 import { take } from 'rxjs';
 
@@ -21,14 +21,13 @@ export class SettingsComponent implements OnInit {
 
   constructor(
     private fb: FormBuilder,
-    private dbService: DbService,
     public appService: AppService,
     private authService: AuthService,
     private storageService: StorageAccountService
   ) {
     this.settingsForm = this.fb.group({
       targetLanguage: ['en'],
-      defaultPeriod: ['1week']
+      defaultPeriod: [ExpirationPeriod.OneWeek]
     });
   }
 
@@ -43,7 +42,7 @@ export class SettingsComponent implements OnInit {
       await this.loadStorageQuotas();
       this.settingsForm = this.fb.group({
         targetLanguage: [user.targetLanguage || 'en'],
-        defaultPeriod: [user.expirationSettings?.defaultPeriod || '1week'],
+        defaultPeriod: [user.expirationSettings?.defaultPeriod || ExpirationPeriod.OneWeek],
         ...this.buildTypeExpirationControls()
       });
     } catch (err) {
@@ -100,7 +99,7 @@ export class SettingsComponent implements OnInit {
           user.expirationSettings.typeExpirations[type] = this.settingsForm.value[key];
         }
       });
-      await this.dbService.updateUser(user);
+      this.authService.saveLoggedInUserInfo(user)
       this.successMessage = 'Settings saved successfully.';
       this.settingsForm.markAsPristine();
     } catch (err) {

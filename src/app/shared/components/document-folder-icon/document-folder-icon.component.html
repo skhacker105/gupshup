@@ -18,6 +18,6 @@
     </div>
     <span class="name" title="{{item.name}}">{{item.name}}</span>
     <ng-container *ngIf="isDocument && documentItem.expiryDate">
-        <span class="expiry">Exp: {{documentItem.expiryDate | date: 'shortDate'}}</span>
+        <span class="expiry">Exp: {{documentItem.expiryDate | expiryCountdown}}</span>
     </ng-container>
 </div>

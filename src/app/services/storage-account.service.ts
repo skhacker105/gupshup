@@ -100,6 +100,7 @@ export class StorageAccountService {
   }
 
   async upload(doc: IDocument, accountId: string): Promise<Observable<any> | undefined> {
+    if (!doc.data) throw new Error('No data found to upload document.')
 
     const formData = new FormData();
     const data: Blob = await stringToFile(doc.data, doc.type);

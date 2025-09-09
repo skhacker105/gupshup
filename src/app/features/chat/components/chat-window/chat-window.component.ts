@@ -52,10 +52,10 @@ export class ChatWindowComponent implements OnInit, OnDestroy {
     this.loading = true;
     this.currentUser = await this.authService.getLoggedInUserInfo();
     this.receiverId = this.route.snapshot.paramMap.get('id') || 'dummy-receiver-id';
-    // this.newMessage.senderId = this.currentUserId;
-    // this.newMessage.receiverId = this.receiverId;
-    this.newMessage.senderId = this.receiverId // currentUserId;
-    this.newMessage.receiverId = this.currentUserId // receiverId;
+    this.newMessage.senderId = this.currentUserId;
+    this.newMessage.receiverId = this.receiverId;
+    // this.newMessage.senderId = this.receiverId // currentUserId;
+    // this.newMessage.receiverId = this.currentUserId // receiverId;
     // Load messages and contact name
     this.loadMessagesAndContact().then(() => {
       this.loading = false;
