@@ -99,7 +99,7 @@ export class StorageAccountService {
     return this.http.get<IQuotaData>(`${this.apiStorage}/${accountId}/quota`);
   }
 
-  async upload(doc: IDocument, accountId: string): Promise<Observable<Object> | undefined> {
+  async upload(doc: IDocument, accountId: string): Promise<Observable<any> | undefined> {
 
     const formData = new FormData();
     const data: Blob = await stringToFile(doc.data, doc.type);
@@ -120,6 +120,6 @@ export class StorageAccountService {
 
   async getBackupCount(accountId: string): Promise<number> {
     const documents = await this.dbService.getAll(Tables.Documents);
-    return documents.filter((doc: IDocument) => doc.backupAccountId === accountId).length;
+    return documents.filter((doc: IDocument) => doc.backupAccountStorage?.accountId === accountId).length;
   }
 }

@@ -101,7 +101,6 @@ export class DbService {
                     "createdDate",
                     "expiryDate",
                     "folderId",
-                    "backupAccountId",
                     "relativePath",
                     "parentFolderId"
                 ]

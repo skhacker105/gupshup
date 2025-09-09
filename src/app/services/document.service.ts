@@ -150,16 +150,19 @@ export class DocumentService {
 
       const obs = await this.storageService.upload(doc, account.id)
       obs?.pipe(take(1)).subscribe(async (res) => {
-        doc.backupAccountId = account.id;
-        
+        doc.backupAccountStorage = {
+          accountId: account.id,
+          fileId: res.id
+        };
+
         await this.dbService.put(Tables.Documents, doc);
-        resolve({...res, accountId: account.id})
+        resolve({ ...res, storageAccount: doc.backupAccountStorage })
       })
     })
   }
 
   async deleteDocument(id: string): Promise<void> {
-    const doc = await this.dbService.get(Tables.Documents, id) as IDocument;
+    // const doc = await this.dbService.get(Tables.Documents, id) as IDocument;
     // if (permanent && doc.backupAccountId) {
     // Requires backend route
     // await this.storageService.deleteBackup(doc.id, doc.backupAccountId);

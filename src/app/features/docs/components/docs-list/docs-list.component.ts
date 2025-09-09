@@ -35,7 +35,7 @@ export class DocsListComponent implements OnInit {
   iconSizes = Object.values(IconSize);
   
   get isMarkForBackupDisabled(): boolean {
-    return this.selectedItems.length === 0 || this.selectedItems.every(item => this.isFolder(item) || (item as IDocument).backupAccountId);
+    return this.selectedItems.length === 0 || this.selectedItems.every(item => this.isFolder(item) || (item as IDocument).backupAccountStorage);
   }
 
   constructor(
@@ -178,15 +178,13 @@ export class DocsListComponent implements OnInit {
 
     this.loading = true;
     try {
+      const ps: Promise<any>[] = [];
       for (const doc of selectedDocuments) {
-        if (!doc.backupAccountId) {
-          // Placeholder for marking backup - call service if available
-          console.log('Marking for backup:', doc.id);
-          // TODO: Implement actual backup marking, e.g., this.documentService.markForBackup(doc.id);
-          // For demo, simulate marking
-          doc.backupAccountId = 'simulated-backup-id'; // Update locally for UI refresh
+        if (!doc.backupAccountStorage) {
+          ps.push(this.markForBackup(doc, false));
         }
       }
+      await Promise.all(ps);
       this.cancelMultiSelect();
       await this.loadItems(); // Refresh to reflect changes
     } catch (err) {
@@ -195,15 +193,21 @@ export class DocsListComponent implements OnInit {
     this.loading = false;
   }
 
-  async markForBackup(item: Item) {
+  async markForBackup(item: Item, changeLoadingFlag = true) {
     if (this.isFolder(item)) return;
+    if (changeLoadingFlag) this.loading = true;
 
     const confirmationMessage = `Mark the following documents for backup: ${item.name}?`;
     const confirmToBackup = await this.appService.confirmForBackup(confirmationMessage);
-    if (!confirmToBackup) return;
+    if (!confirmToBackup) {
+      if (changeLoadingFlag) this.loading = false;
+      return;
+    }
 
     const uploadResult = await this.documentService.backupDocument(item)
-    item.backupAccountId = uploadResult.accountId;
+    item.backupAccountStorage = uploadResult.storageAccount;
+    
+    if (changeLoadingFlag) this.loading = false;
   }
 
   async loadItems() {

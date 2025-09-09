@@ -100,6 +100,8 @@ export class ChatMessageComponent implements OnInit {
   }
 
   onDocumentClick(item: IDocument, event: MouseEvent): void {
+    if (this.multiSelectMode) return;
+    
     event.stopPropagation();
     this.documentService.openDocument(item);
   }

@@ -7,8 +7,12 @@ export interface IDocument {
     receiverId: string;
     createdDate: Date;
     expiryDate?: Date;
-    folderId?: string;
-    backupAccountId?: string;
-    relativePath?: string; // Relative to user's folder structure
+    backupAccountStorage?: IDocumentStorage;
+    relativePath?: string;
     parentFolderId?: string;
+}
+
+export interface IDocumentStorage {
+    accountId: string;
+    fileId: string;
 }

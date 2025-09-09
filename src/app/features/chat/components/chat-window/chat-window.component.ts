@@ -52,10 +52,10 @@ export class ChatWindowComponent implements OnInit, OnDestroy {
     this.loading = true;
     this.currentUser = await this.authService.getLoggedInUserInfo();
     this.receiverId = this.route.snapshot.paramMap.get('id') || 'dummy-receiver-id';
-    this.newMessage.senderId = this.currentUserId;
-    this.newMessage.receiverId = this.receiverId;
-    // this.newMessage.senderId = this.receiverId // currentUserId;
-    // this.newMessage.receiverId = this.currentUserId // receiverId;
+    // this.newMessage.senderId = this.currentUserId;
+    // this.newMessage.receiverId = this.receiverId;
+    this.newMessage.senderId = this.receiverId // currentUserId;
+    this.newMessage.receiverId = this.currentUserId // receiverId;
     // Load messages and contact name
     this.loadMessagesAndContact().then(() => {
       this.loading = false;
@@ -365,10 +365,16 @@ export class ChatWindowComponent implements OnInit, OnDestroy {
 
   async deleteSelectedMessages(): Promise<void> {
     if (this.selectedMessages.length === 0) return;
+
+    const confirmToDelete = await this.appService.confirmForDelete(('all selected messages'));
+    if (!confirmToDelete) return;
+
     try {
+      const delMsgsPromises: Promise<any>[] = [];
       for (const msg of this.selectedMessages) {
-        await this.chatService.deleteMessage(msg.id);
+        delMsgsPromises.push(this.chatService.deleteMessage(msg.id));
       }
+      await Promise.all(delMsgsPromises);
       this.messages = this.messages.filter(m => !this.selectedMessages.some(sm => sm.id === m.id));
       this.cancelMultiSelect();
     } catch (err) {
