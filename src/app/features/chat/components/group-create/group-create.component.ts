@@ -1,6 +1,6 @@
 // src/app/features/chat/components/group-create/group-create.component.ts
-import { Component, OnInit } from '@angular/core';
-import { MatDialogRef } from '@angular/material/dialog';
+import { Component, Inject, OnInit } from '@angular/core';
+import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { v4 as uuidv4 } from 'uuid';
 
 import { Contact, ContactGroup } from '../../../../models';
@@ -12,55 +12,57 @@ import { AppService, ContactService } from '../../../../services';
   styleUrls: ['./group-create.component.scss']
 })
 export class GroupCreateComponent implements OnInit {
+
   groupName = '';
-  selectedContacts: string[] = [];
-  contacts: Contact[] = [];
+  existingGroups: ContactGroup[] = [];
   errorMessage = '';
   loading = false;
 
 
   constructor(
-    private dialogRef: MatDialogRef<GroupCreateComponent>,
+    public appService: AppService,
     private contactService: ContactService,
-    public appService: AppService
+    public dialogRef: MatDialogRef<GroupCreateComponent>,
+    @Inject(MAT_DIALOG_DATA) public data: { contacts: Contact[] }
   ) {
-    
   }
 
   async ngOnInit(): Promise<void> {
-    this.loading = true;
-    try {
-      this.contacts = await this.contactService.getContacts();
-    } catch (err) {
-      this.errorMessage = 'Failed to load contacts.';
-    }
-    this.loading = false;
-  }
-
-  toggleContact(contactId: string): void {
-    const index = this.selectedContacts.indexOf(contactId);
-    if (index === -1) {
-      this.selectedContacts.push(contactId);
-    } else {
-      this.selectedContacts.splice(index, 1);
-    }
+    this.existingGroups = await this.contactService.getGroups();
   }
 
   async createGroup(): Promise<void> {
-    if (!this.groupName || this.selectedContacts.length === 0) {
-      this.errorMessage = 'Please enter a group name and select at least one contact.';
+
+    if (this.data.contacts.length < 2) {
+      this.errorMessage = 'Select two or more contacts.';
+      return;
+    }
+
+    if (!this.groupName) {
+      this.errorMessage = 'Please enter a group name.';
+      return;
+    }
+
+    this.groupName = this.groupName.trim()
+    const nameIsExisting = this.existingGroups.some(g => g.name === this.groupName);
+
+
+    if (nameIsExisting) {
+      this.errorMessage = `A group with  name '${this.groupName}' already exists.`;
       return;
     }
     this.loading = true;
     this.errorMessage = '';
     try {
+      
       const group: ContactGroup = {
         id: uuidv4(),
         name: this.groupName,
-        members: this.selectedContacts
+        members: this.data.contacts.map(c => c.id)
       };
       await this.contactService.createGroup(group);
-      this.dialogRef.close();
+      this.dialogRef.close(true);
+
     } catch (err) {
       this.errorMessage = 'Failed to create group.';
     }

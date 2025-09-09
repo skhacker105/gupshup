@@ -29,12 +29,20 @@ export class ContactService {
         return this.dbService.get(Tables.Contacts, id);
     }
 
-    async getAll(collection: string): Promise<any[]> {
-        return await this.dbService.getAll(collection);
+    async deleteContact(id: string) {
+        return await this.dbService.delete(Tables.Contacts, id);
     }
 
     async createGroup(group: ContactGroup): Promise<void> {
-        await this.dbService.put('contactGroups', group);
+        return await this.dbService.put(Tables.ContactGroups, group);
+    }
+
+    async deleteGroup(id: string) {
+        return await this.dbService.delete(Tables.ContactGroups, id);
+    }
+
+    async getGroups(): Promise<ContactGroup[]> {
+        return await this.dbService.getAll(Tables.ContactGroups);
     }
 
     async updateOnlineStatus(contactId: string, online: boolean): Promise<void> {

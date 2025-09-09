@@ -9,14 +9,6 @@
             <input id="groupName" [(ngModel)]="groupName" name="groupName" placeholder="Enter group name" required
                 title="Required for group creation" />
         </div>
-        <h3>Select Contacts ({{ selectedContacts.length }} selected)</h3>
-        <div class="contact-list" *ngIf="!loading; else loadingSpinner">
-            <label *ngFor="let contact of contacts" title="Add {{ contact.name }} to the group">
-                <input type="checkbox" [checked]="selectedContacts.includes(contact.id)"
-                    (change)="toggleContact(contact.id)" />
-                {{ contact.name }} ({{ contact.phoneNumber }})
-            </label>
-        </div>
         <div class="actions">
             <button type="submit" [disabled]="loading" title="Create the group chat">
                 {{ loading ? 'Creating...' : 'Create Group' }}

@@ -21,6 +21,12 @@
 
   <!-- Actions visible only in multi-select mode -->
   <ng-container action-multiselect>
+
+    <button title="Create Group" (click)="openAddGroupDialog()" [disabled]="selectedContacts.length < 2">
+      <i class="fa fa-users"></i>
+      <span class="no-wrap" *ngIf="!appService.isMobile">Group</span>
+    </button>
+
     <button (click)="deleteSelected()" [disabled]="selectedItems.length === 0" title="Delete selected">
       <i class="fa fa-trash"></i>
       <span class="no-wrap" *ngIf="!appService.isMobile">Delete</span>

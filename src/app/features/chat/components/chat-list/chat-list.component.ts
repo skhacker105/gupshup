@@ -5,6 +5,8 @@ import { AddContactDialogComponent } from '../add-contact-dialog/add-contact-dia
 import { Contact, ContactGroup } from '../../../../models';
 import { AppService, ContactService } from '../../../../services';
 import { Router } from '@angular/router';
+import { GroupCreateComponent } from '../group-create/group-create.component';
+import { take } from 'rxjs';
 
 type ContactItem = Contact | ContactGroup;
 
@@ -23,6 +25,12 @@ export class ChatListComponent implements OnInit {
   selectedItems: ContactItem[] = [];
   multiSelectMode = false;
   orderBy: 'name' | 'lastMessageDate' = 'name';
+
+  get selectedContacts(): Contact[] {
+    if (this.selectedItems.length === 0) return [];
+
+    return this.selectedItems.filter(item => this.isContact(item)) as Contact[]
+  }
 
 
   constructor(
@@ -45,7 +53,7 @@ export class ChatListComponent implements OnInit {
     this.errorMessage = '';
     try {
       this.contacts = await this.contactService.getContacts();
-      this.groups = await this.contactService.getAll('contactGroups');
+      this.groups = await this.contactService.getGroups();
       this.mergeLists();
     } catch {
       this.errorMessage = 'Failed to load contacts or groups.';
@@ -74,6 +82,10 @@ export class ChatListComponent implements OnInit {
     return 'members' in item ? false : true;
   }
 
+  isContactGroup(item: ContactItem): item is ContactGroup {
+    return 'members' in item ? true : false;
+  }
+
   getItemDescription(item: ContactItem): string {
     if (this.isContact(item))
       return item.phoneNumber;
@@ -81,7 +93,6 @@ export class ChatListComponent implements OnInit {
       return item.lastMessageTimestamp?.toString() ?? 'Group';
   }
 
-  // existing mergeLists updated
   mergeLists(orderBy: 'name' | 'lastMessageDate' = 'name'): void {
     this.orderBy = orderBy;
     this.mergedList = [
@@ -98,10 +109,24 @@ export class ChatListComponent implements OnInit {
     });
   }
 
-  deleteSelected(): void {
+  async deleteSelected() {
     if (this.selectedItems.length === 0) return;
-    // implement delete logic (contacts + groups)
+    
+    const confirmToDelete = await this.appService.confirmForDelete(' selected Contacts / Groups');
+    if (!confirmToDelete) return;
+
+    const p: Promise<any>[] = [];
+    for (let item of this.selectedItems) {
+      if (this.isContact(item)) {
+        p.push(this.contactService.deleteContact(item.id));
+      } else {
+        p.push(this.contactService.deleteGroup(item.id));
+      }
+    }
+    await Promise.all(p);
+
     this.cancelMultiSelect();
+    this.loadData();
   }
 
   toggleSelect(item: ContactItem, event: MouseEvent): void {
@@ -128,9 +153,21 @@ export class ChatListComponent implements OnInit {
     this.router.navigate(['/chat', item.id]);
   }
 
-  deleteItem(item: ContactItem, event: MouseEvent): void {
+  async deleteItem(item: ContactItem, event: MouseEvent) {
     event.stopPropagation();
-    // delete single contact/group
+    
+    const confirmToDelete = await this.appService.confirmForDelete((item.name));
+    if (!confirmToDelete) return;
+
+    this.loading = true;
+    if (this.isContact(item)) {
+      await this.contactService.deleteContact(item.id);
+    } else {
+      await this.contactService.deleteGroup(item.id)
+    }
+    this.loading = false;
+    this.cancelMultiSelect();
+    this.loadData();
   }
 
   async sync(): Promise<void> {
@@ -165,5 +202,15 @@ export class ChatListComponent implements OnInit {
         this.loading = false;
       }
     });
+  }
+
+  openAddGroupDialog() {
+    const selectedContacts = this.selectedItems.filter(item => this.isContact(item))
+    const dialogRef = this.dialog.open(GroupCreateComponent, { data: { contacts: selectedContacts } });
+    dialogRef.afterClosed().pipe(take(1))
+      .subscribe(() => {
+        this.cancelMultiSelect();
+        this.loadData();
+      });
   }
 }
