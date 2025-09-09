@@ -9,7 +9,7 @@ import { Browser } from '@capacitor/browser'; // For mobile app PDF viewing
 import { Platform } from '@angular/cdk/platform'; // To detect platform
 import { fileToString, stringToFile } from '../core/indexeddb-handler/utils/file';
 import { SupportedFileTypes } from '../constants';
-import { take } from 'rxjs';
+import { catchError, of, take } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
@@ -109,7 +109,7 @@ export class DocumentService {
 
   async getGroupedDocuments(groupBy: string, orderBy: string): Promise<{ groupKey: string, documents: IDocument[] }[]> {
     await this.dbService.deleteExpiredDocuments();
-    
+
     let documents = await this.dbService.getAll(Tables.Documents);
     const sortFn = (a: IDocument, b: IDocument) => {
       switch (orderBy) {
@@ -181,19 +181,27 @@ export class DocumentService {
   async deleteDocument(id: string): Promise<void> {
     await this.dbService.deleteExpiredDocuments();
 
-    // const doc = await this.dbService.get(Tables.Documents, id) as IDocument;
-    // if (permanent && doc.backupAccountId) {
-    // Requires backend route
-    // await this.storageService.deleteBackup(doc.id, doc.backupAccountId);
-    // }
+    const doc = await this.dbService.get(Tables.Documents, id) as IDocument;
     await this.dbService.delete(Tables.Documents, id);
+
+    await new Promise((resolve, reject) => {
+      if (doc.backupAccountStorage) {
+        this.storageService.deleteBackup(doc).pipe(take(1), catchError(err => {
+          reject(err);
+          return of({})
+        }))
+        .subscribe(res => resolve(res))
+      } else {
+        resolve({});
+      }
+    });
   }
 
   async openDocument(doc: IDocument): Promise<void> {
     await this.dbService.deleteExpiredDocuments();
-    
+
     if (!doc.data) return;
-    
+
     // Extract file extension (case-insensitive)
     const extension = doc.name.split('.').pop()?.toLowerCase();
 
@@ -300,16 +308,16 @@ export class DocumentService {
   async downloadBackup(doc: IDocument): Promise<IDocument> {
     return new Promise((resolve, reject) => {
 
-      this.storageService.downloadFileAsFile(doc).pipe(take(1))
-      .subscribe({
-        next: async (docFile) => {
-          const file = await fileToString(docFile);
-          doc.data = file;
-          await this.updateDocument(doc);
-          resolve(doc);
-        },
-        error: err => reject(err)
-      });
+      this.storageService.downloadBackupAsFile(doc).pipe(take(1))
+        .subscribe({
+          next: async (docFile) => {
+            const file = await fileToString(docFile);
+            doc.data = file;
+            await this.updateDocument(doc);
+            resolve(doc);
+          },
+          error: err => reject(err)
+        });
     });
   }
 }

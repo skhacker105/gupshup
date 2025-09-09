@@ -103,7 +103,7 @@ export class DocsListComponent implements OnInit {
             // Open document
             this.documentService.openDocument(item);
           }
-        } catch {}
+        } catch { }
         this.documentLoading = false;
       }
     }
@@ -157,13 +157,13 @@ export class DocsListComponent implements OnInit {
 
     const isAnyFolderSelected = this.selectedItems.some(item => this.isFolder(item));
     const selectNames = this.selectedItems.map(item => item.name).join(', ');
-    const confirmationMessage = selectNames + (isAnyFolderSelected ? ' and all sub folders and files' : '');
+    const confirmationMessage = selectNames + ' (along with backup) ' + (isAnyFolderSelected ? ' and all sub folders and files (along with backup)' : '');
     const confirmToDelete = await this.appService.confirmForDelete(confirmationMessage);
     if (!confirmToDelete) return;
 
     for (const item of this.selectedItems) {
       if (!this.isFolder(item)) {
-        await this.deleteDocument(item.id);
+        await this.deleteDocument(item);
       } else {
         await this.deleteFolder(item);
       }
@@ -308,11 +308,10 @@ export class DocsListComponent implements OnInit {
     });
   }
 
-  async deleteDocument(id: string, event?: MouseEvent): Promise<void> {
-    event?.stopPropagation();
+  async deleteDocument(document: IDocument): Promise<void> {
     this.loading = true;
     try {
-      await this.documentService.deleteDocument(id);
+      await this.documentService.deleteDocument(document.id);
       await this.loadItems();
     } catch {
       this.errorMessage = 'Failed to delete document.';
@@ -343,7 +342,7 @@ export class DocsListComponent implements OnInit {
 
     const isCurrentFolder = folder.id === this.currentFolder?.id;
     if (isCurrentFolder) {
-      const confirmationMessage = `${folder.name} and all sub folders and files`
+      const confirmationMessage = `${folder.name} and all sub folders and files (along with backup)`;
       const confirmToDelete = await this.appService.confirmForDelete(confirmationMessage)
       if (!confirmToDelete) return;
     }

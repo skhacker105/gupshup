@@ -323,7 +323,7 @@ export class ChatWindowComponent implements OnInit, OnDestroy {
     let deleteDocument = false;
     if (msg.documentId) {
       // ask if to delete document
-      deleteDocument = await this.appService.confirmForDelete(('document attached with the message'));
+      deleteDocument = await this.appService.confirmForDelete(('document and backup attached with the message'));
     }
 
     try {
@@ -348,12 +348,24 @@ export class ChatWindowComponent implements OnInit, OnDestroy {
     const confirmToDelete = await this.appService.confirmForDelete(('all selected messages'));
     if (!confirmToDelete) return;
 
+    let confirmDeleteDocument = false;
+    const messagesWithDocument = this.selectedMessages.filter(m => !!m.documentId);
+    if (messagesWithDocument.length > 0) {
+      confirmDeleteDocument = await this.appService.confirmForDelete(('document and backup attached with the message'));
+    }
+
     try {
-      const delMsgsPromises: Promise<any>[] = [];
+      const delPromises: Promise<any>[] = [];
       for (const msg of this.selectedMessages) {
-        delMsgsPromises.push(this.chatService.deleteMessage(msg.id));
+        delPromises.push(this.chatService.deleteMessage(msg.id));
       }
-      await Promise.all(delMsgsPromises);
+      if (confirmDeleteDocument) {
+        for (const docMsg of messagesWithDocument) {
+          if (docMsg.documentId)
+            delPromises.push(this.documentService.deleteDocument(docMsg.documentId))
+        }
+      }
+      await Promise.all(delPromises);
       this.messages = this.messages.filter(m => !this.selectedMessages.some(sm => sm.id === m.id));
       this.cancelMultiSelect();
     } catch (err) {

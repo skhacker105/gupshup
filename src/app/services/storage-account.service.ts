@@ -112,7 +112,7 @@ export class StorageAccountService {
   }
 
 
-  downloadFileAsFile(doc: IDocument): Observable<File> {
+  downloadBackupAsFile(doc: IDocument): Observable<File> {
     if (!doc.backupAccountStorage) throw new Error('No backup info found');
 
     return this.http.get(`${this.apiStorage}/${doc.backupAccountStorage.accountId}/files/${doc.backupAccountStorage.fileId}?alt=media`, {
@@ -134,27 +134,6 @@ export class StorageAccountService {
     );
   }
 
-  private blobToBase64(blob: Blob): Observable<string> {
-    return new Observable<string>((observer) => {
-      const reader = new FileReader();
-      reader.onload = () => {
-        const arrayBuffer = reader.result as ArrayBuffer;
-        const bytes = new Uint8Array(arrayBuffer);
-        let binary = '';
-        for (let i = 0; i < bytes.byteLength; i++) {
-          binary += String.fromCharCode(bytes[i]);
-        }
-        const base64String = btoa(binary);
-        observer.next(base64String);
-        observer.complete();
-      };
-      reader.onerror = () => {
-        observer.error(new Error('Failed to read blob as base64'));
-      };
-      reader.readAsArrayBuffer(blob); // Read as ArrayBuffer to match fileToString
-    });
-  }
-
   async chooseStorageAccount(): Promise<IStorageAccount | undefined> {
     const user = await this.authService.getLoggedInUserInfo();
     if (!user || !user.storageAccounts.length) return;
@@ -166,5 +145,11 @@ export class StorageAccountService {
   async getBackupCount(accountId: string): Promise<number> {
     const documents = await this.dbService.getAll(Tables.Documents);
     return documents.filter((doc: IDocument) => doc.backupAccountStorage?.accountId === accountId).length;
+  }
+
+  deleteBackup(doc: IDocument) {
+    if (!doc.backupAccountStorage) throw new Error('No backup info found');
+
+    return this.http.delete(`${this.apiStorage}/${doc.backupAccountStorage.accountId}/files/${doc.backupAccountStorage.fileId}`)
   }
 }
