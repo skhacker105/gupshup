@@ -7,7 +7,7 @@ import { ExpirationPeriod, IconSize, Tables } from '../models';
 import { ISearchQuery } from '../core/indexeddb-handler';
 import { Browser } from '@capacitor/browser'; // For mobile app PDF viewing
 import { Platform } from '@angular/cdk/platform'; // To detect platform
-import { stringToFile } from '../core/indexeddb-handler/utils/file';
+import { fileToString, stringToFile } from '../core/indexeddb-handler/utils/file';
 import { SupportedFileTypes } from '../constants';
 import { take } from 'rxjs';
 
@@ -83,6 +83,13 @@ export class DocumentService {
     await this.dbService.deleteExpiredDocuments();
 
     doc.relativePath = this.buildRelativePath(parentFolder, doc.name, doc.id);
+    doc.expiryDate = await this.calculateExpiryDate(doc.type);
+    return await this.dbService.put(Tables.Documents, doc);
+  }
+
+  async updateDocument(doc: IDocument) {
+    await this.dbService.deleteExpiredDocuments();
+
     doc.expiryDate = await this.calculateExpiryDate(doc.type);
     return await this.dbService.put(Tables.Documents, doc);
   }
@@ -288,5 +295,16 @@ export class DocumentService {
       default:
         return undefined;
     }
+  }
+
+  async downloadBackup(doc: IDocument): Promise<IDocument> {
+    const file = await this.storageService.download(doc);
+    if (!file) {
+      throw new Error('No backup found');
+    }
+
+    doc.data = file;
+    await this.updateDocument(doc);
+    return doc;
   }
 }

@@ -52,8 +52,7 @@
         [isMobile]="appService.isMobile" [isTablet]="appService.isTablet" [isDesktop]="appService.isDesktop"
         (toggleSelection)="toggleSelect(msg, $event)" (replyMessage)="replyToMessage(msg)"
         (forwardMessage)="forwardMessage(msg)" (deleteMessage)="deleteMessage(msg)"
-        (translateMessage)="translateMessage(msg)"
-        (downloadAttachment)="downloadAttachment(msg.documentId)"></app-chat-message>
+        (translateMessage)="translateMessage(msg)"></app-chat-message>
     </div>
 
     <!-- Reply bar -->

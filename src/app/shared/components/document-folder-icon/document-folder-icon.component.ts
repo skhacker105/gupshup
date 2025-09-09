@@ -1,6 +1,7 @@
 // src/app/components/document-folder-icon/document-folder-icon.component.ts
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { Folder, IDocument } from '../../../models';
+import { EMPTY_FILE } from '../../../constants';
 
 @Component({
   selector: 'app-document-folder-icon',
@@ -31,6 +32,10 @@ export class DocumentFolderIconComponent {
     return 'data' in this.item;
   }
 
+  get isEmptyFile(): boolean {
+    return 'data' in this.item && this.item.data === EMPTY_FILE
+  }
+
   get documentItem(): IDocument {
     return this.item as IDocument;
   }
@@ -41,39 +46,46 @@ export class DocumentFolderIconComponent {
     }
 
     const extension = this.item.name.split('.').pop()?.toLowerCase();
+    let className = '';
     switch (extension) {
       case 'pdf':
-        return 'fa-file-pdf';
+        className = 'fa-file-pdf'; break;
       case 'doc':
       case 'docx':
-        return 'fa-file-word';
+        className = 'fa-file-word'; break;
       case 'zip':
       case 'rar':
-        return 'fa-file-archive';
+        className = 'fa-file-archive'; break;
       case 'txt':
-        return 'fa-file-alt';
+        className = 'fa-file-alt'; break;
       case 'jpg':
       case 'jpeg':
       case 'png':
       case 'gif':
-        return 'fa-file-image';
+        className = 'fa-file-image'; break;
       case 'xls':
       case 'xlsx':
-        return 'fa-file-excel';
+        className = 'fa-file-excel'; break;
       case 'ppt':
       case 'pptx':
-        return 'fa-file-powerpoint';
+        className = 'fa-file-powerpoint'; break;
       case 'mp3':
       case 'wav':
-        return 'fa-file-audio';
+        className = 'fa-file-audio'; break;
       case 'mp4':
       case 'avi':
-        return 'fa-file-video';
+        className = 'fa-file-video'; break;
       case 'csv':
-        return 'fa-file-csv';
+        className = 'fa-file-csv'; break;
       default:
-        return 'fa-file';
+        className = 'fa-file'; break;
     }
+
+    if (this.isEmptyFile && this.isDocument) {
+      className += ' disabled-icon';
+    }
+
+    return className;
   }
 
   get classes() {

@@ -6,6 +6,7 @@ import { Folder, IDocument, IconSize, IPathSegmenmat } from '../../../../models'
 import { AppService, DocumentService } from '../../../../services';
 import { FileUploadComponent } from '../../../../shared/components/file-upload/file-upload.component';
 import { ActivatedRoute, Router } from '@angular/router';
+import { EMPTY_FILE } from '../../../../constants';
 
 type Item = IDocument | Folder;
 
@@ -33,7 +34,7 @@ export class DocsListComponent implements OnInit {
   currentPath: string = '[]'; // Current relative path (JSON string)
   pathSegments: IPathSegmenmat[] = [{ name: 'Root', id: undefined }]; // For breadcrumb
   iconSizes = Object.values(IconSize);
-  
+
   get isMarkForBackupDisabled(): boolean {
     return this.selectedItems.length === 0 || this.selectedItems.every(item => this.isFolder(item) || (item as IDocument).backupAccountStorage);
   }
@@ -72,7 +73,7 @@ export class DocsListComponent implements OnInit {
     return !('data' in item); // Discriminator: Documents have 'data: Blob'
   }
 
-  rowClick(item: Item, event: MouseEvent): void {
+  async rowClick(item: Item, event: MouseEvent) {
     if (this.multiSelectMode) {
       // if (!this.isFolder(item))
       this.toggleSelect(item, event);
@@ -91,8 +92,14 @@ export class DocsListComponent implements OnInit {
       if (this.isFolder(item)) { // Folder
         this.router.navigate(['/docs', item.id]);
       } else {
-        // Open document
-        this.documentService.openDocument(item);
+        if (item.data === EMPTY_FILE) {
+          // Re download Dowcument from storage and then open
+          const updatedDoc = await this.documentService.downloadBackup(item);
+          item.data = updatedDoc.data;
+        } else {
+          // Open document
+          this.documentService.openDocument(item);
+        }
       }
     }
   }
@@ -203,7 +210,7 @@ export class DocsListComponent implements OnInit {
     if (changeLoadingFlag) this.loading = true;
     const uploadResult = await this.documentService.backupDocument(item)
     item.backupAccountStorage = uploadResult.storageAccount;
-    
+
     if (changeLoadingFlag) this.loading = false;
   }
 
@@ -281,7 +288,7 @@ export class DocsListComponent implements OnInit {
       this.loading = true;
       if (docs) {
         try {
-          for (let i=0; i < docs.length; i++) {
+          for (let i = 0; i < docs.length; i++) {
             await this.documentService.saveNewDocuments(docs[i], this.currentFolder)
           }
           // await docs.map(async (d) => await this.documentService.saveNewDocuments(d, this.currentFolder));

@@ -2,6 +2,7 @@ import { Component, Input, Output, EventEmitter, OnInit } from '@angular/core';
 import { IDocument, IMessage } from '../../../models';
 import { stringToFile } from '../../../core/indexeddb-handler/utils/file';
 import { AppService, DocumentService } from '../../../services';
+import { EMPTY_FILE } from '../../../constants';
 
 @Component({
   selector: 'app-chat-message',
@@ -64,10 +65,10 @@ export class ChatMessageComponent implements OnInit {
   }
 
   async getFileUrl(): Promise<string> {
-    const data = this.documentFile?.data
+    const data = this.documentFile?.data && this.documentFile.data !== EMPTY_FILE
       ? await stringToFile(this.documentFile.data, this.documentFile.type)
       : undefined;
-      
+
     if (!data) return '';
 
     return URL.createObjectURL(data);
@@ -99,11 +100,16 @@ export class ChatMessageComponent implements OnInit {
     }
   }
 
-  onDocumentClick(item: IDocument, event: MouseEvent): void {
+  async onDocumentClick(item: IDocument, event: MouseEvent) {
     if (this.multiSelectMode) return;
-    
     event.stopPropagation();
-    this.documentService.openDocument(item);
+
+    if (item.data === EMPTY_FILE) {
+      // add code for download from storage account and open
+      this.documentFile = await this.documentService.downloadBackup(item);
+    } else {
+      this.documentService.openDocument(item);
+    }
   }
 
   onSelectionChange(event: any): void {

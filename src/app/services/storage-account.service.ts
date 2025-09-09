@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable, Subject } from 'rxjs';
+import { Observable, Subject, switchMap, take } from 'rxjs';
 import { AuthService, DbService } from './';
 import { IStorageAccount, IDocument, Tables, OAuthResponse, IQuotaData } from '../models';
 import { environment } from '../../environments/environment';
@@ -109,6 +109,44 @@ export class StorageAccountService {
     formData.append('accountId', accountId);
     formData.append('documentId', doc.id);
     return this.http.post(`${this.apiStorage}/${accountId}/files`, formData);
+  }
+
+  async download(doc: IDocument): Promise<string> {
+
+    return new Promise<string>((resolve, reject) => {
+      if (!doc.backupAccountStorage) {
+        reject('No backup info found');
+        return;
+      }
+
+      this.http.get(`${this.apiStorage}/${doc.backupAccountStorage.accountId}/files/${doc.backupAccountStorage.fileId}`, { responseType: 'blob' })
+      .pipe(take(1), switchMap((blob: Blob) => this.blobToBase64(blob)))
+      .subscribe({
+        next: file => resolve(file),
+        error: err => reject(err)
+      })
+    });
+  }
+
+  private blobToBase64(blob: Blob): Observable<string> {
+    return new Observable<string>((observer) => {
+      const reader = new FileReader();
+      reader.onload = () => {
+        const arrayBuffer = reader.result as ArrayBuffer;
+        const bytes = new Uint8Array(arrayBuffer);
+        let binary = '';
+        for (let i = 0; i < bytes.byteLength; i++) {
+          binary += String.fromCharCode(bytes[i]);
+        }
+        const base64String = btoa(binary);
+        observer.next(base64String);
+        observer.complete();
+      };
+      reader.onerror = () => {
+        observer.error(new Error('Failed to read blob as base64'));
+      };
+      reader.readAsArrayBuffer(blob); // Read as ArrayBuffer to match fileToString
+    });
   }
 
   async chooseStorageAccount(): Promise<IStorageAccount | undefined> {

@@ -281,27 +281,6 @@ export class ChatWindowComponent implements OnInit, OnDestroy {
     return this.receiverName;
   }
 
-  downloadAttachment(documentId?: string): void {
-    // if (!id || !name) {
-    //   this.errorMessage = 'Invalid document.';
-    //   return;
-    // }
-    // this.dbService.get(Tables.Documents, id).then((doc: IDocument) => {
-    //   if (doc) {
-    //     const url = URL.createObjectURL(doc.data);
-    //     const a = document.createElement('a');
-    //     a.href = url;
-    //     a.download = name;
-    //     a.click();
-    //     URL.revokeObjectURL(url);
-    //   } else {
-    //     this.errorMessage = 'Document not found.';
-    //   }
-    // }).catch(err => {
-    //   this.errorMessage = 'Error downloading document.';
-    // });
-  }
-
   showInfo(): void {
     alert(`Chatting with ${this.receiverName}\nID: ${this.receiverId}`);
   }
