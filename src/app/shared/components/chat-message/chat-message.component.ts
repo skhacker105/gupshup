@@ -1,5 +1,5 @@
 import { Component, Input, Output, EventEmitter, OnInit } from '@angular/core';
-import { Document, Message } from '../../../models';
+import { Document, IMessage } from '../../../models';
 import { stringToFile } from '../../../core/indexeddb-handler/utils/file';
 import { AppService, DocumentService } from '../../../services';
 
@@ -9,7 +9,7 @@ import { AppService, DocumentService } from '../../../services';
   styleUrls: ['./chat-message.component.scss']
 })
 export class ChatMessageComponent implements OnInit {
-  @Input() message!: Message;
+  @Input() message!: IMessage;
   @Input() isSelected = false;
   @Input() multiSelectMode = false;
   @Input() currentUserId!: string;
@@ -22,10 +22,10 @@ export class ChatMessageComponent implements OnInit {
 
   @Output() longPress = new EventEmitter<void>();
   @Output() toggleSelection = new EventEmitter<MouseEvent>();
-  @Output() replyMessage = new EventEmitter<Message>();
-  @Output() forwardMessage = new EventEmitter<Message>();
-  @Output() deleteMessage = new EventEmitter<Message>();
-  @Output() translateMessage = new EventEmitter<Message>();
+  @Output() replyMessage = new EventEmitter<IMessage>();
+  @Output() forwardMessage = new EventEmitter<IMessage>();
+  @Output() deleteMessage = new EventEmitter<IMessage>();
+  @Output() translateMessage = new EventEmitter<IMessage>();
   @Output() downloadAttachment = new EventEmitter<{ id: string, name: string }>();
 
   fileURL = '';
@@ -155,6 +155,6 @@ export class ChatMessageComponent implements OnInit {
 
   onInfo(event: MouseEvent): void {
     event.stopPropagation();
-    alert(`Message info: ${this.message.id}\nTime: ${this.message.createdAt}`);
+    alert(`IMessage info: ${this.message.id}\nTime: ${this.message.createdAt}`);
   }
 }

@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Subject, Observable } from 'rxjs';
 import { v4 as uuidv4 } from 'uuid';
-import { Message, Tables } from '../models';
+import { IMessage, Tables } from '../models';
 import { AuthService, ContactService, DbService, TranslationService, WebSocketService } from './';
 import { ISearchQuery } from '../core/indexeddb-handler';
 
@@ -9,7 +9,7 @@ import { ISearchQuery } from '../core/indexeddb-handler';
     providedIn: 'root'
 })
 export class ChatService {
-    private messageSubject = new Subject<Message>();
+    private messageSubject = new Subject<IMessage>();
 
     constructor(
         private wsService: WebSocketService,
@@ -20,16 +20,16 @@ export class ChatService {
     ) {
         this.wsService.messages$.subscribe(msg => {
             if (msg.type === 'message') {
-                this.messageSubject.next(msg.data as Message);
+                this.messageSubject.next(msg.data as IMessage);
             }
         });
     }
 
-    getMessages(): Observable<Message> {
+    getMessages(): Observable<IMessage> {
         return this.messageSubject.asObservable();
     }
 
-    async sendMessage(msg: Message): Promise<void> {
+    async sendMessage(msg: IMessage): Promise<void> {
         // if (msg.text) {
         //     const user = await this.authService.getLoggedInUserInfo();
         //     if (!user) return;
@@ -46,7 +46,7 @@ export class ChatService {
         return this.dbService.delete(Tables.Messages, messageId);
     }
 
-    async getAllMessageByUser(userId: string): Promise<Message[]> {
+    async getAllMessageByUser(userId: string): Promise<IMessage[]> {
         const query1: ISearchQuery = { text: userId ?? '', fields: ['receiverId'] }
         const messages1 = await this.dbService.search(Tables.Messages, query1);
 

@@ -1,6 +1,6 @@
 import { Document } from './';
 
-export interface Message {
+export interface IMessage {
   id: string;
   senderId: string;
   receiverId: string;
@@ -13,3 +13,5 @@ export interface Message {
   isDeleted?: string;
   isRead?: boolean;
 }
+
+export interface 

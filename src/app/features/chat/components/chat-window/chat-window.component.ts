@@ -2,7 +2,7 @@ import { Component, OnInit, OnDestroy, ViewChild, ElementRef, TrackByFunction } 
 import { Router, ActivatedRoute } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { v4 as uuidv4 } from 'uuid';
-import { Message, Document, Contact, Tables, User } from '../../../../models';
+import { IMessage, Document, Contact, Tables, User } from '../../../../models';
 import { AppService, ChatService, DocumentService, TranslationService, AuthService, ContactService } from '../../../../services';
 import { MatDialog } from '@angular/material/dialog';
 import { MediaEditorComponent } from '../media-editor/media-editor.component';
@@ -15,9 +15,9 @@ import { fileToString } from '../../../../core/indexeddb-handler/utils/file';
 })
 export class ChatWindowComponent implements OnInit, OnDestroy {
   @ViewChild('messagesContainer') messagesContainer!: ElementRef;
-  messages: Message[] = [];
-  newMessage: Message = { id: '', senderId: '', receiverId: '', createdAt: new Date(), status: 'sent' };
-  selectedMessages: Message[] = [];
+  messages: IMessage[] = [];
+  newMessage: IMessage = { id: '', senderId: '', receiverId: '', createdAt: new Date(), status: 'sent' };
+  selectedMessages: IMessage[] = [];
   multiSelectMode = false;
   currentUser: User | undefined;
   receiverId = 'dummy-receiver-id';
@@ -25,7 +25,7 @@ export class ChatWindowComponent implements OnInit, OnDestroy {
   selectedFile?: File;
   loading = false;
   errorMessage = '';
-  replyingTo: Message | null = null;
+  replyingTo: IMessage | null = null;
   private subscription: Subscription = new Subscription();
   private mediaRecorder?: MediaRecorder;
   private recordedChunks: Blob[] = [];
@@ -46,7 +46,7 @@ export class ChatWindowComponent implements OnInit, OnDestroy {
     private dialog: MatDialog
   ) { }
 
-  trackByMessageId: TrackByFunction<Message> = (index: number, msg: Message) => msg.id;
+  trackByMessageId: TrackByFunction<IMessage> = (index: number, msg: IMessage) => msg.id;
 
   async ngOnInit() {
     this.loading = true;
@@ -83,8 +83,8 @@ export class ChatWindowComponent implements OnInit, OnDestroy {
     try {
       const messages = await this.chatService.getAllMessageByUser(this.receiverId);
       this.messages = messages
-        .filter((m: Message) => m.receiverId === this.receiverId || m.senderId === this.receiverId)
-        .sort((a: Message, b: Message) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime());
+        .filter((m: IMessage) => m.receiverId === this.receiverId || m.senderId === this.receiverId)
+        .sort((a: IMessage, b: IMessage) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime());
       const contact = await this.contactService.getContactById(this.receiverId)
       this.receiverName = contact?.name || this.receiverId;
     } catch (err) {
@@ -262,7 +262,7 @@ export class ChatWindowComponent implements OnInit, OnDestroy {
     // peer.on('call', call => { ... });
   }
 
-  async translateMessage(msg: Message): Promise<void> {
+  async translateMessage(msg: IMessage): Promise<void> {
     if (msg.text && !msg.translatedText) {
       try {
         // Assume TranslationService requires source and target language
@@ -274,7 +274,7 @@ export class ChatWindowComponent implements OnInit, OnDestroy {
     }
   }
 
-  getSenderName(msg: Message): string {
+  getSenderName(msg: IMessage): string {
     if (msg.senderId === this.currentUserId) {
       return 'You';
     }
@@ -310,7 +310,7 @@ export class ChatWindowComponent implements OnInit, OnDestroy {
     this.router.navigateByUrl('/chat');
   }
 
-  toggleSelect(msg: Message, event: MouseEvent): void {
+  toggleSelect(msg: IMessage, event: MouseEvent): void {
     event.stopPropagation();
     if (this.isSelected(msg)) {
       this.selectedMessages = this.selectedMessages.filter(m => m.id !== msg.id);
@@ -320,7 +320,7 @@ export class ChatWindowComponent implements OnInit, OnDestroy {
     this.multiSelectMode = this.selectedMessages.length > 0;
   }
 
-  isSelected(msg: Message): boolean {
+  isSelected(msg: IMessage): boolean {
     return this.selectedMessages.some(m => m.id === msg.id);
   }
 
@@ -337,7 +337,7 @@ export class ChatWindowComponent implements OnInit, OnDestroy {
     this.multiSelectMode = false;
   }
 
-  async deleteMessage(msg: Message): Promise<void> {
+  async deleteMessage(msg: IMessage): Promise<void> {
     const confirmToDelete = await this.appService.confirmForDelete((msg.text ? msg.text : 'message'));
     if (!confirmToDelete) return;
 
@@ -376,7 +376,7 @@ export class ChatWindowComponent implements OnInit, OnDestroy {
     }
   }
 
-  replyToMessage(msg: Message): void {
+  replyToMessage(msg: IMessage): void {
     this.replyingTo = msg;
     this.newMessage.text = '';
     this.focusInput();
@@ -387,7 +387,7 @@ export class ChatWindowComponent implements OnInit, OnDestroy {
     this.newMessage.text = '';
   }
 
-  forwardMessage(msg: Message): void {
+  forwardMessage(msg: IMessage): void {
     // Placeholder: Open contact picker for forwarding
     this.errorMessage = 'Forwarding not implemented yet.';
     // Example: this.dialog.open(ContactPickerComponent).afterClosed().subscribe(contact => { ... });
