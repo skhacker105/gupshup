@@ -48,8 +48,9 @@
             <div *ngIf="isDocument" class="document-attachment">
                 <!-- <i [ngClass]="getDocumentIcon()"></i> -->
                 <app-document-folder-icon [item]="documentFile" [size]="documentService.selectedIconSize"
-                    [isDesktop]="appService.isDesktop" [isTablet]="appService.isTablet" [hideBackupAction]="true"
-                    [isMobile]="appService.isMobile" (onClick)="onDocumentClick(documentFile, $event)">
+                    [loading]="loading" [isDesktop]="appService.isDesktop" [isTablet]="appService.isTablet"
+                    [hideBackupAction]="true" [isMobile]="appService.isMobile"
+                    (onClick)="onDocumentClick(documentFile, $event)">
                 </app-document-folder-icon>
                 <!-- <span>{{ documentFile.name }}</span> -->
                 <!-- <button (click)="onDownload($event)" class="btn-download"><i class="fa fa-download"></i></button> -->

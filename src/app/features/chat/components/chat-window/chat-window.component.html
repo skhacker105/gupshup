@@ -47,8 +47,8 @@
 
     <div class="messages" #messagesContainer *ngIf="!loading; else loadingSpinner">
       <app-chat-message *ngFor="let msg of messages; trackBy: trackByMessageId" [message]="msg" [showSenderName]="false"
-        [isSelected]="isSelected(msg)" [multiSelectMode]="multiSelectMode" [currentUserId]="currentUserId"
-        [receiverId]="receiverId" [isSent]="msg.senderId === currentUserId"
+        [loading]="loading" [isSelected]="isSelected(msg)" [multiSelectMode]="multiSelectMode"
+        [currentUserId]="currentUserId" [receiverId]="receiverId" [isSent]="msg.senderId === currentUserId"
         [isMobile]="appService.isMobile" [isTablet]="appService.isTablet" [isDesktop]="appService.isDesktop"
         (toggleSelection)="toggleSelect(msg, $event)" (replyMessage)="replyToMessage(msg)"
         (forwardMessage)="forwardMessage(msg)" (deleteMessage)="deleteMessage(msg)"

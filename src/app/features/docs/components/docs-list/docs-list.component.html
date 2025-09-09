@@ -103,7 +103,7 @@
                 [selectionMode]="multiSelectMode" [selected]="isSelected(item)" (onClick)="rowClick(item, $event)"
                 (longPress)="enableMobileMultiSelect()" [isDesktop]="appService.isDesktop"
                 (onMarkForBackup)="markForBackup(item)" [isTablet]="appService.isTablet"
-                [isMobile]="appService.isMobile">
+                [isMobile]="appService.isMobile" [loading]="documentLoading">
             </app-document-folder-icon>
         </div>
 
@@ -124,7 +124,7 @@
                         [selected]="isSelected(doc)" (onClick)="rowClick(doc, $event)"
                         (longPress)="enableMobileMultiSelect()" [isDesktop]="appService.isDesktop"
                         (onMarkForBackup)="markForBackup(doc)" [isTablet]="appService.isTablet"
-                        [isMobile]="appService.isMobile">
+                        [isMobile]="appService.isMobile" [loading]="documentLoading">
                     </app-document-folder-icon>
                 </div>
             </div>

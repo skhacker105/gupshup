@@ -17,12 +17,14 @@ export class DocumentFolderIconComponent {
   @Input() isTablet = false;
   @Input() isMobile = false;
 
+  @Input() loading = false;
   @Input() selectionMode = false;
   @Input() selected = false;
 
   @Output() longPress = new EventEmitter<void>();
   @Output() onClick = new EventEmitter<MouseEvent>();
   @Output() onMarkForBackup = new EventEmitter<void>();
+
 
   get isFolder(): boolean {
     return !('data' in this.item); // Discriminator: Documents have 'data: Blob'

@@ -28,6 +28,7 @@ export class DocsListComponent implements OnInit {
   multiSelectMode = false;
 
   loading = false;
+  documentLoading = false;
   errorMessage = '';
 
   currentFolder: Folder | undefined = undefined; // Root level
@@ -92,14 +93,18 @@ export class DocsListComponent implements OnInit {
       if (this.isFolder(item)) { // Folder
         this.router.navigate(['/docs', item.id]);
       } else {
-        if (item.data === EMPTY_FILE) {
-          // Re download Dowcument from storage and then open
-          const updatedDoc = await this.documentService.downloadBackup(item);
-          item.data = updatedDoc.data;
-        } else {
-          // Open document
-          this.documentService.openDocument(item);
-        }
+        this.documentLoading = true;
+        try {
+          if (item.data === EMPTY_FILE) {
+            // Re download Dowcument from storage and then open
+            const updatedDoc = await this.documentService.downloadBackup(item);
+            item.data = updatedDoc.data;
+          } else {
+            // Open document
+            this.documentService.openDocument(item);
+          }
+        } catch {}
+        this.documentLoading = false;
       }
     }
   }

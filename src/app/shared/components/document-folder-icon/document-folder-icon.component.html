@@ -1,27 +1,36 @@
 <div class="icon-container" (click)="onClick.emit($event)" [ngClass]="classes">
-    <div class="icon-wrapper" [appLongPress]="true" (modeSwitched)="longPress.emit()">
-        <ng-container *ngIf="selectionMode">
-            <input type="radio" [checked]="selected" (click)="onRadioClick($event)" class="radio-btn"
-                [ngClass]="{
+
+    <ng-container *ngIf="!loading; else loadingSpinner">
+
+        <div class="icon-wrapper" [appLongPress]="true" (modeSwitched)="longPress.emit()">
+            <ng-container *ngIf="selectionMode">
+                <input type="radio" [checked]="selected" (click)="onRadioClick($event)" class="radio-btn" [ngClass]="{
                     'big-icon': isTablet || isDesktop
                 }">
-        </ng-container>
-        <div class="icon-and-backup">
-            <div class="icon-overlay-wrapper">
-                <i class="fa" [ngClass]="iconClass"></i>
-                <ng-container *ngIf="isEmptyFile && isDocument">
-                    <i class="fa fa-download download-overlay"></i>
+            </ng-container>
+            <div class="icon-and-backup">
+                <div class="icon-overlay-wrapper">
+                    <i class="fa" [ngClass]="iconClass"></i>
+                    <ng-container *ngIf="isEmptyFile && isDocument">
+                        <i class="fa fa-download download-overlay"></i>
+                    </ng-container>
+                </div>
+                <ng-container
+                    *ngIf="!hideBackupAction && isDocument && !documentItem.backupAccountStorage && !selectionMode">
+                    <button class="backup-btn" (click)="markForBackup($event)" title="Mark for Backup">
+                        <i class="fa fa-cloud-upload-alt"></i>
+                    </button>
                 </ng-container>
             </div>
-            <ng-container *ngIf="!hideBackupAction && isDocument && !documentItem.backupAccountStorage && !selectionMode">
-                <button class="backup-btn" (click)="markForBackup($event)" title="Mark for Backup">
-                    <i class="fa fa-cloud-upload-alt"></i>
-                </button>
-            </ng-container>
         </div>
-    </div>
-    <span class="name" title="{{item.name}}">{{item.name}}</span>
-    <ng-container *ngIf="isDocument && documentItem.expiryDate">
-        <span class="expiry">Exp: {{documentItem.expiryDate | expiryCountdown}}</span>
+        <span class="name" title="{{item.name}}">{{item.name}}</span>
+        <ng-container *ngIf="isDocument && documentItem.expiryDate">
+            <span class="expiry">Exp: {{documentItem.expiryDate | expiryCountdown}}</span>
+        </ng-container>
+
     </ng-container>
+
+    <ng-template #loadingSpinner>
+        <div class="spinner"><i class="fa fa-spinner fa-spin"></i> Loading document...</div>
+    </ng-template>
 </div>

@@ -20,6 +20,7 @@ export class ChatMessageComponent implements OnInit {
   @Input() isMobile = false;
   @Input() isTablet = false;
   @Input() isDesktop = false;
+  @Input() loading = false;
 
   @Output() longPress = new EventEmitter<void>();
   @Output() toggleSelection = new EventEmitter<MouseEvent>();
@@ -104,11 +105,17 @@ export class ChatMessageComponent implements OnInit {
     if (this.multiSelectMode) return;
     event.stopPropagation();
 
-    if (item.data === EMPTY_FILE) {
-      // add code for download from storage account and open
-      this.documentFile = await this.documentService.downloadBackup(item);
-    } else {
-      this.documentService.openDocument(item);
+    try {
+      this.loading = true;
+      if (item.data === EMPTY_FILE) {
+        // add code for download from storage account and open
+        this.documentFile = await this.documentService.downloadBackup(item);
+      } else {
+        await this.documentService.openDocument(item);
+      }
+      this.loading = false;
+    } catch {
+      this.loading = false;
     }
   }
 
