@@ -311,14 +311,5 @@ export class DocumentService {
         error: err => reject(err)
       });
     });
-
-    // const file = await this.storageService.download(doc);
-    // if (!file) {
-    //   throw new Error('No backup found');
-    // }
-
-    // doc.data = file;
-    // await this.updateDocument(doc);
-    // return doc;
   }
 }
