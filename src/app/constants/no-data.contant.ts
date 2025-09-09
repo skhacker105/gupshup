@@ -1,0 +1,1 @@
+export const EMPTY_FILE = "EMPTY_FILE";

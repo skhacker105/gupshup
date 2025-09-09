@@ -195,15 +195,12 @@ export class DocsListComponent implements OnInit {
 
   async markForBackup(item: Item, changeLoadingFlag = true) {
     if (this.isFolder(item)) return;
-    if (changeLoadingFlag) this.loading = true;
 
     const confirmationMessage = `Mark the following documents for backup: ${item.name}?`;
     const confirmToBackup = await this.appService.confirmForBackup(confirmationMessage);
-    if (!confirmToBackup) {
-      if (changeLoadingFlag) this.loading = false;
-      return;
-    }
+    if (!confirmToBackup) return;
 
+    if (changeLoadingFlag) this.loading = true;
     const uploadResult = await this.documentService.backupDocument(item)
     item.backupAccountStorage = uploadResult.storageAccount;
     

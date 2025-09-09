@@ -4,6 +4,7 @@ import { IDocument } from '../models/document.interface';
 import { User } from '../models/user.interface';
 import { ISearchQuery, MultiDBManager } from '../core/indexeddb-handler';
 import { Tables } from '../models';
+import { EMPTY_FILE } from '../constants';
 
 @Injectable({
     providedIn: 'root'
@@ -181,7 +182,7 @@ export class DbService {
         const expired = documents.filter(doc => doc.expiryDate && new Date(doc.expiryDate) < new Date());
         for (const doc of expired) {
             if (doc.backupAccountStorage) {
-                doc.data = undefined;
+                doc.data = EMPTY_FILE;
                 await this.put(Tables.Documents, doc);
             } else {
                 await this.delete(Tables.Documents, doc.id);

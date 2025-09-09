@@ -1,1 +1,2 @@
-export * from './allowed-file-types.contants';
+export * from './allowed-file-types.contant';
+export * from './no-data.contant';
