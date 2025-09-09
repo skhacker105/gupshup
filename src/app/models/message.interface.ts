@@ -13,5 +13,3 @@ export interface IMessage {
   isDeleted?: string;
   isRead?: boolean;
 }
-
-// export interface
