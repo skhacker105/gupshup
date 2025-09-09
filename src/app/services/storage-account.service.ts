@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, Subject } from 'rxjs';
 import { AuthService, DbService } from './';
-import { IStorageAccount, Document, Tables, OAuthResponse, IQuotaData } from '../models';
+import { IStorageAccount, IDocument, Tables, OAuthResponse, IQuotaData } from '../models';
 import { environment } from '../../environments/environment';
 import { CacheEvict, Cacheable } from '../core/cache';
 import { stringToFile } from '../core/indexeddb-handler/utils/file';
@@ -99,7 +99,7 @@ export class StorageAccountService {
     return this.http.get<IQuotaData>(`${this.apiStorage}/${accountId}/quota`);
   }
 
-  async upload(doc: Document, accountId: string): Promise<Observable<Object> | undefined> {
+  async upload(doc: IDocument, accountId: string): Promise<Observable<Object> | undefined> {
 
     const formData = new FormData();
     const data: Blob = await stringToFile(doc.data, doc.type);
@@ -120,6 +120,6 @@ export class StorageAccountService {
 
   async getBackupCount(accountId: string): Promise<number> {
     const documents = await this.dbService.getAll(Tables.Documents);
-    return documents.filter((doc: Document) => doc.backupAccountId === accountId).length;
+    return documents.filter((doc: IDocument) => doc.backupAccountId === accountId).length;
   }
 }

@@ -1,6 +1,6 @@
 // src/app/components/document-folder-icon/document-folder-icon.component.ts
 import { Component, EventEmitter, Input, Output } from '@angular/core';
-import { Folder, Document } from '../../../models';
+import { Folder, IDocument } from '../../../models';
 
 @Component({
   selector: 'app-document-folder-icon',
@@ -8,7 +8,7 @@ import { Folder, Document } from '../../../models';
   styleUrls: ['./document-folder-icon.component.scss']
 })
 export class DocumentFolderIconComponent {
-  @Input() item!: Document | Folder;
+  @Input() item!: IDocument | Folder;
   @Input() size: 'small' | 'medium' | 'large' = 'medium';
   @Input() hideBackupAction = false;
 
@@ -31,8 +31,8 @@ export class DocumentFolderIconComponent {
     return 'data' in this.item;
   }
 
-  get documentItem(): Document {
-    return this.item as Document;
+  get documentItem(): IDocument {
+    return this.item as IDocument;
   }
 
   get iconClass(): string {

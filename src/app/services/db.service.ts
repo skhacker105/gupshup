@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { v4 as uuidv4 } from 'uuid';
-import { Document } from '../models/document.interface';
+import { IDocument } from '../models/document.interface';
 import { User } from '../models/user.interface';
 import { ISearchQuery, MultiDBManager } from '../core/indexeddb-handler';
 import { Tables } from '../models';
@@ -175,7 +175,7 @@ export class DbService {
 
     checkExpirations(): void {
         setInterval(async () => {
-            const documents: Document[] = await this.getAll(Tables.Documents);
+            const documents: IDocument[] = await this.getAll(Tables.Documents);
             const expired = documents.filter(doc => doc.expiryDate && doc.expiryDate < new Date());
             for (const doc of expired) {
                 await this.delete(Tables.Documents, doc.id);

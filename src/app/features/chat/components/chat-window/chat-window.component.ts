@@ -2,7 +2,7 @@ import { Component, OnInit, OnDestroy, ViewChild, ElementRef, TrackByFunction } 
 import { Router, ActivatedRoute } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { v4 as uuidv4 } from 'uuid';
-import { IMessage, Document, Contact, Tables, User } from '../../../../models';
+import { IMessage, IDocument, Contact, Tables, User } from '../../../../models';
 import { AppService, ChatService, DocumentService, TranslationService, AuthService, ContactService } from '../../../../services';
 import { MatDialog } from '@angular/material/dialog';
 import { MediaEditorComponent } from '../media-editor/media-editor.component';
@@ -115,7 +115,7 @@ export class ChatWindowComponent implements OnInit, OnDestroy {
         dialogRef.afterClosed().subscribe(async (editedFile: File | undefined) => {
           if (editedFile) {
             const editedFileStr = await fileToString(editedFile);
-            const doc: Document = {
+            const doc: IDocument = {
               id: uuidv4(),
               name: editedFile.name,
               type: editedFile.type,
@@ -160,7 +160,7 @@ export class ChatWindowComponent implements OnInit, OnDestroy {
 
   selectDocumentFromApp(): void {
     // Placeholder: Open app-specific document picker (e.g., cloud storage)
-    this.errorMessage = 'Document from app selection not implemented yet.';
+    this.errorMessage = 'IDocument from app selection not implemented yet.';
     // Example: Could open a dialog to select from app storage
     // this.dialog.open(DocumentPickerComponent, { data: { source: 'app' } });
   }
@@ -286,7 +286,7 @@ export class ChatWindowComponent implements OnInit, OnDestroy {
     //   this.errorMessage = 'Invalid document.';
     //   return;
     // }
-    // this.dbService.get(Tables.Documents, id).then((doc: Document) => {
+    // this.dbService.get(Tables.Documents, id).then((doc: IDocument) => {
     //   if (doc) {
     //     const url = URL.createObjectURL(doc.data);
     //     const a = document.createElement('a');

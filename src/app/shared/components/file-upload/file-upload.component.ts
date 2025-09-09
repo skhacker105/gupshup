@@ -1,7 +1,7 @@
 import { Component, Inject } from '@angular/core';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { v4 as uuidv4 } from 'uuid';
-import { Document } from '../../../models';
+import { IDocument } from '../../../models';
 import { fileToString } from '../../../core/indexeddb-handler/utils/file';
 
 @Component({
@@ -53,7 +53,7 @@ export class FileUploadComponent {
     this.loading = true;
     this.errorMessage = '';
     try {
-      const documents: Document[] = [];
+      const documents: IDocument[] = [];
       for (let i = 0; i < this.selectedFiles.length; i++) {
         const file = this.selectedFiles[i];
         const data = await fileToString(file);

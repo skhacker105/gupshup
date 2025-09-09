@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { v4 as uuidv4 } from 'uuid';
 import { AuthService, DbService, StorageAccountService } from './';
-import { Document } from '../models/document.interface';
+import { IDocument } from '../models/document.interface';
 import { Folder } from '../models/folder.interface';
 import { IconSize, Tables } from '../models';
 import { ISearchQuery } from '../core/indexeddb-handler';
@@ -79,24 +79,24 @@ export class DocumentService {
     private platform: Platform
   ) { }
 
-  async saveNewDocuments(doc: Document, parentFolder?: Folder) {
+  async saveNewDocuments(doc: IDocument, parentFolder?: Folder) {
     doc.relativePath = this.buildRelativePath(parentFolder, doc.name, doc.id);
     doc.expiryDate = await this.calculateExpiryDate(doc.type)
     return await this.dbService.put(Tables.Documents, doc);
   }
 
-  getDocument(documentId: string): Promise<Document> {
+  getDocument(documentId: string): Promise<IDocument> {
     return this.dbService.get(Tables.Documents, documentId);
   }
 
-  async getDocuments(parentFolderId?: string): Promise<Document[]> {
+  async getDocuments(parentFolderId?: string): Promise<IDocument[]> {
     const query: ISearchQuery = { text: parentFolderId ?? '', fields: ['parentFolderId'] };
     return this.dbService.search(Tables.Documents, query);
   }
 
-  async getGroupedDocuments(groupBy: string, orderBy: string): Promise<{ groupKey: string, documents: Document[] }[]> {
+  async getGroupedDocuments(groupBy: string, orderBy: string): Promise<{ groupKey: string, documents: IDocument[] }[]> {
     let documents = await this.dbService.getAll(Tables.Documents);
-    const sortFn = (a: Document, b: Document) => {
+    const sortFn = (a: IDocument, b: IDocument) => {
       switch (orderBy) {
         case 'createdDate':
           return new Date(a.createdDate).getTime() - new Date(b.createdDate).getTime();
@@ -110,7 +110,7 @@ export class DocumentService {
           return 0;
       }
     };
-    const grouped: { [key: string]: Document[] } = documents.reduce((acc: any, doc: Document) => {
+    const grouped: { [key: string]: IDocument[] } = documents.reduce((acc: any, doc: IDocument) => {
       let key: string;
       switch (groupBy) {
         case 'type':
@@ -140,7 +140,7 @@ export class DocumentService {
     return Object.entries(grouped).map(([groupKey, documents]) => ({ groupKey, documents }));
   }
 
-  backupDocument(doc: Document): Promise<any> {
+  backupDocument(doc: IDocument): Promise<any> {
     return new Promise(async (resolve) => {
       const account = await this.storageService.chooseStorageAccount();
       if (!account) {
@@ -159,7 +159,7 @@ export class DocumentService {
   }
 
   async deleteDocument(id: string): Promise<void> {
-    const doc = await this.dbService.get(Tables.Documents, id) as Document;
+    const doc = await this.dbService.get(Tables.Documents, id) as IDocument;
     // if (permanent && doc.backupAccountId) {
     // Requires backend route
     // await this.storageService.deleteBackup(doc.id, doc.backupAccountId);
@@ -167,7 +167,7 @@ export class DocumentService {
     await this.dbService.delete(Tables.Documents, id);
   }
 
-  async openDocument(doc: Document): Promise<void> {
+  async openDocument(doc: IDocument): Promise<void> {
     // Extract file extension (case-insensitive)
     const extension = doc.name.split('.').pop()?.toLowerCase();
 

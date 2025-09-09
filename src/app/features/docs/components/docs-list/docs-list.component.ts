@@ -2,16 +2,16 @@
 import { Component, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { FolderCreateComponent } from '../folder-create/folder-create.component';
-import { Folder, Document, IconSize, IPathSegmenmat } from '../../../../models';
+import { Folder, IDocument, IconSize, IPathSegmenmat } from '../../../../models';
 import { AppService, DocumentService } from '../../../../services';
 import { FileUploadComponent } from '../../../../shared/components/file-upload/file-upload.component';
 import { ActivatedRoute, Router } from '@angular/router';
 
-type Item = Document | Folder;
+type Item = IDocument | Folder;
 
 interface IGroup {
   groupKey: string;
-  documents: Document[];
+  documents: IDocument[];
 }
 
 @Component({
@@ -35,7 +35,7 @@ export class DocsListComponent implements OnInit {
   iconSizes = Object.values(IconSize);
   
   get isMarkForBackupDisabled(): boolean {
-    return this.selectedItems.length === 0 || this.selectedItems.every(item => this.isFolder(item) || (item as Document).backupAccountId);
+    return this.selectedItems.length === 0 || this.selectedItems.every(item => this.isFolder(item) || (item as IDocument).backupAccountId);
   }
 
   constructor(
@@ -164,7 +164,7 @@ export class DocsListComponent implements OnInit {
     if (!this.selectedItems.length) return;
 
     // Filter only documents (skip folders)
-    const selectedDocuments = this.selectedItems.filter(item => !this.isFolder(item)) as Document[];
+    const selectedDocuments = this.selectedItems.filter(item => !this.isFolder(item)) as IDocument[];
 
     if (!selectedDocuments.length) {
       this.errorMessage = 'No documents selected for backup.';
@@ -276,7 +276,7 @@ export class DocsListComponent implements OnInit {
         isMobile: this.appService.isMobile
       }
     });
-    dialogRef.afterClosed().subscribe(async (docs: Document[] | undefined) => {
+    dialogRef.afterClosed().subscribe(async (docs: IDocument[] | undefined) => {
       this.loading = true;
       if (docs) {
         try {

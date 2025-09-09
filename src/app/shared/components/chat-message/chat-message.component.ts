@@ -1,5 +1,5 @@
 import { Component, Input, Output, EventEmitter, OnInit } from '@angular/core';
-import { Document, IMessage } from '../../../models';
+import { IDocument, IMessage } from '../../../models';
 import { stringToFile } from '../../../core/indexeddb-handler/utils/file';
 import { AppService, DocumentService } from '../../../services';
 
@@ -29,7 +29,7 @@ export class ChatMessageComponent implements OnInit {
   @Output() downloadAttachment = new EventEmitter<{ id: string, name: string }>();
 
   fileURL = '';
-  documentFile: Document | undefined;
+  documentFile: IDocument | undefined;
 
   get senderName(): string {
     return this.message.senderId === this.receiverId ? 'Them' : 'You'; // Simplified; use actual names if passed
@@ -87,7 +87,7 @@ export class ChatMessageComponent implements OnInit {
     }
   }
 
-  async getDocument(): Promise<Document | undefined> {
+  async getDocument(): Promise<IDocument | undefined> {
     if (this.message.documentId)
       return await this.documentService.getDocument(this.message.documentId)
     return;
@@ -99,7 +99,7 @@ export class ChatMessageComponent implements OnInit {
     }
   }
 
-  onDocumentClick(item: Document, event: MouseEvent): void {
+  onDocumentClick(item: IDocument, event: MouseEvent): void {
     event.stopPropagation();
     this.documentService.openDocument(item);
   }

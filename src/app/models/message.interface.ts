@@ -1,4 +1,4 @@
-import { Document } from './';
+import { IDocument } from './';
 
 export interface IMessage {
   id: string;
