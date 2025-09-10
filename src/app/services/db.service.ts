@@ -10,8 +10,8 @@ import { EMPTY_FILE } from '../constants';
     providedIn: 'root'
 })
 export class DbService {
-    private manager: MultiDBManager;
-    private dbId = 'chatAppDB';
+    private manager?: MultiDBManager;
+    private dbId = 'GupShupAppDB';
     private schema = {
         "version": 1,
         "stores": {
@@ -121,11 +121,16 @@ export class DbService {
             }
         }
     };
+    private expiryTimeOut: number | null = null;
 
     constructor() {
+    }
+
+    initializeDB(user: User) {
         this.manager = new MultiDBManager();
+        this.dbId = this.dbId + user.phoneNumber;
         if (!this.manager.getDeviceId()) {
-            const deviceId = uuidv4();
+            const deviceId = user.id;
             this.manager.setDeviceId(deviceId);
         }
         this.manager.createDatabaseAsCreator(this.dbId, this.schema).catch(err => console.error('DB Creation Error:', err));
@@ -133,46 +138,36 @@ export class DbService {
     }
 
     async search(store: string, query: ISearchQuery): Promise<any[]> {
-        return await this.manager.search(this.dbId, store, query);
+        return (await this.manager?.search(this.dbId, store, query)) ?? [];
     }
 
     async get(store: string, id: string): Promise<any> {
-        return this.manager.get(this.dbId, store, id);
+        return this.manager?.get(this.dbId, store, id);
     }
 
     async getAll(store: string): Promise<any[]> {
-        return this.manager.getAll(this.dbId, store);
+        return (await this.manager?.getAll(this.dbId, store)) ?? [];
     }
 
     async put(store: string, data: any): Promise<void> {
-        return await this.manager.put(this.dbId, store, data);
+        return await this.manager?.put(this.dbId, store, data);
     }
 
     async delete(store: string, id: string): Promise<void> {
-        return await this.manager.delete(this.dbId, store, id);
-    }
-
-    getDeviceId(): string {
-        // Replace with actual device ID logic (e.g., UUID from localStorage or device fingerprint)
-        return 'device-id-stub-' + Date.now(); // Stub for testing
+        return await this.manager?.delete(this.dbId, store, id);
     }
 
     async getUser(userId: string): Promise<User | undefined> {
         const user = await this.get('users', userId);
-        return user; // || { id: this.manager.getDeviceId()!, phoneNumber: '', password: '', targetLanguage: 'en-US', storageAccounts: [] };
+        return user;
     }
-
-    // async getUser(): Promise<User | undefined> {
-    //     const user = await this.get('users', this.manager.getDeviceId()!);
-    //     return user || { id: this.manager.getDeviceId()!, phoneNumber: '', password: '', targetLanguage: 'en-US', storageAccounts: [] };
-    // }
 
     async updateUser(user: Partial<User>): Promise<void> {
         return await this.put('users', user);
     }
 
     checkExpirations(): void {
-        setInterval(() => this.deleteExpiredDocuments(), 3600000); // Run hourly
+        this.expiryTimeOut = window.setInterval(() => this.deleteExpiredDocuments(), 3600000); // Run hourly
     }
 
     async deleteExpiredDocuments() {
@@ -186,5 +181,13 @@ export class DbService {
                 await this.delete(Tables.Documents, doc.id);
             }
         }
+    }
+
+    deInitializeDB() {
+        this.manager?.destructor();
+        this.manager = undefined;
+        if (this.expiryTimeOut)
+            window.clearInterval(this.expiryTimeOut);
+        this.dbId = 'GupShupAppDB';
     }
 }

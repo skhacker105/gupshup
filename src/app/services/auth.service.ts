@@ -28,6 +28,9 @@ export class AuthService {
                 if (!res || !res.token) throw new Error('Login Failed');
 
                 return this.getLoggedInUserInfoFromBackend().pipe(
+                    tap(userInfo => {
+                        this.dbService.initializeDB(userInfo);
+                    }),
                     catchError(err => {
                         this.logout();
                         throw err;
@@ -62,6 +65,7 @@ export class AuthService {
     logout() {
         localStorage.removeItem(this.tokenKey);
         localStorage.removeItem(this.userInfoKey);
+        this.dbService.deInitializeDB();
     }
 
     isLoggedIn(): boolean {

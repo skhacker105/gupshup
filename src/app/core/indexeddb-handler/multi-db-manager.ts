@@ -392,4 +392,10 @@ export class MultiDBManager {
         if (!ctx) throw new Error(`DB ${effectiveDbId} not loaded`);
         return { ctx, dbId: effectiveDbId };
     }
+
+    // Public Destructor
+    destructor() {
+        localStorage.removeItem(MultiDBManager.LS_KEY_DEVICE);
+        localStorage.removeItem(MultiDBManager.LS_KEY_SELECTEDDB);
+    }
 }
