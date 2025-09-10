@@ -45,7 +45,7 @@ export class ChatListComponent implements OnInit {
   async ngOnInit(): Promise<void> {
     setTimeout(async () => {
       await this.loadData();
-    }, 100);
+    }, 500);
   }
 
   async loadData(): Promise<void> {
@@ -55,7 +55,7 @@ export class ChatListComponent implements OnInit {
       this.contacts = await this.contactService.getContacts();
       this.groups = await this.contactService.getGroups();
       this.mergeLists();
-    } catch {
+    } catch(err) {
       this.errorMessage = 'Failed to load contacts or groups.';
     }
     this.loading = false;

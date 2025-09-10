@@ -35,7 +35,7 @@ export class SettingsComponent implements OnInit {
     this.loading = true;
     try {
       const user = await this.authService.getLoggedInUserInfo();
-      if (!user) return;
+      if (!user) throw new Error('User not found');
 
       this.typeExpirations = user.expirationSettings?.typeExpirations || {};
       this.storageAccounts = user.storageAccounts || [];

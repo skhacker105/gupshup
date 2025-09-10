@@ -28,9 +28,6 @@ export class AuthService {
                 if (!res || !res.token) throw new Error('Login Failed');
 
                 return this.getLoggedInUserInfoFromBackend().pipe(
-                    tap(userInfo => {
-                        this.dbService.initializeDB(userInfo);
-                    }),
                     catchError(err => {
                         this.logout();
                         throw err;
@@ -42,9 +39,10 @@ export class AuthService {
 
     getLoggedInUserInfoFromBackend(): Observable<User> {
         return this.http.get(`${this.apiUsers}/myInfo`).pipe(
-            tap((userInfo: any) => {
+            tap(async(userInfo: any) => {
                 if (!userInfo) throw new Error('Login successfull but no user information found.');
 
+                await this.dbService.initializeDB(userInfo);
                 this.saveLoggedInUserInfo(userInfo, true);
             })
         );

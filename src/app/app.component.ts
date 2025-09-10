@@ -42,9 +42,9 @@ export class AppComponent implements OnInit {
       if (this.authService.isLoggedIn()) {
         this.authService.getLoggedInUserInfoFromBackend()
           .pipe(take(1))
-          .subscribe((userInfo) => this.dbService.initializeDB(userInfo));
+          .subscribe(() => {});
       }
-    }, 1000);
+    }, 10);
   }
 
   onTabClick(index: number): void {

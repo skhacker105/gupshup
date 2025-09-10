@@ -52,7 +52,7 @@ export class StorageAccountsComponent implements OnInit {
     obs
       .pipe(take(1))
       .subscribe(response => {
-        this.authService.getLoggedInUserInfoFromBackend().pipe(take(1)).subscribe(user => {
+        this.authService.getLoggedInUserInfo().then(user => {
           this.storageAccounts = user?.storageAccounts || [];
           this.storageAccountsChange.emit(this.storageAccounts);
           this.loadStorageQuotas();
@@ -72,7 +72,7 @@ export class StorageAccountsComponent implements OnInit {
         this.storageAccountsChange.emit(this.storageAccounts);
         console.log('Storage account deleted successfully')
         this.successMessage.emit('Storage account deleted successfully.');
-        this.authService.getLoggedInUserInfoFromBackend().pipe(take(1)).subscribe(res => { });
+        this.authService.getLoggedInUserInfo().then(res => { });
       });
     } catch (err) {
       this.errorMessage.emit('Failed to delete storage account.');

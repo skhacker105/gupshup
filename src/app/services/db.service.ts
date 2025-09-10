@@ -126,14 +126,14 @@ export class DbService {
     constructor() {
     }
 
-    initializeDB(user: User) {
+    async initializeDB(user: User) {
         this.manager = new MultiDBManager();
         this.dbId = this.dbId + user.phoneNumber;
         if (!this.manager.getDeviceId()) {
             const deviceId = user.id;
             this.manager.setDeviceId(deviceId);
         }
-        this.manager.createDatabaseAsCreator(this.dbId, this.schema).catch(err => console.error('DB Creation Error:', err));
+        await this.manager.createDatabaseAsCreator(this.dbId, this.schema).catch(err => console.error('DB Creation Error:', err));
         this.checkExpirations();
     }
 
