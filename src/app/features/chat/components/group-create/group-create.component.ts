@@ -31,26 +31,30 @@ export class GroupCreateComponent implements OnInit {
     this.existingGroups = await this.contactService.getGroups();
   }
 
-  async createGroup(): Promise<void> {
-
+  newContactVerified(): boolean {
     if (this.data.contacts.length < 2) {
       this.errorMessage = 'Select two or more contacts.';
-      return;
+      return false;
     }
 
     if (!this.groupName) {
       this.errorMessage = 'Please enter a group name.';
-      return;
+      return false;
     }
 
-    this.groupName = this.groupName.trim()
+    this.groupName = this.groupName.trim();
     const nameIsExisting = this.existingGroups.some(g => g.name === this.groupName);
-
-
     if (nameIsExisting) {
       this.errorMessage = `A group with  name '${this.groupName}' already exists.`;
-      return;
+      return false;
     }
+
+    return true;
+  }
+
+  async createGroup(): Promise<void> {
+    if (!this.newContactVerified()) return;
+    
     this.loading = true;
     this.errorMessage = '';
     try {
