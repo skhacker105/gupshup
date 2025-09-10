@@ -3,6 +3,7 @@ import { DbService } from './db.service';
 import { WebSocketService } from './websocket.service';
 import { Contact, ContactGroup, Tables } from '../models';
 import { Subscription } from 'rxjs';
+import { ISearchQuery } from '../core/indexeddb-handler';
 
 @Injectable({
     providedIn: 'root'
@@ -27,6 +28,16 @@ export class ContactService {
 
     async getContactById(id: string): Promise<Contact> {
         return this.dbService.get(Tables.Contacts, id);
+    }
+
+    async getContactByName(name: string): Promise<Contact[]> {
+        const query: ISearchQuery = { text: name, fields: ['name'] };
+        return this.dbService.search(Tables.Contacts, query)
+    }
+
+    async getContactByPhone(phoneNumber: string): Promise<Contact[]> {
+        const query: ISearchQuery = { text: phoneNumber, fields: ['phoneNumber'] };
+        return this.dbService.search(Tables.Contacts, query)
     }
 
     async deleteContact(id: string) {

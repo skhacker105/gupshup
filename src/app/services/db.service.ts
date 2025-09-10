@@ -47,11 +47,9 @@ export class DbService {
                     "name",
                     "email",
                     "address",
-                    "company",
                     "lastMessageTimestamp",
                     "createdAt",
-                    "updatedAt",
-                    "favorite"
+                    "updatedAt"
                 ]
             },
             "contactGroups": {
