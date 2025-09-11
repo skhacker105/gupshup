@@ -1,5 +1,3 @@
-import { IDocument } from './';
-
 export interface IMessage {
   id: string;
   senderId: string;
