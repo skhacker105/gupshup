@@ -6,4 +6,3 @@ export * from './db.service';
 export * from './document.service';
 export * from './storage-account.service';
 export * from './translation.service';
-export * from './websocket.service';

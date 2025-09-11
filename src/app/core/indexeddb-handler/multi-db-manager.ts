@@ -131,7 +131,7 @@ export class MultiDBManager {
         const me = await db.getDevice(deviceId);
         const myRole = me?.role ?? ROLES.VIEWER;
 
-        const sync = await this.startSync(db, cryptoMgr, deviceId, dbId, myRole === ROLES.CREATOR, creatorDeviceId);
+        // const sync = await this.startSync(db, cryptoMgr, deviceId, dbId, myRole === ROLES.CREATOR, creatorDeviceId);
 
         const ctx: DBContext = {
             dbId,
@@ -141,7 +141,7 @@ export class MultiDBManager {
             schema,
             db,
             cryptoMgr,
-            sync,
+            // sync,
             secrets
         };
 
@@ -181,7 +181,7 @@ export class MultiDBManager {
             await db.addOrUpdateDevice({ deviceId, role: ROLES.CREATOR, grant });
         }
 
-        const sync = await this.startSync(db, cryptoMgr, deviceId, dbId, true, deviceId);
+        // const sync = await this.startSync(db, cryptoMgr, deviceId, dbId, true, deviceId);
 
         const ctx: DBContext = {
             dbId,
@@ -191,7 +191,7 @@ export class MultiDBManager {
             schema,
             db,
             cryptoMgr,
-            sync,
+            // sync,
             secrets: cryptoSecret
         };
 

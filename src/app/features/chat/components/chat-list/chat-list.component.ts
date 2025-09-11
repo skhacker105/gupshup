@@ -43,6 +43,7 @@ export class ChatListComponent implements OnInit {
   }
 
   async ngOnInit(): Promise<void> {
+    this.loading = true;
     setTimeout(async () => {
       await this.loadData();
     }, 500);

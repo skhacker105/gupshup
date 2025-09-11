@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { Subject, Observable } from 'rxjs';
 import { v4 as uuidv4 } from 'uuid';
 import { IMessage, Tables } from '../models';
-import { AuthService, ContactService, DbService, TranslationService, WebSocketService } from './';
+import { AuthService, ContactService, DbService, TranslationService } from './';
 import { ISearchQuery } from '../core/indexeddb-handler';
 
 @Injectable({
@@ -12,17 +12,17 @@ export class ChatService {
     private messageSubject = new Subject<IMessage>();
 
     constructor(
-        private wsService: WebSocketService,
+        // private wsService: WebSocketService,
         private dbService: DbService,
         private translationService: TranslationService,
         private contactService: ContactService,
         private authService: AuthService
     ) {
-        this.wsService.messages$.subscribe(msg => {
-            if (msg.type === 'message') {
-                this.messageSubject.next(msg.data as IMessage);
-            }
-        });
+        // this.wsService.messages$.subscribe(msg => {
+        //     if (msg.type === 'message') {
+        //         this.messageSubject.next(msg.data as IMessage);
+        //     }
+        // });
     }
 
     getMessages(): Observable<IMessage> {

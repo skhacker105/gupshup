@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { DbService } from './db.service';
-import { WebSocketService } from './websocket.service';
+// import { WebSocketService } from './websocket.service';
 import { Contact, ContactGroup, Tables } from '../models';
 import { Subscription } from 'rxjs';
 import { ISearchQuery } from '../core/indexeddb-handler';
@@ -13,13 +13,13 @@ export class ContactService {
 
     constructor(
         private dbService: DbService,
-        private wsService: WebSocketService
+        // private wsService: WebSocketService
     ) {
-        this.sub = this.wsService.messages$.subscribe(msg => {
-            if (msg.type === 'presence') {
-                this.updateOnlineStatus(msg.contactId, msg.online);
-            }
-        });
+        // this.sub = this.wsService.messages$.subscribe(msg => {
+        //     if (msg.type === 'presence') {
+        //         this.updateOnlineStatus(msg.contactId, msg.online);
+        //     }
+        // });
     }
 
     async getContacts(): Promise<Contact[]> {

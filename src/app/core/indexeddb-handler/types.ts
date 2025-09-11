@@ -53,7 +53,7 @@ export interface DBContext {
     schema: any;
     db: IndexedDBAbstraction;
     cryptoMgr: CryptoManager;
-    sync: CreatorHubSyncManager;
+    sync?: CreatorHubSyncManager;
     secrets: SecretBundle;
 }
 export interface DBListEntry {
